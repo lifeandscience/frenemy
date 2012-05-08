@@ -1,0 +1,17 @@
+h1 #{title}
+
+table.table.table-striped
+	thead
+		tr
+			th Name
+			th Score
+			th Actions
+	tbody
+		each player, i in players
+			tr
+				td #{player.name}
+				td #{player.score}
+				td
+					a.btn(href="/players/edit/#{player._id}") Edit
+					| 
+					a.btn.btn-danger(href="/players/delete/#{player._id}") Delete

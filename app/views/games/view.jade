@@ -1,0 +1,62 @@
+h1 Let's play FRENEMY
+h2 Round ##{round.number}
+h2
+	if my_vote && their_vote
+		| RESULTS:
+	else 
+		if my_vote
+			| Your Vote:
+		else
+			| Pick One:
+
+#vote
+	a(href="/games/#{game._id}/#{round._id}/#{me}/friend", class=(my_vote ? (my_vote.value == 'friend' ? 'btn btn-primary disabled' : 'btn disabled') : 'btn')) Friend
+	a(href="/games/#{game._id}/#{round._id}/#{me}/enemy", class=(my_vote ? (my_vote.value == 'enemy' ? 'btn btn-primary disabled' : 'btn disabled') : 'btn')) Enemy
+
+if !game.currentRound
+	a.btn(href="/games/#{game._id}/#{me}") Go to Results!
+else if game.currentRound.toString() != round._id.toString()
+	a.btn(href="/games/#{game._id}/#{game.currentRound}/#{me}") Go to Current Round!
+
+
+#scoring
+	ul
+		li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'label label-info' : 'label'))
+			span.friend-you Friend (You)
+			| +
+			span.friend-them Friend (Them)
+			| = 
+			span.score-you +10 to You
+			span.score-them +10 to Them
+		li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
+			span.friend-you Friend (You)
+			| +
+			span.enemy-them Enemy (Them)
+			| =
+			span.score-you -15 to You
+			span.score-them +15 to Them
+		li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'label label-info' : 'label'))
+			span.enemy-you Enemy (You)
+			| +
+			span.friend-them Friend (Them)
+			| =
+			span.score-you +15 to You
+			span.score-them -15 to Them
+		li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
+			span.enemy-you Enemy (You)
+			| +
+			span.enemy-them Enemy (Them)
+			| =
+			span.score-you -15 to You
+			span.score-them -15 to Them
+
+
+pre !{util.inspect(game)}
+pre !{util.inspect(round)}
+			
+#me
+	iframe(src="/player/profile/#{me}")
+#my-opponent
+	iframe(src="/player/profile/#{opponent}")
+#leaderboard
+	iframe(src="/player/leaderboard")

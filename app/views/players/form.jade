@@ -1,0 +1,26 @@
+form(method="POST")#playerForm.form-horizontal
+	fieldset
+		legend #{title}
+
+		.control-group
+			label.control-label(for="name") Player Name:
+			.controls
+				input#name.span5(type="text", placeholder="", name="name", value=player.name)
+				p.help-inline The name of the player.
+				
+		.control-group
+			label.control-label(for="email") Email Address:
+			.controls
+				input#email.span5(type="text", placeholder="", name="email", value=player.email)
+				p.help-inline The email address for the player.
+
+		.control-group
+			label.control-label(for="score") Score:
+			.controls
+				input#score.span5(type="text", placeholder="", name="score", value=player.score)
+				p.help-inline The score for the player.
+
+	.form-actions
+		button.btn.btn-primary(type="submit") Submit
+		|  
+		a.btn(href="/categories") Cancel
