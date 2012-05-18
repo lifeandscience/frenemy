@@ -5,7 +5,7 @@ var mongoose = require('mongoose')
 
 var RoundSchema = new Schema({
 	completed: {type: Boolean, default: false}
-  , number: {type: Number, default: 1, min: 1, max: config.roundsPerGame}
+  , number: {type: Number, default: 1, min: 1, max: 7}
   , votes: [{type: Schema.ObjectId, ref: 'Vote'}]
 });
 
@@ -22,6 +22,7 @@ RoundSchema.methods.getVoteForPlayer = function(id){
 RoundSchema.methods.getPointsForPlayer = function(id){
 	var player_vote = null
 	  , opponent_vote = null;
+	util.log('votes: '+util.inspect(this.votes));
 	if(this.votes[0].player.toString() == id.toString()){
 		player_vote = this.votes[0];
 		opponent_vote = this.votes[1];
@@ -29,6 +30,8 @@ RoundSchema.methods.getPointsForPlayer = function(id){
 		player_vote = this.votes[1];
 		opponent_vote = this.votes[0];
 	}
+	util.log('player_vote: '+player_vote.value);
+	util.log('oppont_vote: '+opponent_vote.value);
 	if(player_vote.value == opponent_vote.value){
 		if(player_vote.value == 'friend'){
 			return config.points.winningTie;

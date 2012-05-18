@@ -1,26 +1,22 @@
 module.exports = {
-	// Number of rounds in each game
-	roundsPerGame: 3
-	
 	// Number of points for players who start out high
-  , defaultHighPoints: 10000
+	defaultHighPoints: 10000
 
 	// Number of points for players who start out low
   , defaultLowPoints: 0
 
-	// Function to decide which a user has:
-  , determineInitialPoints: function(){
-		return (Math.floor(Math.random() * 2) ? module.exports.defaultHighPoints : module.exports.defaultLowPoints);
-	}
-
   , points: {
 		// 'friend' + 'friend'
-		winningTie: 10
+		winningTie: 15
 		// 'friend' in 'friend' + 'enemy'
-	  , loss: -15
+	  , loss: -5
 		// 'enemy' in 'friend' + 'enemy'
-	  , win: 15
+	  , win: 25
 		// 'enemy' + 'enemy'
-	  , losingTie: -15
+	  , losingTie: 5
 	}
+	
+  , defaultDefenderEmail: 'ben.schell@gmail.com'
+//  , defaultDefenderEmail: 'ben.schell+defender@bluepanestudio.com'
+  , defaultNonDefenderEmail: 'ben.schell+non+defender@bluepanestudio.com'
 };

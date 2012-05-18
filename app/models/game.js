@@ -4,39 +4,81 @@ var mongoose = require('mongoose')
   , config = require('../../config');
 
 var GameSchema = new Schema({
-	startTime: {type: Date, default: -1}
+	startTime: {type: Date, default: function(){ return Date.now(); }}
+  , numRounds: {
+		type: Number, 
+		default: function(){
+			return Math.floor(Math.random() * 5) + 3;  
+		}
+	}
+  , completed: {type: Boolean, default: false}
   , opponents: [{type: Schema.ObjectId, ref: 'Player'}]
   , currentRound: {type: Schema.ObjectId, ref: 'Round'}
   , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
 });
 
-GameSchema.statics.setupGames = function(){
+GameSchema.statics.setupGames = function(req, cb){
 	var Player = mongoose.model('Player');
-	Player.find({}).asc('_id').run(function(err, players){
-		if(err){
-			util.log('couldn\'t find players?!');
-		}else{
-			var pickPlayer = function(){
-					var index = Math.floor(Math.random() * players.length);
-					return players.splice(index, 1)[0];
-				}
-			  , count = 0;
-			while(players.length > 1){
-				// Pick two players
-				var game = new Game();
-				game.opponents.push(pickPlayer());
-				game.opponents.push(pickPlayer());
-				count++;
-				game.save(function(err){
-					if(err){
-						util.log('game not saved!');
-					}
-					if(--count == 0){
-						util.log('setup all of the games!');
-					}
-				});
-			}
-		}
+	Player.find({email: config.defaultNonDefenderEmail}).run(function(err, nonDefendingPlayers){
+		var nonDefendingPlayer = nonDefendingPlayers.pop();
+		Player.find({email: config.defaultDefenderEmail}).run(function(err, defendingPlayers){
+			var defendingPlayer = defendingPlayers.pop()
+			  , setupCount = 2
+			  , setupGamesForPlayers = function(fillInPlayer){
+					return function(err, players){
+						util.log('setupGamesForPlayers: '+util.inspect(players));
+						if(err){
+							util.log('couldn\'t find players?!');
+						}else if(players.length < 1){
+							req.flash('error', 'Can\'t start games with less than 2 players');
+							if(cb && --setupCount == 0){
+								cb();
+							}
+							return;
+						}else{
+							util.log('woo?');
+							var pickPlayer = function(){
+									util.log('fill in: '+fillInPlayer.email);
+									if(players.length == 0){
+										return fillInPlayer;
+									}
+									var index = Math.floor(Math.random() * players.length);
+									return players.splice(index, 1)[0];
+								}
+							  , count = 0;
+							while(players.length > 0){
+								util.log('here? '+players.length);
+								// Pick two players
+								var game = new Game();
+								game.opponents.push(pickPlayer());
+								game.opponents.push(pickPlayer());
+								count++;
+								game.save(function(err){
+									if(err){
+										util.log('game not saved!');
+									}
+									if(--count == 0){
+										util.log('setup some of the games!');
+										if(cb && --setupCount == 0){
+											cb();
+										}
+									}
+								});
+							}
+						}
+					};
+				};
+			Player.find({defending: true}).where('email').ne(config.defaultDefenderEmail).asc('_id').run(setupGamesForPlayers(defendingPlayer));
+			Player.find({defending: false}).where('email').ne(config.defaultNonDefenderEmail).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
+		});
+	});
+};
+
+GameSchema.statics.endGames = function(cb){
+	Game.update({completed: false}, {$set: {completed: true, currentRound: null}}, {multi: true}, function(){
+		util.log('completed all games!');
+		util.log(util.inspect(arguments));
+		cb();
 	});
 };
 
@@ -45,7 +87,8 @@ GameSchema.pre('save', function(next){
 	if(game.startTime == -1){
 		game.startTime = new Date();
 	}
-	if(!game.currentRound && game.rounds.length < config.roundsPerGame){
+	// TODO: replace roundsPerGame
+	if(!game.currentRound && game.rounds.length < game.numRounds){
 		// Create a round
 		var Round = mongoose.model('Round')
 		  , round = new Round();
@@ -61,12 +104,15 @@ GameSchema.pre('save', function(next){
 				util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
 				Player.findById(game.opponents[i]).run(function(err, opponent){
 					if(opponent){
-						opponent.notifyOfNewRound('/games/'+game._id+'/'+round._id+'/'+opponent._id);
+						opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id);
 					}
 				});
 			}
 			next();
 		});
+	}else if(game.rounds.length == game.numRounds){
+		game.completed = true;
+		next();
 	}else{
 		next();
 	}

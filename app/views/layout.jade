@@ -4,53 +4,49 @@ html(lang="en")
     block head
       meta(charset="utf-8")
       title= title
-      style
-        body {
-          padding: 60px 0 0 0;
-        }
+      - if(everyauth.loggedIn)
+        style
+          body {
+            padding: 60px 0 0 0;
+          }
       link(rel='stylesheet', href="/bootstrap/css/bootstrap.min.css")
       link(rel='stylesheet', href='/css/style.css')
       //Le HTML5 shim, for IE6-8 support of HTML5 elements
       //if lt IE 9
         script(src='/js/modernizr.js')
   body
-    .navbar.navbar-fixed-top
-      .navbar-inner
-        .container
-          a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.brand(href="/") Frenemy
-          .nav-collapse
-            ul.nav
-              li: a(href="/") Home
-              li.dropdown
-                a.dropdown-toggle(href="#", data-toggle="dropdown")
-                  | Games
-                  b.caret
-                ul.dropdown-menu
-                  li: a(href="/games") List Games
-                  li: a(href="/games/start") Start Games
-              li.dropdown
-                a.dropdown-toggle(href="#", data-toggle="dropdown")
-                  | Rounds
-                  b.caret
-                ul.dropdown-menu
-                  li: a(href="/rounds") List Rounds
-              li.dropdown
-                a.dropdown-toggle(href="#", data-toggle="dropdown")
-                  | Votes
-                  b.caret
-                ul.dropdown-menu
-                  li: a(href="/votes") List Votes
-              li.dropdown
-                a.dropdown-toggle(href="#", data-toggle="dropdown")
-                  | Players
-                  b.caret
-                ul.dropdown-menu
-                  li: a(href="/players") List Players
-                  li: a(href="/players/add") Add Player
+    - if(everyauth.loggedIn)
+      .navbar.navbar-fixed-top
+        .navbar-inner
+          .container
+            a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.brand(href="/") Frenemy
+            .nav-collapse
+              - if(everyauth.loggedIn)
+                ul.nav
+                  li.dropdown
+                    a.dropdown-toggle(href="#", data-toggle="dropdown")
+                      | Games
+                      b.caret
+                    ul.dropdown-menu
+                      li: a(href="/games") Active Games
+                      li: a(href="/games/all") All Games
+                      li: a(href="/games/start") Force Start Day
+                      li: a(href="/games/end") Force End Day
+                  li.dropdown
+                    a.dropdown-toggle(href="#", data-toggle="dropdown")
+                      | Players
+                      b.caret
+                    ul.dropdown-menu
+                      li: a(href="/players") List Players
+                      li: a(href="/players/defending") List Defending Players
+                      li: a(href="/players/nondefending") List Non-Defending Players
+                      li: a(href="/players/add") Add Player
+              ul.nav.pull-right
+                li: a(href="/logout") Logout
     div(class="container")
       block messages
         #messages !{flashMessages}

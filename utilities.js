@@ -72,9 +72,9 @@ module.exports = {
 				return;
 			});
 		}
-	},
+	}
 	
-	getByID: function(object, title, populate){
+  , getByID: function(object, title, populate){
 		if(!populate){
 			populate = [];
 		}
@@ -97,5 +97,15 @@ module.exports = {
 			req.flash('error', 'No '+title+' ID provided');
 			next();
 		}
+	}
+
+  , checkAdmin: function(req, res, next){
+		if(req.loggedIn && req.user && req.user.isAdmin){
+			// Check if they're an admin!
+			next();
+			return;
+		}
+		req.flash('error', 'You are not authorized to view that resource!');
+		res.redirect('/');
 	}
 }

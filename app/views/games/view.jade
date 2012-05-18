@@ -26,29 +26,29 @@ else if game.currentRound.toString() != round._id.toString()
 			| +
 			span.friend-them Friend (Them)
 			| = 
-			span.score-you +10 to You
-			span.score-them +10 to Them
+			span.score-you +15 to You
+			span.score-them +15 to Them
 		li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
 			span.friend-you Friend (You)
 			| +
 			span.enemy-them Enemy (Them)
 			| =
-			span.score-you -15 to You
-			span.score-them +15 to Them
+			span.score-you -5 to You
+			span.score-them +25 to Them
 		li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'label label-info' : 'label'))
 			span.enemy-you Enemy (You)
 			| +
 			span.friend-them Friend (Them)
 			| =
-			span.score-you +15 to You
-			span.score-them -15 to Them
+			span.score-you +25 to You
+			span.score-them -5 to Them
 		li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
 			span.enemy-you Enemy (You)
 			| +
 			span.enemy-them Enemy (Them)
 			| =
-			span.score-you -15 to You
-			span.score-them -15 to Them
+			span.score-you +5 to You
+			span.score-them +5 to Them
 
 
 pre !{util.inspect(game)}
@@ -57,6 +57,6 @@ pre !{util.inspect(round)}
 #me
 	iframe(src="/player/profile/#{me}")
 #my-opponent
-	iframe(src="/player/profile/#{opponent}")
+	iframe(src="/player/profile/#{opponent}/#{me}")
 #leaderboard
-	iframe(src="/player/leaderboard")
+	iframe(src="/player/leaderboard/#{me}")
