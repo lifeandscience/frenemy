@@ -4,6 +4,7 @@ var mongoose = require('mongoose')
   , config = require('../../config')
   , nodemailer = require('nodemailer')
   , jade = require('jade')
+  , fs = require('fs')
   , util = require('util');
 
 
@@ -17,13 +18,13 @@ var smtpTransport = nodemailer.createTransport("SES", {
 });
 
 var path = __dirname + '/../views/players/email/game_start.jade'
-  , str = require('fs').readFileSync(path, 'utf8')
+  , str = fs.readFileSync(path, 'utf8')
   , gameStartTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/round_start.jade'
-  , str = require('fs').readFileSync(path, 'utf8')
+  , str = fs.readFileSync(path, 'utf8')
   , roundStartTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/layout.jade'
-  , str = require('fs').readFileSync(path, 'utf8')
+  , str = fs.readFileSync(path, 'utf8')
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
 
 
@@ -42,6 +43,52 @@ var shouldNextPlayerDefend = true
 	  , score: {type: Number, default: -1}
 	  , active: {type: Boolean, default: true}
 	  , lastPlayed: {type: Date}
+	  
+	  , image: {type: String}
+	  , twitter: {type: String}
+	  , facebook: {type: String}
+	  , flickr: {type: String}
+	  , tumblr: {type: String}
+	  , youtube: {type: String}
+	  
+	  , profile_0: {type: String, default: 'My Profile (Sunday)'}
+	  , profile_1: {type: String, default: 'My Profile (Monday)'}
+	  , profile_2: {type: String, default: 'My Profile (Tuesday)'}
+	  , profile_3: {type: String, default: 'My Profile (Wednesday)'}
+	  , profile_4: {type: String, default: 'My Profile (Thursday)'}
+	  , profile_5: {type: String, default: 'My Profile (Friday)'}
+	  , profile_6: {type: String, default: 'My Profile (Saturday)'}
+	  
+	  , opponent_profile_1: {type: String, default: 'Opponent Profile (1)'}
+	  , opponent_profile_2: {type: String, default: 'Opponent Profile (2)'}
+	  , opponent_profile_3: {type: String, default: 'Opponent Profile (3)'}
+	  , opponent_profile_4: {type: String, default: 'Opponent Profile (4)'}
+	  , opponent_profile_5: {type: String, default: 'Opponent Profile (5)'}
+	  , opponent_profile_6: {type: String, default: 'Opponent Profile (6)'}
+	  , opponent_profile_7: {type: String, default: 'Opponent Profile (7)'}
+	  , opponent_profile_8: {type: String, default: 'Opponent Profile (8)'}
+	  , opponent_profile_9: {type: String, default: 'Opponent Profile (9)'}
+	  , opponent_profile_10: {type: String, default: 'Opponent Profile (10)'}
+	  , opponent_profile_11: {type: String, default: 'Opponent Profile (11)'}
+	  , opponent_profile_12: {type: String, default: 'Opponent Profile (12)'}
+	  , opponent_profile_13: {type: String, default: 'Opponent Profile (13)'}
+	  , opponent_profile_14: {type: String, default: 'Opponent Profile (14)'}
+	  , opponent_profile_15: {type: String, default: 'Opponent Profile (15)'}
+	  , opponent_profile_16: {type: String, default: 'Opponent Profile (16)'}
+	  , opponent_profile_17: {type: String, default: 'Opponent Profile (17)'}
+	  , opponent_profile_18: {type: String, default: 'Opponent Profile (18)'}
+	  , opponent_profile_19: {type: String, default: 'Opponent Profile (19)'}
+	  , opponent_profile_20: {type: String, default: 'Opponent Profile (20)'}
+	  , opponent_profile_21: {type: String, default: 'Opponent Profile (21)'}
+	  , opponent_profile_22: {type: String, default: 'Opponent Profile (22)'}
+	  , opponent_profile_23: {type: String, default: 'Opponent Profile (23)'}
+	  , opponent_profile_24: {type: String, default: 'Opponent Profile (24)'}
+	  , opponent_profile_25: {type: String, default: 'Opponent Profile (25)'}
+	  , opponent_profile_26: {type: String, default: 'Opponent Profile (26)'}
+	  , opponent_profile_27: {type: String, default: 'Opponent Profile (27)'}
+	  , opponent_profile_28: {type: String, default: 'Opponent Profile (28)'}
+	  , opponent_profile_29: {type: String, default: 'Opponent Profile (29)'}
+	  , opponent_profile_30: {type: String, default: 'Opponent Profile (30)'}
 	})
   , Player = null;
 
@@ -56,8 +103,8 @@ PlayerSchema.plugin(mongooseAuth, {
   , facebook: {
 		everyauth: {
 			myHostname: process.env.BASEURL || 'http://localhost:5000'
-		  , appId: process.env.FB_APP_ID || ''
-		  , appSecret: process.env.FB_SECRET || ''
+		  , appId: process.env.FB_APP_ID || '240269872746246'
+		  , appSecret: process.env.FB_SECRET || '7797ab8af4f7e1cda5e7f9418e7a9db5'
 		  , redirectPath: '/'
 		  , scope: 'email'
 		  , findOrCreateUser: function (sess, accessTok, accessTokExtra, fbUser) {
@@ -124,7 +171,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url){
 		
 		// setup e-mail data with unicode symbols
 		var mailOptions = {
-		    from: "Experimonth <ben.schell@bluepanestudio.com>", // sender address
+		    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
 		    to: this.email, // list of receivers
 		    subject: title, // Subject line
 		    generateTextFromHTML: true,
@@ -140,6 +187,16 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url){
 		    }
 		});
 	}
+};
+
+PlayerSchema.methods.getProfile = function(){
+	var d = new Date();
+	return this['profile_'+d.getDay()];
+};
+
+PlayerSchema.methods.getOpponentProfile = function(){
+	var d = new Date();
+	return this['opponent_profile_'+d.getDate()];
 };
 
 Player = mongoose.model('Player', PlayerSchema);
@@ -174,4 +231,20 @@ Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
 		player.defending = true;
 		player.save();
 	}
+});
+config.admins.forEach(function(item, index){
+	Player.find({email: item}).run(function(err, players){
+		var player = null;
+		if(err || !players || players.length == 0){
+			// Create a player!
+			player = new Player();
+			player.name = item;
+			player.email = item;
+			player.active = false;
+		}else{
+			player = players[0];
+		}
+		player.isAdmin = true;
+		player.save();
+	});
 });

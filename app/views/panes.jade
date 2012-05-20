@@ -1,0 +1,17 @@
+#me.pane
+	.handle
+		a Me
+		// a.rotateBack
+		//	i.icon-forward.icon-white
+	.inner
+		iframe(src="/players/profile/#{me}")
+#my-opponent.pane
+	.handle
+		a My Opponent
+	.inner
+		iframe(src="/players/profile/#{opponent}/#{me}")
+#leaderboard.pane
+	.handle
+		a Leaderboard
+	.inner
+		iframe(src="/players/leaderboard/#{me}")

@@ -19,9 +19,22 @@ table.table.table-striped
 				td
 					a.btn(href="/players/edit/#{player._id}") Edit
 					| 
-					a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
-					| 
+					//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
+					//| 
 					- if(player.isAdmin)
-						a.btn.btn-success(href="/players/demote/#{player._id}") Demote
+						a.btn.btn-success(href="/players/demote/#{player._id}")
+							i.icon-chevron-down.icon-white
+							|  Demote
 					- else
-						a.btn.btn-warning(href="/players/promote/#{player._id}") Promote
+						a.btn.btn-danger(href="/players/promote/#{player._id}")
+							i.icon-chevron-up.icon-white
+							|  Promote
+					| 
+					- if(player.active)
+						a.btn.btn-warning(href="/players/deactivate/#{player._id}")
+							i.icon-remove.icon-white
+							|  De-activate
+					- else
+						a.btn.btn-primary(href="/players/activate/#{player._id}")
+							i.icon-ok.icon-white
+							|  Activate

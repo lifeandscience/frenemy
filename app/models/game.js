@@ -78,7 +78,9 @@ GameSchema.statics.endGames = function(cb){
 	Game.update({completed: false}, {$set: {completed: true, currentRound: null}}, {multi: true}, function(){
 		util.log('completed all games!');
 		util.log(util.inspect(arguments));
-		cb();
+		if(cb){
+			cb();
+		}
 	});
 };
 
@@ -120,3 +122,27 @@ GameSchema.pre('save', function(next){
 
 var Game = mongoose.model('Game', GameSchema);
 exports = Game;
+
+var cronJob = require('cron').CronJob;
+var startJob = new cronJob('00 00 8 * * *', function(){
+		// Runs every day at 8:00:00 AM. 
+		util.log('setting up games!');
+		Game.setupGames();
+	}, function () {
+		// This function is executed when the job stops
+		util.log('did setup games!');
+	}, 
+	true /* Start the job right now */,
+	"America/New_York" /* Time zone of this job. */
+);
+var endJob = new cronJob('00 00 20 * * *', function(){
+		// Runs every day at 8:00:00 PM. 
+		util.log('ending games!');
+		Game.endGames();
+	}, function () {
+		// This function is executed when the job stops
+		util.log('did end games!');
+	}, 
+	true /* Start the job right now */,
+	"America/New_York" /* Time zone of this job. */
+);

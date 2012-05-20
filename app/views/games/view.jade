@@ -53,10 +53,5 @@ else if game.currentRound.toString() != round._id.toString()
 
 pre !{util.inspect(game)}
 pre !{util.inspect(round)}
-			
-#me
-	iframe(src="/player/profile/#{me}")
-#my-opponent
-	iframe(src="/player/profile/#{opponent}/#{me}")
-#leaderboard
-	iframe(src="/player/leaderboard/#{me}")
+
+include ../panes

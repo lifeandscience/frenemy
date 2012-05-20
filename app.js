@@ -28,8 +28,10 @@ fs.readdirSync(dir).forEach(function(file){
 app.configure(function(){
 	app.set('views', __dirname + '/app/views');
 	app.set('view engine', 'jade');
-	app.use(express.bodyParser());
+	app.use(express.compiler({ src: __dirname + '/public', enable: ['less']}));
 	app.use(express.static(__dirname + '/public'));
+
+	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({ secret: "keyboard cat" }));
 
@@ -62,7 +64,7 @@ fs.readdirSync(dir).forEach(function(file){
 	// the file with vm.runInNewContext()
 	// instead of loading it with require(). require's
 	// internals use similar, so dont be afraid of "boot time".
-	var context = { app: app, db: db, util: util, require: require };
+	var context = { app: app, db: db, util: util, require: require, __dirname: __dirname };
 	// we have to merge the globals for console, process etc
 	for (var key in global) context[key] = global[key];
 	// note that this is essentially no different than ... just using

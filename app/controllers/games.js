@@ -46,7 +46,7 @@ app.get('/games/:id/:as', function(req, res){
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+	Game.findById(req.params.id).run(function(err, game){
 		if(err){
 			req.flash('error', 'Game Lookup Failed');
 			res.redirect('/');
@@ -56,6 +56,21 @@ app.get('/games/:id/:as', function(req, res){
 			res.redirect('/games/'+game._id+'/'+game.currentRound+'/'+req.params.as);
 			return;
 		}
+
+		var me = null
+		  , opponent = null;
+		if(game.opponents[0].toString() == req.params.as){
+			me = game.opponents[0];
+			opponent = game.opponents[1];
+		}else if(game.opponents[1].toString() == req.params.as){
+			me = game.opponents[1];
+			opponent = game.opponents[0];
+		}else{
+			req.flash('error', 'This is not your game!');
+			res.redirect('/');
+			return;
+		}
+
 		if(game.rounds.length > 0){
 			var count = game.rounds.length
 			  , Round = mongoose.model('Round')
@@ -65,7 +80,14 @@ app.get('/games/:id/:as', function(req, res){
 						game.rounds[index] = round;
 						util.log('count: '+count);
 						if(--count == 0){
-							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
+							res.render('games/completed', {
+								title: 'Completed Game'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							});
+//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
 							return;
 						}
 					});
@@ -74,7 +96,14 @@ app.get('/games/:id/:as', function(req, res){
 				populateRound(i);
 			}
 		}else{
-			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
+			res.render('games/completed', {
+				title: 'Completed Game'
+			  , game: game
+			  , util: util
+			  , me: me
+			  , opponent: opponent
+			});
+//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
 		}
 		return;
 	});
