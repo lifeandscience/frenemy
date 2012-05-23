@@ -23,6 +23,9 @@ var path = __dirname + '/../views/players/email/game_start.jade'
   , path = __dirname + '/../views/players/email/round_start.jade'
   , str = fs.readFileSync(path, 'utf8')
   , roundStartTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/your_turn.jade'
+  , str = fs.readFileSync(path, 'utf8')
+  , yourTurnTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/layout.jade'
   , str = fs.readFileSync(path, 'utf8')
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
@@ -159,7 +162,10 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url, cb){
 		var html = ''
 		  , title = ''
 		  , player = this;
-		if(round.number == 1){
+		if(round.votes.length == 1){
+			title = 'Your Turn in Frenemy!';
+			html = yourTurnTemplate({user: player, url: url});
+		}else if(round.number == 1){
 			// Game Start!
 			title = 'New Game of Frenemy!';
 			html = gameStartTemplate({user: player, url: url});
@@ -182,9 +188,9 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url, cb){
 		// send mail with defined transport object
 		smtpTransport.sendMail(mailOptions, function(error, response){
 		    if(error){
-		        util.log(error);
-		    }else{
-		        util.log("Message sent: " + response.message);
+		        util.log('Email message not sent: '+util.inspect(error));
+//		    }else{
+//		        util.log("Message sent: " + response.message);
 		    }
 		    if(cb){
 		    	cb();
@@ -209,9 +215,6 @@ Player = mongoose.model('Player', PlayerSchema);
 exports = Player;
 
 Player.count({}, function(err, totalPlayerCount){
-	util.log('counted players!');
-	util.log(util.inspect(arguments));
-	
 	Player.count({defending: true}, function(err, defendingPlayerCount){
 		shouldNextPlayerDefend = (totalPlayerCount - defendingPlayerCount ) > defendingPlayerCount;
 	});

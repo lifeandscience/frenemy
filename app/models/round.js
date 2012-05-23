@@ -22,7 +22,6 @@ RoundSchema.methods.getVoteForPlayer = function(id){
 RoundSchema.methods.getPointsForPlayer = function(id){
 	var player_vote = null
 	  , opponent_vote = null;
-	util.log('votes: '+util.inspect(this.votes));
 	if(this.votes[0].player.toString() == id.toString()){
 		player_vote = this.votes[0];
 		opponent_vote = this.votes[1];
@@ -30,8 +29,6 @@ RoundSchema.methods.getPointsForPlayer = function(id){
 		player_vote = this.votes[1];
 		opponent_vote = this.votes[0];
 	}
-	util.log('player_vote: '+player_vote.value);
-	util.log('oppont_vote: '+opponent_vote.value);
 	if(player_vote.value == opponent_vote.value){
 		if(player_vote.value == 'friend'){
 			return config.points.winningTie;

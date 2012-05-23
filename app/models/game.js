@@ -48,10 +48,9 @@ GameSchema.statics.setupGames = function(req, cb){
 							}
 							return;
 						}else{
-							util.log('woo?');
 							var pickPlayer = function(){
 									if(players.length == 0){
-										util.log('fill in: '+fillInPlayer.email);
+										util.log('using fill in player: ('+fillInPlayer.email+')');
 										return fillInPlayer;
 									}
 									var index = Math.floor(Math.random() * players.length);
@@ -59,7 +58,6 @@ GameSchema.statics.setupGames = function(req, cb){
 								}
 							  , count = 0;
 							while(players.length > 0){
-								util.log('here? '+players.length);
 								// Pick two players
 								var game = new Game();
 								game.opponents.push(pickPlayer());
@@ -112,23 +110,27 @@ GameSchema.pre('save', function(next){
 			if(err){
 				util.log('Round couldn\'t be created');
 			}
-			// Notify the opponents
-			var Player = mongoose.model('Player')
-			  , count = 0;
-			for(var i=0; i<2; i++){
-				util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
-				count++;
-				Player.findById(game.opponents[i]).run(function(err, opponent){
-					if(opponent){
-						opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id, function(){
-							if(--count == 0){
-								next();
-							}
-						});
-					}else if(--count == 0){
-						next();
-					}
-				});
+			if(round.number == 1){
+				// Notify the opponents of the new game
+				var Player = mongoose.model('Player')
+				  , count = 0;
+				for(var i=0; i<2; i++){
+					util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
+					count++;
+					Player.findById(game.opponents[i]).run(function(err, opponent){
+						if(opponent){
+							opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id, function(){
+								if(--count == 0){
+									next();
+								}
+							});
+						}else if(--count == 0){
+							next();
+						}
+					});
+				}
+			}else{
+				next();
 			}
 		});
 	}else if(game.rounds.length == game.numRounds){

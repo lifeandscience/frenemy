@@ -46,7 +46,7 @@ app.get('/games/:id/:as', function(req, res){
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).run(function(err, game){
+	Game.findById(req.params.id).populate('opponents').run(function(err, game){
 		if(err){
 			req.flash('error', 'Game Lookup Failed');
 			res.redirect('/');
@@ -59,10 +59,10 @@ app.get('/games/:id/:as', function(req, res){
 
 		var me = null
 		  , opponent = null;
-		if(game.opponents[0].toString() == req.params.as){
+		if(game.opponents[0]._id.toString() == req.params.as){
 			me = game.opponents[0];
 			opponent = game.opponents[1];
-		}else if(game.opponents[1].toString() == req.params.as){
+		}else if(game.opponents[1]._id.toString() == req.params.as){
 			me = game.opponents[1];
 			opponent = game.opponents[0];
 		}else{
@@ -189,6 +189,7 @@ app.get('/games/:id/:round/:as', function(req, res){
 					continue;
 				}
 			}
+			util.log('woo?');
 	
 			res.render('games/view', {
 				title: 'In-Progress Game'
@@ -301,21 +302,26 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 							Player.findById(opponent).run(function(err, player){
 								player.score += round.getPointsForPlayer(opponent);
 								player.save();
+								player.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
+									util.log('did notify '+player.name+' of new round!');
+								});
+							});
+						}else{
+							Player.findById(opponent).run(function(err, player){
+								player.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
+									util.log('did notify '+player.name+' of new round!');
+								});
 							});
 						}
 						
+						
 						if(round.votes.length >= 2){
-							util.log('is_final!');
+							// This round is over!
 							game.rounds.push(round);
 							game.currentRound = null;
-							util.log('done!');
-							util.log('game: '+util.inspect(game));
 							game.save(function(err, game){
-								util.log('saved!');
-								util.log('game! '+util.inspect(arguments));
 								res.redirect('/games/'+game._id+'/'+currentRound._id+'/'+req.params.as);
 							});
-							util.log('called game.save...');
 						}else{
 							res.redirect('/games/'+game._id+'/'+currentRound._id+'/'+req.params.as);
 						}
