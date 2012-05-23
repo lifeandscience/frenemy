@@ -18,6 +18,10 @@ var GameSchema = new Schema({
 });
 
 GameSchema.statics.setupGames = function(req, cb){
+	if(typeof req == 'function'){
+		cb = req;
+		req = null;
+	}
 	var Player = mongoose.model('Player');
 	Player.find({email: config.defaultNonDefenderEmail}).run(function(err, nonDefendingPlayers){
 		var nonDefendingPlayer = nonDefendingPlayers.pop();
@@ -29,8 +33,13 @@ GameSchema.statics.setupGames = function(req, cb){
 						util.log('setupGamesForPlayers: '+util.inspect(players));
 						if(err){
 							util.log('couldn\'t find players?!');
+							if(cb && --setupCount == 0){
+								cb();
+							}
 						}else if(players.length < 1){
-							req.flash('error', 'Can\'t start games with less than 2 players');
+							if(req){
+								req.flash('error', 'Can\'t start games with less than 2 players');
+							}
 							if(cb && --setupCount == 0){
 								cb();
 							}
@@ -123,6 +132,7 @@ GameSchema.pre('save', function(next){
 var Game = mongoose.model('Game', GameSchema);
 exports = Game;
 
+/*
 var cronJob = require('cron').CronJob;
 var startJob = new cronJob('00 00 8 * * *', function(){
 		// Runs every day at 8:00:00 AM. 
@@ -132,8 +142,8 @@ var startJob = new cronJob('00 00 8 * * *', function(){
 		// This function is executed when the job stops
 		util.log('did setup games!');
 	}, 
-	true /* Start the job right now */,
-	"America/New_York" /* Time zone of this job. */
+	true /* Start the job right now * /,
+	"America/New_York" /* Time zone of this job. * /
 );
 var endJob = new cronJob('00 00 20 * * *', function(){
 		// Runs every day at 8:00:00 PM. 
@@ -143,6 +153,7 @@ var endJob = new cronJob('00 00 20 * * *', function(){
 		// This function is executed when the job stops
 		util.log('did end games!');
 	}, 
-	true /* Start the job right now */,
-	"America/New_York" /* Time zone of this job. */
+	true /* Start the job right now * /,
+	"America/New_York" /* Time zone of this job. * /
 );
+//*/

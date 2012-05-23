@@ -4,18 +4,14 @@
  */
 
 var   express = require('express')
-	, mongoose = require('mongoose')
 	, mongooseAuth = require('mongoose-auth')
+	, db = require('./db')
 	, vm = require('vm')
 	, fs = require('fs')
 	, util = require('util');
 
 
 var app = module.exports = express.createServer();
-
-// Database
-var db = process.env.MONGOHQ_URL || 'mongodb://localhost/frenemy';
-db = mongoose.connect(db);
 
 // Models
 var dir = __dirname + '/app/models';
