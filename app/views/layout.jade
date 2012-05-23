@@ -4,11 +4,12 @@ html(lang="en")
     block head
       meta(charset="utf-8")
       title= title
-      - if(everyauth.loggedIn)
-        style
-          body {
-            padding: 60px 0 0 0;
-          }
+      //- if(everyauth.loggedIn)
+      //  style
+      //    body {
+      //      padding: 60px 0 0 0;
+      //    }
+      link(rel='stylesheet', href='http://fast.fonts.com/cssapi/a33e1fc1-4e82-4932-9b7f-6411183d5b4c.css', type='text/css')
       link(rel='stylesheet', href="/bootstrap/css/bootstrap.min.css")
       link(rel='stylesheet', href="/font-awesome/css/font-awesome.css")
       link(rel='stylesheet', href='/css/style.css')
@@ -17,7 +18,7 @@ html(lang="en")
         script(src='/js/modernizr.js')
   body
     - if(everyauth.loggedIn)
-      .navbar.navbar-fixed-top
+      .navbar
         .navbar-inner
           .container
             a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")

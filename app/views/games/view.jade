@@ -1,57 +1,76 @@
-h1 Let's play FRENEMY
-h2 Round ##{round.number}
-h2
-	if my_vote && their_vote
-		| RESULTS:
-	else 
-		if my_vote
-			| Your Vote:
-		else
-			| Pick One:
-
-#vote
-	a(href="/games/#{game._id}/#{round._id}/#{me}/friend", class=(my_vote ? (my_vote.value == 'friend' ? 'btn btn-primary disabled' : 'btn disabled') : 'btn')) Friend
-	a(href="/games/#{game._id}/#{round._id}/#{me}/enemy", class=(my_vote ? (my_vote.value == 'enemy' ? 'btn btn-primary disabled' : 'btn disabled') : 'btn')) Enemy
-
-if !game.currentRound
-	a.btn(href="/games/#{game._id}/#{me}") Go to Results!
-else if game.currentRound.toString() != round._id.toString()
-	a.btn(href="/games/#{game._id}/#{game.currentRound}/#{me}") Go to Current Round!
+#header
+	h2.lets Let's play
+	h1 FRENEMY
+	h2.prompt
+		| ROUND ##{round.number}
+		br
+		if my_vote && their_vote
+			| RESULTS:
+		else 
+			| pick one:
 
 
-#scoring
+#vote.cf
+	- if(round.completed)
+		// Gotta populate my vote and their vote
+		a(class=my_vote.value+' vote chosen disabled')
+			.avatar 
+				.inner 
+			h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'you chose enemy'}
+		a(class=their_vote.value+' vote chosen disabled')
+			.avatar 
+				.inner 
+			h3 #{their_vote && their_vote.value == 'friend' ? 'they chose friend' : 'they chose enemy'}
+	- else	
+		a(href="/games/#{game._id}/#{round._id}/#{me}/friend", class='vote friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'disabled') : 'active'))
+			.avatar 
+				.inner 
+			h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}
+		a(href="/games/#{game._id}/#{round._id}/#{me}/enemy", class='vote enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active')) 
+			.avatar 
+				.inner
+			h3 #{my_vote && my_vote.value == 'enemy' ? 'you chose enemy' : 'enemy'}
+
+	if !game.currentRound
+		a.next-round(href="/games/#{game._id}/#{me}") click to see the results!
+	else if game.currentRound.toString() != round._id.toString()
+		a.next-round(href="/games/#{game._id}/#{game.currentRound}/#{me}") click to play the current round!
+
+
+#scoring.cf
+	h4 Scoring Reminder
 	ul
-		li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'label label-info' : 'label'))
-			span.friend-you Friend (You)
-			| +
-			span.friend-them Friend (Them)
-			| = 
-			span.score-you +15 to You
-			span.score-them +15 to Them
-		li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
-			span.friend-you Friend (You)
-			| +
-			span.enemy-them Enemy (Them)
-			| =
-			span.score-you -5 to You
-			span.score-them +25 to Them
-		li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'label label-info' : 'label'))
-			span.enemy-you Enemy (You)
-			| +
-			span.friend-them Friend (Them)
-			| =
-			span.score-you +25 to You
-			span.score-them -5 to Them
-		li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'label label-info' : 'label'))
-			span.enemy-you Enemy (You)
-			| +
-			span.enemy-them Enemy (Them)
-			| =
-			span.score-you +5 to You
-			span.score-them +5 to Them
-
-
-pre !{util.inspect(game)}
-pre !{util.inspect(round)}
+		li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+			.visuals
+				span.friend
+				span.friend
+			.text
+				span.points 15
+				span.comma ,
+				span.points 15
+		li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+			.visuals
+				span.friend
+				span.enemy
+			.text
+				span.points -5
+				span.comma ,
+				span.points 25
+		li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+			.visuals
+				span.enemy
+				span.friend
+			.text
+				span.points 25
+				span.comma ,
+				span.points -5
+		li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+			.visuals
+				span.enemy
+				span.enemy
+			.text
+				span.points 5
+				span.comma ,
+				span.points 5
 
 include ../panes

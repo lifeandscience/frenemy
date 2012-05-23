@@ -1,9 +1,16 @@
 jQuery(function(){
 	// INIT
-	jQuery('#vote > a').click(function(){
+	jQuery('#vote > a.vote').click(function(){
 		var t = jQuery(this);
+		console.log('t: ', t);
 		if(!t.hasClass('disabled')){
-			return window.confirm('Are you sure you meant to select '+t.html()+'?');
+			console.log('what?');
+			t.addClass('chosen');
+			var h3 = jQuery('h3', t);
+			if(window.confirm('Are you sure you meant to select '+h3.html()+'?')){
+				return true;
+			}
+			t.removeClass('chosen');
 		}
 		return false;
 	});
@@ -11,7 +18,7 @@ jQuery(function(){
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1
-	  , bottom: -675
+	  , bottom: -2000
 	});
 	jQuery('#leaderboard > .handle > a').click(function(){
 		leaderboard.toggleClass('visible');
