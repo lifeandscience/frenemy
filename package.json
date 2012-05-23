@@ -13,6 +13,7 @@
     , "express-form": ">= 0.0.1"
     , "jade": ">= 0.0.1"
     , "mongoose": ">= 0.0.1"
+    , "connect-mongo": ">= 0.0.1"
     , "mongoose-auth": ">= 0.0.1"
     , "nodemailer": ">= 0.0.1"
     , "less": ">= 0.0.1"

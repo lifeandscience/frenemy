@@ -8,6 +8,7 @@ var   express = require('express')
 	, db = require('./db')
 	, vm = require('vm')
 	, fs = require('fs')
+	, MongoStore = require('connect-mongo')(express)
 	, util = require('util');
 
 
@@ -29,7 +30,12 @@ app.configure(function(){
 
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.session({ secret: "keyboard cat" }));
+	app.use(express.session({
+		secret: "keyboard cat"
+	  , store: new MongoStore({
+			url: process.env.MONGOHQ_URL || 'mongodb://localhost/frenemy'
+		})
+	}));
 
 	// mongoose-auth: Step 2
 	app.use(mongooseAuth.middleware());
