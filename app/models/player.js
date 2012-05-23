@@ -17,15 +17,18 @@ var smtpTransport = nodemailer.createTransport("SES", {
   , AWSSecretKey: awsSecret
 });
 
-var path = __dirname + '/../views/players/email/game_start.jade'
+var path = __dirname + '/../views/players/email/new_game.jade'
   , str = fs.readFileSync(path, 'utf8')
-  , gameStartTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/round_start.jade'
+  , newGameTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/end_of_round.jade'
   , str = fs.readFileSync(path, 'utf8')
-  , roundStartTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/your_turn.jade'
+  , endOfRoundTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/end_of_game.jade'
   , str = fs.readFileSync(path, 'utf8')
-  , yourTurnTemplate = jade.compile(str, { filename: path, pretty: true })
+  , endOfGameTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/nudge.jade'
+  , str = fs.readFileSync(path, 'utf8')
+  , nudgeTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/layout.jade'
   , str = fs.readFileSync(path, 'utf8')
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
@@ -153,7 +156,7 @@ PlayerSchema.pre('save', function(next){
 	next();
 });
 
-PlayerSchema.methods.notifyOfNewRound = function(round, url, cb){
+PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	util.log('notifying '+this.name+' of new round! ' + url);
 
 	if(process.env.DO_NOTIFICATIONS){
@@ -162,17 +165,21 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url, cb){
 		var html = ''
 		  , title = ''
 		  , player = this;
-		if(round.votes.length == 1){
+		if(type == 'nudge'){
 			title = 'Your Turn in Frenemy!';
-			html = yourTurnTemplate({user: player, url: url});
-		}else if(round.number == 1){
+			html = nudgeTemplate({user: player, url: url});
+		}else if(type == 'new-game'){
 			// Game Start!
 			title = 'New Game of Frenemy!';
-			html = gameStartTemplate({user: player, url: url});
-		}else {
+			html = newGameTemplate({user: player, url: url});
+		}else if(type == 'end-of-round'){ // type == 'new-round'
 			// Just round start!
-			title = 'New Round of Frenemy!';
-			html = roundStartTemplate({user: player, url: url});
+			title = 'End of Round of Frenemy!';
+			html = endOfRoundTemplate({user: player, url: url});
+		}else { // type == 'end-of-game'
+			// Just round start!
+			title = 'End of Game of Frenemy!';
+			html = endOfGameTemplate({user: player, url: url});
 		}
 		html = layoutTemplate({title: title, body: html});
 		

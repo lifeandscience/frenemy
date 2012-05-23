@@ -302,14 +302,20 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 							Player.findById(opponent).run(function(err, player){
 								player.score += round.getPointsForPlayer(opponent);
 								player.save();
-								player.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
-									util.log('did notify '+player.name+' of new round!');
-								});
+								if(currentRound.number == game.numRounds){
+									player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
+										util.log('did notify '+player.name+' of end of game! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id);
+									});
+								}else {
+									player.notifyOfNewRound(round, 'end-of-round', '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
+										util.log('did notify '+player.name+' of end of round! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id);
+									});
+								}
 							});
 						}else{
 							Player.findById(opponent).run(function(err, player){
-								player.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+player._id, function(){
-									util.log('did notify '+player.name+' of new round!');
+								player.notifyOfNewRound(round, 'nudge', '/games/'+game._id+'/'+currentRound._id+'/'+player._id, function(){
+									util.log('did notify '+player.name+' of their turn!');
 								});
 							});
 						}
