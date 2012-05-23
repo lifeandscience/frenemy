@@ -120,9 +120,12 @@ GameSchema.pre('save', function(next){
 				count++;
 				Player.findById(game.opponents[i]).run(function(err, opponent){
 					if(opponent){
-						opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id);
-					}
-					if(--count == 0){
+						opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id, function(){
+							if(--count == 0){
+								next();
+							}
+						});
+					}else if(--count == 0){
 						next();
 					}
 				});

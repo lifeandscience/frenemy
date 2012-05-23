@@ -150,10 +150,11 @@ PlayerSchema.pre('save', function(next){
 	next();
 });
 
-PlayerSchema.methods.notifyOfNewRound = function(round, url){
+PlayerSchema.methods.notifyOfNewRound = function(round, url, cb){
 	util.log('notifying '+this.name+' of new round! ' + url);
 
 	if(process.env.DO_NOTIFICATIONS){
+		util.log('will DO_NOTIFICATIONS');
 		url = (process.env.BASEURL || 'http://localhost:5000') + url;
 		var html = ''
 		  , title = ''
@@ -185,7 +186,12 @@ PlayerSchema.methods.notifyOfNewRound = function(round, url){
 		    }else{
 		        util.log("Message sent: " + response.message);
 		    }
+		    if(cb){
+		    	cb();
+		    }
 		});
+	}else if(cb){
+		cb();
 	}
 };
 
