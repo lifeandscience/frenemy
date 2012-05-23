@@ -39,7 +39,10 @@ GameSchema.statics.setupGames = function(req, cb){
 						}else if(players.length < 1){
 							if(req){
 								req.flash('error', 'Can\'t start games with less than 2 players');
+							}else{
+								util.log('Can\'t start games with less than 2 players');
 							}
+
 							if(cb && --setupCount == 0){
 								cb();
 							}
@@ -47,8 +50,8 @@ GameSchema.statics.setupGames = function(req, cb){
 						}else{
 							util.log('woo?');
 							var pickPlayer = function(){
-									util.log('fill in: '+fillInPlayer.email);
 									if(players.length == 0){
+										util.log('fill in: '+fillInPlayer.email);
 										return fillInPlayer;
 									}
 									var index = Math.floor(Math.random() * players.length);
@@ -67,7 +70,7 @@ GameSchema.statics.setupGames = function(req, cb){
 										util.log('game not saved!');
 									}
 									if(--count == 0){
-										util.log('setup some of the games!');
+										util.log('setup some of the games! ('+setupCount+')');
 										if(cb && --setupCount == 0){
 											cb();
 										}
@@ -77,8 +80,8 @@ GameSchema.statics.setupGames = function(req, cb){
 						}
 					};
 				};
-			Player.find({defending: true}).where('email').ne(config.defaultDefenderEmail).asc('_id').run(setupGamesForPlayers(defendingPlayer));
-			Player.find({defending: false}).where('email').ne(config.defaultNonDefenderEmail).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
+			Player.find({defending: true, active: true}).where('email').ne(config.defaultDefenderEmail).asc('_id').run(setupGamesForPlayers(defendingPlayer));
+			Player.find({defending: false, active: true}).where('email').ne(config.defaultNonDefenderEmail).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
 		});
 	});
 };
@@ -110,16 +113,20 @@ GameSchema.pre('save', function(next){
 				util.log('Round couldn\'t be created');
 			}
 			// Notify the opponents
-			var Player = mongoose.model('Player');
+			var Player = mongoose.model('Player')
+			  , count = 0;
 			for(var i=0; i<2; i++){
 				util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
+				count++;
 				Player.findById(game.opponents[i]).run(function(err, opponent){
 					if(opponent){
 						opponent.notifyOfNewRound(round, '/games/'+game._id+'/'+round._id+'/'+opponent._id);
 					}
+					if(--count == 0){
+						next();
+					}
 				});
 			}
-			next();
 		});
 	}else if(game.rounds.length == game.numRounds){
 		game.completed = true;

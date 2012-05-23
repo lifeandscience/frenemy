@@ -16,5 +16,5 @@ Game.endGames(function(){
 		Game.setupGames(null, function(){
 			process.exit(0);
 		});
-	}, 60000);
+	}, 10000);
 });
