@@ -16,8 +16,7 @@ module.exports = {
 	  , losingTie: 5
 	}
 	
-  , defaultDefenderEmail: 'ben.schell+defender@bluepanestudio.com'
-//  , defaultDefenderEmail: 'ben.schell+defender@bluepanestudio.com'
-  , defaultNonDefenderEmail: 'ben.schell+non+defender@bluepanestudio.com'
-  , admins: ['ben.schell@gmail.com', 'beck@becktench.com']
+  , defaultDefenderEmail: 'beck@becktench.com'
+  , defaultNonDefenderEmail: 'elizfleming@gmail.com'
+  , admins: ['ben.schell@gmail.com']
 };
