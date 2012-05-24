@@ -312,12 +312,12 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 									});
 								}
 							});
-						}else{
-							Player.findById(opponent).run(function(err, player){
-								player.notifyOfNewRound(round, 'nudge', '/games/'+game._id+'/'+currentRound._id+'/'+player._id, function(){
-									util.log('did notify '+player.name+' of their turn!');
-								});
-							});
+//						}else{
+//							Player.findById(opponent).run(function(err, player){
+//								player.notifyOfNewRound(round, 'nudge', '/games/'+game._id+'/'+currentRound._id+'/'+player._id, function(){
+//									util.log('did notify '+player.name+' of their turn!');
+//								});
+//							});
 						}
 						
 						
