@@ -12,9 +12,11 @@ fs.readdirSync(dir).forEach(function(file){
 
 var d = new Date()
   , h = d.getHours()
+/*
 if(h != 0 && h != 8 && h != 16){
 	process.exit(0);
 }
+*/
 
 var Game = mongoose.model('Game');
 Game.endGames(function(){
