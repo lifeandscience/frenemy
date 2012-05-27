@@ -52,6 +52,10 @@ h1, h2, h3, h4, h5, h6 {
           transition: all @duration ease-out;
 }
 
+.table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
+	color: #666;
+}
+
 .border-radius (@topLeft: 10px, @topRight: 10px, @bottomRight: 10px, @bottomLeft: 10px) {
   -webkit-border-radius: @topLeft @topRight @bottomRight @bottomLeft;
           border-radius: @topLeft @topRight @bottomRight @bottomLeft;
