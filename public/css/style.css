@@ -34,6 +34,10 @@ h6 {
 .cf {
   *zoom: 1;
 }
+.table-striped tbody tr:nth-child(odd) td,
+.table-striped tbody tr:nth-child(odd) th {
+  color: #666;
+}
 .pane {
   opacity: 0;
   -webkit-transition: all 0.3s ease-out;
