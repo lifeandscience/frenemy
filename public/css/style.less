@@ -351,6 +351,7 @@ h1, h2, h3, h4, h5, h6 {
 	margin: 0 auto;
 	position: relative;
 	
+	
 	a.vote {
 		display: block;
 		width: 357px;
@@ -529,6 +530,9 @@ span.enemy {
 	.enemy {
 		margin: 10px auto;
 	}
+	.enemy {
+		background-position-x: -84px;
+	}
 	
 	th.moves,
 	th.points {
@@ -546,6 +550,10 @@ span.enemy {
 		tr.total {
 			border-top: none;
 			
+			span.value {
+				display: inline-block;
+				padding: 15px 15px 5px 15px;
+			}
 	
 			.tie,
 			.winner {
@@ -554,8 +562,11 @@ span.enemy {
 					border: 3px solid @blue;
 					background-color: white;
 					.border-radius(10px, 10px, 10px, 10px);
-					display: inline-block;
-					padding: 15px 15px 5px 15px;
+				}
+			}
+			.loser {
+				span.value {
+					padding-bottom: 50px;
 				}
 			}
 			span.result {
@@ -569,4 +580,34 @@ span.enemy {
 	.round {
 		width: 255px;
 	}
+}
+
+#vote.home {
+	// Home Screen
+	width: 1200px;
+	margin-left: -65px;
+
+	h2 {
+		width: 198px;
+		padding: 140px 25px 0 0;
+		float: left;
+		text-align: right;
+		font-size: 32px;
+		line-height: 120%;
+		text-transform: uppercase;
+	}
+	h2.enemy {
+		text-align: left;
+	}
+}
+#signup {
+	width: 200px;
+	height: 200px;
+	background: transparent url('../img/signup.png') scroll no-repeat left top;
+	display: black;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -100px 0px 0px -100px;
+	text-indent: -999em;
 }

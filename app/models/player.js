@@ -260,13 +260,13 @@ PlayerSchema.methods.getProfile = function(){
 
 PlayerSchema.methods.getOpponentProfile = function(){
 	var d = new Date();
-	switch(day ? day : d.getDay()){
+	switch(d.getDay()){
 		case 3:
 			return 'Your voting record on the last seven games.';
 		case 4:
 			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
 		default:
-			return this['profile_'+(d.getDate()+offset)];
+			return this['opponent_profile_'+(d.getDate()+offset)];
 	}
 };
 
