@@ -31,7 +31,7 @@ var as = 'player'
   , redirect = '/players'
   , formValidate = form(
 		field('email').trim().required().isEmail()
-	  , field('image').trim().required()
+	  , field('image').trim()
 	  , field('name').trim().required()
 	  , field('twitter').trim()
 	  , field('facebook').trim()
