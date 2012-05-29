@@ -207,15 +207,67 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		cb();
 	}
 };
-
+var offset = 0; // -5;
+var day = false; // 4;
+PlayerSchema.methods.getProfileSlug = function(){
+	var d = new Date();
+	switch(day ? day : d.getDay()){
+		case 0:
+			return 'birthday';
+		case 1:
+			return 'personality';
+		case 2:
+			return 'color';
+		case 3:
+			return 'voting';
+		case 4: 
+			return 'chat';
+		case 5:
+			return 'sports-team';
+		case 6:
+			return 'transportation';
+	}
+};
+PlayerSchema.methods.getProfileHeading = function(){
+	var d = new Date();
+	switch(day ? day : d.getDay()){
+		case 0:
+			return 'Birthday';
+		case 1:
+			return 'Personality Type';
+		case 2:
+			return 'Favorite Color';
+		case 3:
+		case 4: 
+			return null;
+		case 5:
+			return 'Favorite Sports Team';
+		case 6:
+			return 'Primary Transportation';
+	}
+};
 PlayerSchema.methods.getProfile = function(){
 	var d = new Date();
-	return this['profile_'+d.getDay()];
+	switch(day ? day : d.getDay()){
+		case 3:
+			return 'Your voting record on the last seven games.';
+		case 4:
+			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
+		default:
+			return this['profile_'+(day ? day : d.getDay())];
+	}
 };
 
 PlayerSchema.methods.getOpponentProfile = function(){
 	var d = new Date();
-	return this['opponent_profile_'+d.getDate()];
+	switch(day ? day : d.getDay()){
+		case 3:
+			return 'Your voting record on the last seven games.';
+		case 4:
+			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
+		default:
+			return this['profile_'+(d.getDate()+offset)];
+	}
 };
 
 Player = mongoose.model('Player', PlayerSchema);

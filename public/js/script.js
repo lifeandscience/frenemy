@@ -15,6 +15,31 @@ jQuery(function(){
 		return false;
 	});
 
+	var chat = jQuery('#chat');
+	chat.css({
+		opacity: 1
+	  , top: -570
+	});
+	jQuery('#chat > .handle > a').click(function(){
+		chat.toggleClass('visible');
+		if(chat.hasClass('visible')){
+			chat.css({
+				top: 0
+			  , 'z-index': 200
+			});
+		}else{
+			chat.css({
+				top: -570
+			  , 'z-index': 0
+			});
+		}
+	});
+	jQuery('a[href="#chat"]').click(function(){
+		console.log('woo?');
+		jQuery('#chat > .handle > a').click();
+		return false;
+	});
+
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1

@@ -36,8 +36,11 @@ module.exports = {
 					if(!item){
 						item = new object();
 					}
+					util.log('form:' +util.inspect(req.form));
 					varNames.forEach(function(name){
+						util.log('looking to match: '+name+' ('+req.form[name]+')');
 						if(req.form[name]){
+							util.log('found and populating!');
 							item[name] = req.form[name];
 						}
 					});

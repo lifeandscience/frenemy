@@ -68,15 +68,98 @@ h6 {
   cursor: pointer;
 }
 .pane .inner {
-  height: 100%;
+  height: 670px;
   background-color: #278fd8;
+  padding: 35px;
 }
-.pane .inner iframe {
-  margin: 35px;
+.pane .inner .content {
   border: none;
   background-color: white;
   -webkit-box-shadow: 5px 10px 0 0 #375163;
   box-shadow: 5px 10px 0 0 #375163;
+}
+.pane .inner .content h1,
+.pane .inner .content h2,
+.pane .inner .content h3 {
+  text-align: center;
+}
+.pane .inner .content h1 {
+  text-align: center;
+  padding: 35px 0;
+  font-size: 45px;
+  line-height: 100%;
+}
+.pane .inner .content h2 {
+  padding: 0 0 35px 0;
+  font-size: 42px;
+  line-height: 100%;
+}
+.pane .inner .content h3 {
+  font-size: 25px;
+  line-height: 120%;
+  color: black;
+  padding: 0 30px;
+}
+.pane .inner .content .profile {
+  padding: 340px 0 0 0;
+  background: transparent url('../img/birthday.png') scroll no-repeat center top;
+}
+.pane .inner .content .profile.chat {
+  background-image: url('../img/chat.png');
+}
+.pane .inner .content .profile.personality.Extrovert {
+  background-image: url('../img/extrovert.png');
+}
+.pane .inner .content .profile.personality.Introvert {
+  background-image: url('../img/introvert.png');
+}
+.pane .inner .content .profile.noinfo {
+  background-image: url('../img/noinfo.png');
+}
+.pane .inner .content .profile.sports-team {
+  background-image: url('../img/sportsteam.png');
+}
+.pane .inner .content .profile.transportation {
+  background-image: url('../img/transportation.png');
+}
+.pane .inner .content .profile.color,
+.pane .inner .content .profile.voting {
+  padding: 0;
+  background: none;
+}
+.pane .inner .content .profile .color {
+  display: block;
+  width: 340px;
+  height: 340px;
+  margin: 0 auto 35px auto;
+  text-indent: -999em;
+}
+.pane .inner .content .color.Red {
+  background-color: #ff3333;
+}
+.pane .inner .content .color.Orange {
+  background-color: #ff6633;
+}
+.pane .inner .content .color.Yellow {
+  background-color: #ffec00;
+}
+.pane .inner .content .color.Green {
+  background-color: #66cc33;
+}
+.pane .inner .content .color.Blue {
+  background-color: #0000ff;
+}
+.pane .inner .content .color.Indigo {
+  background-color: #333399;
+}
+.pane .inner .content .color.Violet {
+  background-color: #ff00ff;
+}
+.pane .inner .content .color.White {
+  background-color: #ffffff;
+}
+.pane .inner .content .color.Black {
+  background-color: #000000;
 }
 #leaderboard {
   width: 820px;
@@ -97,9 +180,38 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#leaderboard .inner iframe {
+#leaderboard .inner .content {
   width: 740px;
   height: 550px;
+}
+#chat {
+  width: 770px;
+  height: 500px;
+  position: absolute;
+  top: -625px;
+  left: 50%;
+  margin-left: -385px;
+}
+#chat .handle {
+  height: 55px;
+  width: 330px;
+  -webkit-border-radius: 0 0 10px 10px;
+  border-radius: 0 0 10px 10px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+#chat .inner {
+  height: 500px;
+  -webkit-border-radius: 0 0 10px 10px;
+  border-radius: 0 0 10px 10px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+#chat .inner .content {
+  width: 700px;
+  height: 500px;
 }
 #me {
   width: 550px;
@@ -129,7 +241,7 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#me .inner iframe {
+#me .inner .content {
   width: 480px;
   height: 670px;
 }
@@ -161,7 +273,7 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#my-opponent .inner iframe {
+#my-opponent .inner .content {
   width: 480px;
   height: 670px;
 }
@@ -175,7 +287,7 @@ h6 {
   text-transform: uppercase;
   margin: 35px 20px 0 105px;
 }
-#header h1 {
+#header h1 a {
   background: transparent url('../img/logo.png') scroll no-repeat left top;
   width: 582px;
   height: 181px;
@@ -270,6 +382,18 @@ h6 {
   line-height: 120%;
   padding-top: 16px;
 }
+span.friend,
+span.enemy {
+  display: block;
+  width: 42px;
+  height: 42px;
+  background: transparent url('../img/sprite.png') scroll no-repeat left top;
+  margin: 0 14px;
+  text-indent: -999em;
+}
+span.enemy {
+  background-position-x: -42px;
+}
 #scoring {
   clear: both;
 }
@@ -296,15 +420,7 @@ h6 {
 }
 #scoring ul li .visuals span.friend,
 #scoring ul li .visuals span.enemy {
-  display: block;
-  width: 42px;
-  height: 42px;
-  background: transparent url('../img/sprite.png') scroll no-repeat left top;
   float: left;
-  margin: 0 14px;
-}
-#scoring ul li .visuals span.enemy {
-  background-position-x: -42px;
 }
 #scoring ul li .text {
   clear: both;
@@ -326,4 +442,59 @@ h6 {
 }
 #scoring ul li.active {
   background-color: #333;
+}
+.you {
+  color: #ffcb05;
+}
+.them {
+  color: #767676;
+}
+#results {
+  width: 100%;
+  text-align: center;
+  font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
+  font-size: 35px;
+  line-height: 120%;
+}
+#results th {
+  padding: 15px 15px 5px 15px;
+}
+#results .friend,
+#results .enemy {
+  margin: 10px auto;
+}
+#results th.moves,
+#results th.points {
+  border-bottom: 1px solid white;
+}
+#results tbody tr {
+  border-top: 1px solid #6d6d6d;
+  padding-bottom: 10px;
+}
+#results tbody tr:first-child {
+  border-top: none;
+}
+#results tbody tr.total {
+  border-top: none;
+}
+#results tbody tr.total .tie span.value,
+#results tbody tr.total .winner span.value {
+  color: #c4161c;
+  border: 3px solid #278fd8;
+  background-color: white;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  display: inline-block;
+  padding: 15px 15px 5px 15px;
+}
+#results tbody tr.total span.result {
+  display: block;
+  color: #278fd8;
+  font-size: 20px;
+}
+#results .round {
+  width: 255px;
 }

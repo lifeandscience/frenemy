@@ -56,37 +56,37 @@ form(method="POST")#playerForm.form-horizontal
 		.control-group
 			label.control-label(for="profile_0") Sunday Profile:
 			.controls
-				textarea#profile_0.span8 !{player.profile_0}
+				textarea#profile_0.span8(name="profile_0") !{player.profile_0}
 
 		.control-group
 			label.control-label(for="profile_1") Monday Profile:
 			.controls
-				textarea#profile_1.span8 !{player.profile_1}
+				textarea#profile_1.span8(name="profile_1") !{player.profile_1}
 
 		.control-group
 			label.control-label(for="profile_2") Tuesday Profile:
 			.controls
-				textarea#profile_2.span8 !{player.profile_2}
+				textarea#profile_2.span8(name="profile_2") !{player.profile_2}
 
 		.control-group
 			label.control-label(for="profile_3") Wednesday Profile:
 			.controls
-				textarea#profile_3.span8 !{player.profile_3}
+				textarea#profile_3.span8(name="profile_3") !{player.profile_3}
 
 		.control-group
 			label.control-label(for="profile_4") Thursday Profile:
 			.controls
-				textarea#profile_4.span8 !{player.profile_4}
+				textarea#profile_4.span8(name="profile_4") !{player.profile_4}
 
 		.control-group
 			label.control-label(for="profile_5") Friday Profile:
 			.controls
-				textarea#profile_5.span8 !{player.profile_5}
+				textarea#profile_5.span8(name="profile_5") !{player.profile_5}
 
 		.control-group
 			label.control-label(for="profile_6") Saturday Profile:
 			.controls
-				textarea#profile_6.span8 !{player.profile_6}
+				textarea#profile_6.span8(name="profile_6") !{player.profile_6}
 
 	fieldset
 		legend Opponent's Profile
@@ -95,7 +95,7 @@ form(method="POST")#playerForm.form-horizontal
 			.control-group
 				label.control-label(for="opponent_profile_#{i}") Opponent Profile (June #{i}):
 				.controls
-					textarea(id='opponent_profile_'+i, class='span8') !{player['opponent_profile_'+i]}
+					textarea(id='opponent_profile_'+i, class='span8', name='opponent_profile_'+i) !{player['opponent_profile_'+i]}
 
 
 	.form-actions

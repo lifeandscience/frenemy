@@ -1,17 +1,52 @@
+heading = me.getProfileHeading();
+slug = me.getProfileSlug();
+d = new Date();
+
+- if(d.getDay() == 4)
+	#chat.pane
+		.inner
+			.content
+				#tlkio(data-channel=game._id.toString(), style="width:700px;height:500px;")
+				script(src="http://tlk.io/embed.js", type="text/javascript")
+		.handle
+			a Chat
+
 #me.pane
 	.handle
 		a Me
 		// a.rotateBack
 		//	i.icon-forward.icon-white
 	.inner
-		iframe(src="/players/profile/#{me}")
+		.content 
+			h1.you YOU
+			h2 score: #{me.score}
+			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getProfile() : ''))
+				- if(slug == 'voting')
+					// Do voting
+				- else if(slug == 'color')
+					// Do Color!
+					div(class='color '+me.getProfile())
+				- if(heading)
+					h3 #{heading}: 
+				h3 !{me.getProfile()}
 #my-opponent.pane
 	.handle
 		a My Opponent
 	.inner
-		iframe(src="/players/profile/#{opponent}/#{me}")
+		.content
+			h1.them THEM
+			h2 score: #{opponent.score}
+			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getOpponentProfile(opponent) : ''))
+				- if(slug == 'voting')
+					// Do voting
+				- else if(slug == 'color')
+					// Do Color!
+					div(class='color '+me.getOpponentProfile(opponent))
+				- if(heading)
+					h3 #{heading}: 
+				h3 !{me.getOpponentProfile(opponent)}
 #leaderboard.pane
 	.handle
 		a Leaderboard
 	.inner
-		iframe(src="/players/leaderboard/#{me}")
+		iframe(src="/players/leaderboard/#{me._id}")
