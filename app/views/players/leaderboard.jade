@@ -1,4 +1,5 @@
-ul
-	- for(var j=0; j<10; j++)
-		each player, i in players
-			li #{player.name} :: #{player.score}
+#container-inner
+	ul
+		- for(var j=0; j<10; j++)
+			each player, i in players
+				li #{player.name} :: #{player.score}

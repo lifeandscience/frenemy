@@ -13,12 +13,17 @@ body {
 	background-color: black;
 	color: white;
 	font-family: Arial, sans-serif;
-//	overflow: hidden;
+	overflow: hidden;
 
 	> .container {
-//		overflow: hidden;
+		overflow: hidden;
 		height: 100%;
 		width: 1070px;
+		
+		> #container-inner {
+			overflow: scroll;
+			height: 100%;
+		}
 	}
 }
 

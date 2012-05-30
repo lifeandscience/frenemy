@@ -1,27 +1,28 @@
-h1 #{title}
-
-table.table.table-striped
-	thead
-		tr
-			th Started
-			th Completed?
-			th Opponents
-			th Completed Rounds
-			th Actions
-	tbody
-		each game, i in games
+#container-inner
+	h1 #{title}
+	
+	table.table.table-striped
+		thead
 			tr
-				td #{game.startTime}
-				td
-					input(type="checkbox", disabled="disabled", checked=game.completed)
-				td
-					ul
-						each opponent in game.opponents
-							li
-								#{opponent.name}
-								a.btn(href="/games/#{game._id}/#{opponent._id}") View Game (as this player)
-				td #{game.rounds.length} / #{game.numRounds}
-				td
-					a.btn(href="/games/edit/#{game._id}") Edit
-					| 
-					a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
+				th Started
+				th Completed?
+				th Opponents
+				th Completed Rounds
+				th Actions
+		tbody
+			each game, i in games
+				tr
+					td #{game.startTime}
+					td
+						input(type="checkbox", disabled="disabled", checked=game.completed)
+					td
+						ul
+							each opponent in game.opponents
+								li
+									#{opponent.name}
+									a.btn(href="/games/#{game._id}/#{opponent._id}") View Game (as this player)
+					td #{game.rounds.length} / #{game.numRounds}
+					td
+						a.btn(href="/games/edit/#{game._id}") Edit
+						| 
+						a.btn.btn-danger(href="/games/delete/#{game._id}") Delete

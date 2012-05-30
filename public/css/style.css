@@ -6,10 +6,16 @@ body {
   background-color: black;
   color: white;
   font-family: Arial, sans-serif;
+  overflow: hidden;
 }
 body > .container {
+  overflow: hidden;
   height: 100%;
   width: 1070px;
+}
+body > .container > #container-inner {
+  overflow: scroll;
+  height: 100%;
 }
 h1,
 h2,

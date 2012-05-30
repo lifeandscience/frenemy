@@ -1,40 +1,41 @@
-h1 #{title}
-
-table.table.table-striped
-	thead
-		tr
-			th Name
-			th Defending?
-			th Score
-			th Last Played
-			th Actions
-	tbody
-		each player, i in players
+#container-inner
+	h1 #{title}
+	
+	table.table.table-striped
+		thead
 			tr
-				td #{player.name}
-				td 
-					input(type="checkbox",disabled="disabled",checked=player.defending)
-				td #{player.score}
-				td #{player.lastPlayed}
-				td
-					a.btn(href="/players/edit/#{player._id}") Edit
-					| 
-					//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
-					//| 
-					- if(player.isAdmin)
-						a.btn.btn-success(href="/players/demote/#{player._id}")
-							i.icon-chevron-down.icon-white
-							|  Demote
-					- else
-						a.btn.btn-danger(href="/players/promote/#{player._id}")
-							i.icon-chevron-up.icon-white
-							|  Promote
-					| 
-					- if(player.active)
-						a.btn.btn-warning(href="/players/deactivate/#{player._id}")
-							i.icon-remove.icon-white
-							|  De-activate
-					- else
-						a.btn.btn-primary(href="/players/activate/#{player._id}")
-							i.icon-ok.icon-white
-							|  Activate
+				th Name
+				th Defending?
+				th Score
+				th Last Played
+				th Actions
+		tbody
+			each player, i in players
+				tr
+					td #{player.name}
+					td 
+						input(type="checkbox",disabled="disabled",checked=player.defending)
+					td #{player.score}
+					td #{player.lastPlayed}
+					td
+						a.btn(href="/players/edit/#{player._id}") Edit
+						| 
+						//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
+						//| 
+						- if(player.isAdmin)
+							a.btn.btn-success(href="/players/demote/#{player._id}")
+								i.icon-chevron-down.icon-white
+								|  Demote
+						- else
+							a.btn.btn-danger(href="/players/promote/#{player._id}")
+								i.icon-chevron-up.icon-white
+								|  Promote
+						| 
+						- if(player.active)
+							a.btn.btn-warning(href="/players/deactivate/#{player._id}")
+								i.icon-remove.icon-white
+								|  De-activate
+						- else
+							a.btn.btn-primary(href="/players/activate/#{player._id}")
+								i.icon-ok.icon-white
+								|  Activate
