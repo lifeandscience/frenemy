@@ -310,7 +310,7 @@ PlayerSchema.virtual('votingRecord');
 PlayerSchema.pre('init', function(next, t){
 	var Game = mongoose.model('Game')
 	  , Round = mongoose.model('Round');
-	Game.find({opponents: t._id}).desc('startTime').limit(7).run(function(err, games){
+	Game.find({opponents: t._id, completed: true}).desc('startTime').limit(7).run(function(err, games){
 		t.votingRecord = [];
 		var count = 0
 		  , finished = function(){

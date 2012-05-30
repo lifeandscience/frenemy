@@ -230,12 +230,27 @@ h6 {
 }
 #leaderboard .inner > a {
   text-decoration: none;
-  color: white;
+  text-transform: uppercase;
+  font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
+  color: #bfdef3;
   font-weight: bold;
   display: block;
   float: left;
   cursor: pointer;
   margin: 0 20px 10px 10px;
+}
+#leaderboard .inner > a > i {
+  background-color: #375163;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  display: inline-block;
+  width: 20px;
+  height: 19px;
+  text-align: center;
+  padding-top: 1px;
 }
 #leaderboard .inner > a.disabled {
   color: #CCC;
