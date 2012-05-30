@@ -1,3 +1,4 @@
+@lightBlue: #dfeef9;
 @blue: #278FD8;
 @paneShadow: #375163;
 @yellow: #ffcb05;
@@ -258,10 +259,10 @@ h1, h2, h3, h4, h5, h6 {
 
 #leaderboard {
 	width: 820px;
-	height: 730px;
+	height: 530px;
 
 	position: absolute;
-	bottom: -785px;
+	bottom: -585px;
 	left: 50%;
 	margin-left: -410px;
 
@@ -273,9 +274,94 @@ h1, h2, h3, h4, h5, h6 {
 	.inner {
 		.border-radius(10px, 10px, 0, 0);
 
-		iframe {
+		> a {
+			text-decoration: none;
+			color: white;
+			font-weight: bold;
+			display: block;
+			float: left;
+			cursor: pointer;
+			margin: 0 20px 10px 10px;
+		}
+		> a.disabled {
+			color: #CCC;
+			cursor: default;
+		}
+		> a.next {
+			float: right;
+		}
+
+		.content {
+			clear: both;
 			width: 740px;
-			height: 550px;
+			height: 380px;
+			
+			
+			.headings {
+				width: 420px;
+				margin: 0 auto 10px auto;
+				padding: 20px 0 0 0;
+				
+				h3 {
+					color: #8d8d8d;
+					display: inline-block;
+					width: 300px;
+					text-align: left;
+					padding: 0;
+					margin: 0;
+					font-size: 25px;
+					line-height: 120%;
+				}
+				h3.leader {
+				}
+				h3.score {
+					width: 120px;
+				}
+			}
+			.ul-container {
+				overflow: hidden;
+				width: 420px;
+				height: 380px;
+				margin: 0 auto;
+				position: relative;
+				
+				ul {
+					.transition;
+					width: 420px;
+					margin: 0px auto;
+					padding: 0;
+					list-style-type: none;	
+					
+					position: absolute;
+					left: 740px;
+	
+					li {
+						border-bottom: 1px solid @lightBlue;
+						margin-bottom: 10px;
+	
+						span.name,
+						span.score {
+							display: inline-block;
+							width: 300px;
+							color: black;
+						}
+						span.name {
+							font-size: 20px;
+							line-height: 100%;
+						}
+						span.score {
+							font-family: @bauhaus;
+							font-size: 35px;
+							line-height: 120%;
+							width: 120px;
+							color: @blue;
+						}
+					}
+					li:last-child {
+						border-bottom: none;
+					}
+				}
+			}
 		}
 	}
 }

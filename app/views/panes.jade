@@ -71,5 +71,4 @@ slug = me.getProfileSlug(game.startTime);
 #leaderboard.pane
 	.handle
 		a Leaderboard
-	.inner
-		iframe(src="/players/leaderboard/#{me._id}")
+	.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/'+me._id)

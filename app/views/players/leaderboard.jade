@@ -1,5 +1,8 @@
-#container-inner
-	ul
-		- for(var j=0; j<10; j++)
-			each player, i in players
-				li #{player.name} :: #{player.score}
+.content
+	.ul-container.cf
+		ul
+			- for(var j=0; j<10; j++)
+				each player, i in players
+					li
+						span.name #{player.name}
+						span.score #{player.score}

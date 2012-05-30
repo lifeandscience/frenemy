@@ -2,9 +2,7 @@ jQuery(function(){
 	// INIT
 	jQuery('#vote > a.vote').click(function(){
 		var t = jQuery(this);
-		console.log('t: ', t);
 		if(!t.hasClass('disabled')){
-			console.log('what?');
 			t.addClass('chosen');
 			var h3 = jQuery('h3', t);
 			if(window.confirm('Are you sure you meant to select '+h3.html()+'?')){
@@ -35,7 +33,6 @@ jQuery(function(){
 		}
 	});
 	jQuery('a[href="#chat"]').click(function(){
-		console.log('woo?');
 		jQuery('#chat > .handle > a').click();
 		return false;
 	});
@@ -43,7 +40,7 @@ jQuery(function(){
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1
-	  , bottom: -675
+	  , bottom: -475
 	});
 	jQuery('#leaderboard > .handle > a').click(function(){
 		leaderboard.toggleClass('visible');
@@ -54,7 +51,7 @@ jQuery(function(){
 			});
 		}else{
 			leaderboard.css({
-				bottom: -675
+				bottom: -475
 			  , 'z-index': 0
 			});
 		}
@@ -101,5 +98,71 @@ jQuery(function(){
 			});
 		}
 		return false;
+	});
+	
+	jQuery('div[data-src]').each(function(index, item){
+		var container = jQuery(item)
+		  , url = container.data('src');
+		container.load(url, function(){
+			var content = jQuery('.content', container)
+			  , ul = jQuery('ul', content).css('left', 0)
+			  , i = -1
+			  , page = 0
+			  , numPages = 1
+			  , uls = [ul];
+			jQuery('<div class="headings"><h3 class="leader">leader</h3><h3 class="score">score</h3></div>').insertBefore(ul);
+			var prev = jQuery('<a class="prev disabled"><i class="icon-chevron-left"></i> Previous</a>').insertBefore(content).click(function(){
+				if(prev.hasClass('disabled')){
+					return;
+				}
+				var oldPage = uls[page--]
+				  , newPage = uls[page];
+
+				oldPage.css({left: oldPage.width()});
+				newPage.css({left: 0});
+
+				if(page == 0){
+					prev.addClass('disabled');
+				}
+				if(page+1 < numPages){
+					next.removeClass('disabled');
+				}
+				return false;
+			});
+			var next = jQuery('<a class="next">Next <i class="icon-chevron-right"></i></a>').insertBefore(content).click(function(){
+				if(next.hasClass('disabled')){
+					return;
+				}
+
+				var oldPage = uls[page++]
+				  , newPage = uls[page];
+
+				oldPage.css({left: -oldPage.width()});
+				newPage.css({left: 0});
+
+				if(page > 0){
+					prev.removeClass('disabled');
+				}
+				if(page+1 == numPages){
+					next.addClass('disabled');
+				}
+				return false;
+			});
+			jQuery('li', ul).each(function(index, li){
+				if(++i < 5){
+					return;
+				}
+				if(i % 5 == 0){
+					// Create a new list and append it!
+					ul = jQuery('<ul></ul>').insertAfter(ul);
+					uls.push(ul);
+					numPages++;
+				}
+				jQuery(li).appendTo(ul);
+			});
+			if(numPages == 1){
+				next.addClass('disabled');
+			}
+		});
 	});
 });

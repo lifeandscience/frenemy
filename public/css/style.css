@@ -211,9 +211,9 @@ h6 {
 }
 #leaderboard {
   width: 820px;
-  height: 730px;
+  height: 530px;
   position: absolute;
-  bottom: -785px;
+  bottom: -585px;
   left: 50%;
   margin-left: -410px;
 }
@@ -228,9 +228,88 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#leaderboard .inner iframe {
+#leaderboard .inner > a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  display: block;
+  float: left;
+  cursor: pointer;
+  margin: 0 20px 10px 10px;
+}
+#leaderboard .inner > a.disabled {
+  color: #CCC;
+  cursor: default;
+}
+#leaderboard .inner > a.next {
+  float: right;
+}
+#leaderboard .inner .content {
+  clear: both;
   width: 740px;
-  height: 550px;
+  height: 380px;
+}
+#leaderboard .inner .content .headings {
+  width: 420px;
+  margin: 0 auto 10px auto;
+  padding: 20px 0 0 0;
+}
+#leaderboard .inner .content .headings h3 {
+  color: #8d8d8d;
+  display: inline-block;
+  width: 300px;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  font-size: 25px;
+  line-height: 120%;
+}
+#leaderboard .inner .content .headings h3.score {
+  width: 120px;
+}
+#leaderboard .inner .content .ul-container {
+  overflow: hidden;
+  width: 420px;
+  height: 380px;
+  margin: 0 auto;
+  position: relative;
+}
+#leaderboard .inner .content .ul-container ul {
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+  width: 420px;
+  margin: 0px auto;
+  padding: 0;
+  list-style-type: none;
+  position: absolute;
+  left: 740px;
+}
+#leaderboard .inner .content .ul-container ul li {
+  border-bottom: 1px solid #dfeef9;
+  margin-bottom: 10px;
+}
+#leaderboard .inner .content .ul-container ul li span.name,
+#leaderboard .inner .content .ul-container ul li span.score {
+  display: inline-block;
+  width: 300px;
+  color: black;
+}
+#leaderboard .inner .content .ul-container ul li span.name {
+  font-size: 20px;
+  line-height: 100%;
+}
+#leaderboard .inner .content .ul-container ul li span.score {
+  font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
+  font-size: 35px;
+  line-height: 120%;
+  width: 120px;
+  color: #278fd8;
+}
+#leaderboard .inner .content .ul-container ul li:last-child {
+  border-bottom: none;
 }
 #chat {
   width: 770px;
