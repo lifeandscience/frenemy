@@ -47,11 +47,8 @@ var shouldNextPlayerDefend = true
 	  , isAdmin: {type: Boolean, default: false}
 	  , timezone: {type: String, enum: ['Eastern', 'Central', 'Mountain', 'Pacific'], default: 'Eastern'}
 
-	  , defending: {type: Boolean, default: function(){
-			var toReturn = shouldNextPlayerDefend;
-			shouldNextPlayerDefend = !shouldNextPlayerDefend;
-			return toReturn;
-		}}
+	  , defending: {type: Boolean, default: false}
+	  , defendingNum: {type: Number, default: -1}
 	  , score: {type: Number, default: -1}
 	  , active: {type: Boolean, default: true}
 	  , lastPlayed: {type: Date}
@@ -152,6 +149,11 @@ PlayerSchema.plugin(mongooseAuth, {
 });
 
 PlayerSchema.pre('save', function(next){
+	if(this.defendingNum == -1){
+		this.defendingNum = 0;
+		this.defending = shouldNextPlayerDefend;
+		shouldNextPlayerDefend = !shouldNextPlayerDefend;
+	}
 	if(this.score == -1){
 		if(this.defending){
 			this.score = config.defaultHighPoints;

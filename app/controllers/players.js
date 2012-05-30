@@ -151,48 +151,13 @@ app.get('/players/deactivate/:id', utilities.checkAdmin, function(req, res){
 */
 });
 
-app.get('/players/profile/:id', function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.findById(req.params.id).run(function(err, player){
-		if(err || !player){
-			res.send(404);
-			return;
-		}
-		res.render('players/profile', {layout: false, player: player, profile: player.getProfile()});
-		return;
-	});
-});
-app.get('/players/profile/:id/:as', function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.findById(req.params.id).run(function(err, opponent){
-		if(err || !opponent){
-			res.send(404);
-			return;
-		}
-		Player.findById(req.params.id).run(function(err, player){
-			if(err || !player){
-				res.send(404);
-				return;
-			}
-			res.render('players/profile', {layout: false, player: opponent, profile: player.getOpponentProfile()});
-			return;
-		});
-	});
-});
-
 app.get('/players/leaderboard/:id', function(req, res){
 	if(!req.params.id){
 		res.send(404);
 		return;
 	}
 	Player.findById(req.params.id).run(function(err, player){
-		Player.find({defending: player.defending}).desc(player.score).run(function(err, players){
+		Player.find({defending: player.defending}).desc('score').run(function(err, players){
 			res.render('players/leaderboard', {layout: false, players: players, util: util});
 			return;
 		});
