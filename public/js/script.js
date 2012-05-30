@@ -43,7 +43,7 @@ jQuery(function(){
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1
-	  , bottom: -2000
+	  , bottom: -675
 	});
 	jQuery('#leaderboard > .handle > a').click(function(){
 		leaderboard.toggleClass('visible');

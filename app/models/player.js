@@ -209,8 +209,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 };
 var offset = 0; // -5;
 var day = false; // 4;
-PlayerSchema.methods.getProfileSlug = function(){
-	var d = new Date();
+PlayerSchema.methods.getProfileSlug = function(d){
 	switch(day ? day : d.getDay()){
 		case 0:
 			return 'birthday';
@@ -228,8 +227,7 @@ PlayerSchema.methods.getProfileSlug = function(){
 			return 'transportation';
 	}
 };
-PlayerSchema.methods.getProfileHeading = function(){
-	var d = new Date();
+PlayerSchema.methods.getProfileHeading = function(d){
 	switch(day ? day : d.getDay()){
 		case 0:
 			return 'Birthday';
@@ -246,8 +244,7 @@ PlayerSchema.methods.getProfileHeading = function(){
 			return 'Primary Transportation';
 	}
 };
-PlayerSchema.methods.getProfile = function(){
-	var d = new Date();
+PlayerSchema.methods.getProfile = function(d){
 	switch(day ? day : d.getDay()){
 		case 3:
 			return 'Your voting record on the last seven games.';
@@ -258,11 +255,54 @@ PlayerSchema.methods.getProfile = function(){
 	}
 };
 
-PlayerSchema.methods.getOpponentProfile = function(){
-	var d = new Date();
+PlayerSchema.virtual('votingRecord');
+PlayerSchema.pre('init', function(next, t){
+	var Game = mongoose.model('Game')
+	  , Round = mongoose.model('Round');
+	Game.find({opponents: t._id}).desc('startTime').limit(7).run(function(err, games){
+		t.votingRecord = [];
+		var count = 0
+		  , finished = function(){
+				if(--count == 0){
+					// Done!
+					t.votingRecord.reverse();
+					next();
+				}
+			}
+		games.forEach(function(game, index){
+			var g = {
+				startTime: game.startTime
+			  , votes: []
+			};
+			t.votingRecord.push(g); 
+			if(game.rounds){
+				game.rounds.forEach(function(roundId, index){
+					count++;
+					Round.findById(roundId).populate('votes').run(function(err, round){
+						if(round && round.votes){
+							for(var k=0; k<round.votes.length; k++){
+								var vote = round.votes[k];
+								if(vote.player.toString() == t._id.toString()){
+									g.votes[index] = vote;
+									break;
+								}
+							}
+						}
+						if(!g.votes[index]){
+							g.votes[index] = false;
+						}
+						finished();
+					});
+				});
+			}
+		});
+	});
+});
+
+PlayerSchema.methods.getOpponentProfile = function(d, opponent){
 	switch(d.getDay()){
 		case 3:
-			return 'Your voting record on the last seven games.';
+			return 'Their voting record on the last seven games.';
 		case 4:
 			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
 		default:

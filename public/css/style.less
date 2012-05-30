@@ -203,6 +203,50 @@ h1, h2, h3, h4, h5, h6 {
 			.color.Black {
 				background-color: #000000;
 			}
+			
+			.profile.voting {
+				color: #8d8d8d;
+				font-family: @bauhaus;
+				font-size: 20px;
+				line-height: 200%;
+				
+				ul, li {
+					list-style-type: none;
+					margin: 0;
+					padding: 0;
+					clear: both;
+				}
+				li {
+					padding: 0 0 10px 0;
+				}
+				
+				span.date {
+					display: block;
+					width: 100px;
+					float: left;
+					text-align: right;
+					padding: 15px 10px 0 0;
+				}
+				span.no-votes {
+					display: block;
+					padding: 15px 0 0 0;
+				}
+				span.friend,
+				span.enemy {
+					float: left;
+					margin: 0 2px;
+				}
+				span.friend {
+					background-position: -126px top;
+				}
+				span.enemy {
+					background-position: -84px top;
+				}
+				h3 {
+					clear: both;
+					padding-top: 10px;
+				}
+			}
 		}
 	}
 }
@@ -212,7 +256,7 @@ h1, h2, h3, h4, h5, h6 {
 	height: 730px;
 
 	position: absolute;
-	bottom: -730px;
+	bottom: -785px;
 	left: 50%;
 	margin-left: -410px;
 
@@ -224,7 +268,7 @@ h1, h2, h3, h4, h5, h6 {
 	.inner {
 		.border-radius(10px, 10px, 0, 0);
 
-		.content {
+		iframe {
 			width: 740px;
 			height: 550px;
 		}
@@ -451,7 +495,7 @@ span.friend,
 span.enemy {
 	display: block;
 	width: 42px;
-	height: 42px;
+	height: 41px;
 	background: transparent url('../img/sprite.png') scroll no-repeat left top;
 	margin: 0 14px;
 	text-indent: -999em;

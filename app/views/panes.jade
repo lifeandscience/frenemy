@@ -1,8 +1,7 @@
-heading = me.getProfileHeading();
-slug = me.getProfileSlug();
-d = new Date();
+heading = me.getProfileHeading(game.startTime);
+slug = me.getProfileSlug(game.startTime);
 
-- if(d.getDay() == 4)
+- if(game.startTime.getDay() == 4)
 	#chat.pane
 		.inner
 			.content
@@ -20,15 +19,27 @@ d = new Date();
 		.content 
 			h1.you YOU
 			h2 score: #{me.score}
-			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getProfile() : ''))
+			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getProfile(game.startTime) : ''))
 				- if(slug == 'voting')
 					// Do voting
+					ul
+						each game, i in me.votingRecord
+							li.cf
+								span.date #{game.startTime.getMonth()} / #{game.startTime.getDate()}
+								- if(game.votes.length == 0)
+									span.no-votes No Votes!
+								- else
+									each vote, j in game.votes
+										// Find this player's 
+										span(class=vote.value) #{vote.value}
+					h3 !{me.getProfile(game.startTime)}
 				- else if(slug == 'color')
 					// Do Color!
-					div(class='color '+me.getProfile())
+					div(class='color '+me.getProfile(game.startTime))
+					h3 !{me.getProfile(game.startTime)}
 				- if(heading)
 					h3 #{heading}: 
-				h3 !{me.getProfile()}
+					h3 !{me.getProfile(game.startTime)}
 #my-opponent.pane
 	.handle
 		a My Opponent
@@ -36,15 +47,27 @@ d = new Date();
 		.content
 			h1.them THEM
 			h2 score: #{opponent.score}
-			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getOpponentProfile(opponent) : ''))
+			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getOpponentProfile(game.startTime, opponent) : ''))
 				- if(slug == 'voting')
 					// Do voting
+					ul
+						each game, i in opponent.votingRecord
+							li.cf
+								span.date #{game.startTime.getMonth()} / #{game.startTime.getDate()}
+								- if(game.votes.length == 0)
+									span.no-votes No Votes!
+								- else
+									each vote, j in game.votes
+										// Find this player's 
+										span(class=vote.value) #{vote.value}
+					h3 !{me.getOpponentProfile(game.startTime, opponent)}
 				- else if(slug == 'color')
 					// Do Color!
-					div(class='color '+me.getOpponentProfile(opponent))
+					div(class='color '+me.getOpponentProfile(game.startTime, opponent))
+					h3 !{me.getOpponentProfile(game.startTime, opponent)}
 				- if(heading)
 					h3 #{heading}: 
-				h3 !{me.getOpponentProfile(opponent)}
+					h3 !{me.getOpponentProfile(game.startTime, opponent)}
 #leaderboard.pane
 	.handle
 		a Leaderboard

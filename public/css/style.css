@@ -161,11 +161,53 @@ h6 {
 .pane .inner .content .color.Black {
   background-color: #000000;
 }
+.pane .inner .content .profile.voting {
+  color: #8d8d8d;
+  font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
+  font-size: 20px;
+  line-height: 200%;
+}
+.pane .inner .content .profile.voting ul,
+.pane .inner .content .profile.voting li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  clear: both;
+}
+.pane .inner .content .profile.voting li {
+  padding: 0 0 10px 0;
+}
+.pane .inner .content .profile.voting span.date {
+  display: block;
+  width: 100px;
+  float: left;
+  text-align: right;
+  padding: 15px 10px 0 0;
+}
+.pane .inner .content .profile.voting span.no-votes {
+  display: block;
+  padding: 15px 0 0 0;
+}
+.pane .inner .content .profile.voting span.friend,
+.pane .inner .content .profile.voting span.enemy {
+  float: left;
+  margin: 0 2px;
+}
+.pane .inner .content .profile.voting span.friend {
+  background-position: -126px top;
+}
+.pane .inner .content .profile.voting span.enemy {
+  background-position: -84px top;
+}
+.pane .inner .content .profile.voting h3 {
+  clear: both;
+  padding-top: 10px;
+}
 #leaderboard {
   width: 820px;
   height: 730px;
   position: absolute;
-  bottom: -730px;
+  bottom: -785px;
   left: 50%;
   margin-left: -410px;
 }
@@ -180,7 +222,7 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#leaderboard .inner .content {
+#leaderboard .inner iframe {
   width: 740px;
   height: 550px;
 }
@@ -390,7 +432,7 @@ span.friend,
 span.enemy {
   display: block;
   width: 42px;
-  height: 42px;
+  height: 41px;
   background: transparent url('../img/sprite.png') scroll no-repeat left top;
   margin: 0 14px;
   text-indent: -999em;
