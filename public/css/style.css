@@ -327,7 +327,7 @@ h6 {
   text-indent: -999em;
 }
 #vote a.vote.enemy > .avatar > .inner {
-  background-position-x: -285px;
+  background-position: -285px -326px;
 }
 #vote a.vote.chosen,
 #vote a.vote.active:hover {
@@ -340,11 +340,15 @@ h6 {
 #vote a.vote.chosen > .avatar > .inner,
 #vote a.vote.active:hover > .avatar > .inner {
   background-color: #ffcb05;
-  background-position-y: -611px;
+  background-position: left -611px;
 }
 #vote a.vote.chosen h3,
 #vote a.vote.active:hover h3 {
   color: #c4161c;
+}
+#vote a.vote.chosen.enemy > .avatar > .inner,
+#vote a.vote.active.enemy:hover > .avatar > .inner {
+  background-position: -285px -611px;
 }
 #vote a.vote.disabled {
   cursor: default;
@@ -392,7 +396,7 @@ span.enemy {
   text-indent: -999em;
 }
 span.enemy {
-  background-position-x: -42px;
+  background-position: -42px top;
 }
 #scoring {
   clear: both;
@@ -464,7 +468,7 @@ span.enemy {
   margin: 10px auto;
 }
 #results .enemy {
-  background-position-x: -84px;
+  background-position: -84px top;
 }
 #results th.moves,
 #results th.points {

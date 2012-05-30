@@ -26,7 +26,7 @@
 #scoring.cf
 	h4 Scoring Reminder
 	ul
-		li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+		li#friend-friend
 			.visuals
 				span.friend
 				span.friend
@@ -34,7 +34,7 @@
 				span.points 15
 				span.comma ,
 				span.points 15
-		li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+		li#friend-enemy
 			.visuals
 				span.friend
 				span.enemy
@@ -42,7 +42,7 @@
 				span.points -5
 				span.comma ,
 				span.points 25
-		li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+		li#enemy-friend
 			.visuals
 				span.enemy
 				span.friend
@@ -50,7 +50,7 @@
 				span.points 25
 				span.comma ,
 				span.points -5
-		li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+		li#enemy-enemy
 			.visuals
 				span.enemy
 				span.enemy
