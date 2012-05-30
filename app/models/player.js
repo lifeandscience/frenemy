@@ -12,7 +12,7 @@ var awsAccessKey = process.env.AWS_ACCESS_KEY || 'AKIAJGTS6FVN4QPODUUA'
   , awsSecret = process.env.AWS_SECRET || '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';
 
 // create reusable transport method (opens pool of SMTP connections)
-var smtpTransport = nodemailer.createTransport("SES", {
+var email = nodemailer.createTransport("SES", {
 	AWSAccessKeyID: awsAccessKey
   , AWSSecretKey: awsSecret
 });
@@ -29,6 +29,12 @@ var path = __dirname + '/../views/players/email/new_game.jade'
   , path = __dirname + '/../views/players/email/nudge.jade'
   , str = fs.readFileSync(path, 'utf8')
   , nudgeTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/activation.jade'
+  , str = fs.readFileSync(path, 'utf8')
+  , activationTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/deactivation.jade'
+  , str = fs.readFileSync(path, 'utf8')
+  , deactivationTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/layout.jade'
   , str = fs.readFileSync(path, 'utf8')
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
@@ -156,6 +162,49 @@ PlayerSchema.pre('save', function(next){
 	next();
 });
 
+PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
+	util.log('notifying '+this.name+' of deactivation');
+
+	if(process.env.DO_NOTIFICATIONS){
+		util.log('will DO_NOTIFICATIONS');
+		var html = ''
+		  , title = ''
+		  , player = this;
+		if(isActivation){
+			title = 'Your Frenemy Account has been Activated!';
+			html = activationTemplate({user: player});
+		}else { // deactivation
+			// Just round start!
+			title = 'Your Frenemy Account has been Deactivated!';
+			html = deactivationTemplate({user: player});
+		}
+		html = layoutTemplate({title: title, body: html});
+		
+		// setup e-mail data with unicode symbols
+		var mailOptions = {
+		    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
+		    to: this.email, // list of receivers
+		    subject: title, // Subject line
+		    generateTextFromHTML: true,
+		    html: html // html body
+		}
+		
+		// send mail with defined transport object
+		email.sendMail(mailOptions, function(error, response){
+		    if(error){
+		        util.log('Email message not sent: '+util.inspect(error));
+//		    }else{
+//		        util.log("Message sent: " + response.message);
+		    }
+		    if(cb){
+		    	cb();
+		    }
+		});
+	}else if(cb){
+		cb();
+	}
+};
+
 PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	util.log('notifying '+this.name+' of new round! ' + url);
 
@@ -193,7 +242,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		}
 		
 		// send mail with defined transport object
-		smtpTransport.sendMail(mailOptions, function(error, response){
+		email.sendMail(mailOptions, function(error, response){
 		    if(error){
 		        util.log('Email message not sent: '+util.inspect(error));
 //		    }else{
@@ -269,33 +318,38 @@ PlayerSchema.pre('init', function(next, t){
 					next();
 				}
 			}
-		games.forEach(function(game, index){
-			var g = {
-				startTime: game.startTime
-			  , votes: []
-			};
-			t.votingRecord.push(g); 
-			if(game.rounds){
-				game.rounds.forEach(function(roundId, index){
-					count++;
-					Round.findById(roundId).populate('votes').run(function(err, round){
-						if(round && round.votes){
-							for(var k=0; k<round.votes.length; k++){
-								var vote = round.votes[k];
-								if(vote.player.toString() == t._id.toString()){
-									g.votes[index] = vote;
-									break;
+		if(games && games.length){
+			games.forEach(function(game, index){
+				var g = {
+					startTime: game.startTime
+				  , votes: []
+				};
+				t.votingRecord.push(g); 
+				if(game.rounds){
+					game.rounds.forEach(function(roundId, index){
+						count++;
+						Round.findById(roundId).populate('votes').run(function(err, round){
+							if(round && round.votes){
+								for(var k=0; k<round.votes.length; k++){
+									var vote = round.votes[k];
+									if(vote.player.toString() == t._id.toString()){
+										g.votes[index] = vote;
+										break;
+									}
 								}
 							}
-						}
-						if(!g.votes[index]){
-							g.votes[index] = false;
-						}
-						finished();
+							if(!g.votes[index]){
+								g.votes[index] = false;
+							}
+							finished();
+						});
 					});
-				});
-			}
-		});
+				}
+			});
+		}else{
+			count++;
+			finished();
+		}
 	});
 });
 

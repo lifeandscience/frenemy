@@ -122,16 +122,33 @@ app.get('/players/demote/:id', utilities.checkAdmin, function(req, res){
 	});
 });
 app.get('/players/activate/:id', utilities.checkAdmin, function(req, res){
-	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){
-		req.flash('info', 'Player Activated!');
-		res.redirect('/players');
+	Player.findById(req.params.id).run(function(err, player){
+/* 	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){ */
+		player.active = true;
+		player.save();
+		player.notifyOfActivation(true, function(){
+			util.log('activated: '+util.inspect(arguments));
+			req.flash('info', 'Player Activated!');
+			res.redirect('/players');
+		});
 	});
 });
 app.get('/players/deactivate/:id', utilities.checkAdmin, function(req, res){
+	Player.findById(req.params.id).run(function(err, player){
+		player.active = false;
+		player.save();
+		player.notifyOfActivation(false, function(){
+			util.log('activated: '+util.inspect(arguments));
+			req.flash('info', 'Player De-activated!');
+			res.redirect('/players');
+		});
+	});
+/*
 	Player.update({_id: req.params.id}, {$set: {active: false}}, {}, function(){
 		req.flash('info', 'Player De-activated!');
 		res.redirect('/players');
 	});
+*/
 });
 
 app.get('/players/profile/:id', function(req, res){
