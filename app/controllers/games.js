@@ -8,13 +8,17 @@ var form = require('express-form')
   , util = require('util');
 
 app.get('/games', utilities.checkAdmin, function(req, res){
+	util.log('/games woo?');
 	Game.find({completed: false}).asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+		util.log('games: '+util.inspect(games));
 		res.render('games/index', {title: 'Active Games', games: games, util: util});
 	});
 });
 
 app.get('/games/all', utilities.checkAdmin, function(req, res){
+	util.log('woo?');
 	Game.find().asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+		util.log('games: '+util.inspect(games));
 		res.render('games/index', {title: 'Active Games', games: games, util: util});
 	});
 });
@@ -47,8 +51,8 @@ app.get('/games/:id/:as', function(req, res){
 		return;
 	}
 	Game.findById(req.params.id).populate('opponents').run(function(err, game){
-		if(err){
-			req.flash('error', 'Game Lookup Failed');
+		if(err || !game){
+			req.flash('error', 'Game not found!');
 			res.redirect('/');
 			return;
 		}
@@ -126,6 +130,12 @@ app.get('/games/:id/:round/:as', function(req, res){
 		return;
 	}
 	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+	
 		var me = null
 		  , opponent = null;
 		if(game.opponents[0]._id.toString() == req.params.as){
@@ -221,6 +231,12 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 		return;
 	}
 	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+
 		var me = null
 		  , opponent = null;
 		if(game.opponents[0]._id.toString() == req.params.as){
@@ -334,6 +350,12 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 	}
 
 	Game.findById(req.params.id).run(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+
 		var me = null
 		  , opponent = null;
 		if(game.opponents[0].toString() == req.params.as){

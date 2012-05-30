@@ -319,15 +319,17 @@ PlayerSchema.pre('init', function(next, t){
 				}
 			}
 		if(games && games.length){
+			count += games.length;
 			games.forEach(function(game, index){
 				var g = {
 					startTime: game.startTime
 				  , votes: []
 				};
 				t.votingRecord.push(g); 
-				if(game.rounds){
+				if(game.rounds && game.rounds.length){
+					--count;
+					count += game.rounds.length;
 					game.rounds.forEach(function(roundId, index){
-						count++;
 						Round.findById(roundId).populate('votes').run(function(err, round){
 							if(round && round.votes){
 								for(var k=0; k<round.votes.length; k++){
@@ -344,6 +346,8 @@ PlayerSchema.pre('init', function(next, t){
 							finished();
 						});
 					});
+				}else{
+					finished();
 				}
 			});
 		}else{
