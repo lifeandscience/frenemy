@@ -378,20 +378,6 @@ Player.count({}, function(err, totalPlayerCount){
 		shouldNextPlayerDefend = (totalPlayerCount - defendingPlayerCount ) > defendingPlayerCount;
 	});
 });
-Player.find({email: config.defaultNonDefenderEmail}).run(function(err, players){
-	if(err || !players || players.length == 0){
-		// Create a player!
-		var player = new Player();
-		player.name = config.defaultNonDefenderEmail;
-		player.email = config.defaultNonDefenderEmail;
-		player.isAdmin = true;
-/* 		player.defending = false; */
-		player.save(function(err, player){
-			player.defending = false;
-			player.save();
-		});
-	}
-});
 Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
 	if(err || !players || players.length == 0){
 		// Create a player!
@@ -402,6 +388,20 @@ Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
 /* 		player.defending = true; */
 		player.save(function(err, player){
 			player.defending = true;
+			player.save();
+		});
+	}
+});
+Player.find({email: config.defaultNonDefenderEmail}).run(function(err, players){
+	if(err || !players || players.length == 0){
+		// Create a player!
+		var player = new Player();
+		player.name = config.defaultNonDefenderEmail;
+		player.email = config.defaultNonDefenderEmail;
+		player.isAdmin = true;
+/* 		player.defending = false; */
+		player.save(function(err, player){
+			player.defending = false;
 			player.save();
 		});
 	}
