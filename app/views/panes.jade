@@ -36,6 +36,8 @@ slug = me.getProfileSlug(game.startTime);
 				- else if(slug == 'color')
 					// Do Color!
 					div(class='color '+me.getProfile(game.startTime))
+				- else if(slug == 'chat')
+					h3 !{me.getProfile(game.startTime)}
 				- if(heading)
 					h3 #{heading}: 
 					h3 !{me.getProfile(game.startTime)}
@@ -63,6 +65,8 @@ slug = me.getProfileSlug(game.startTime);
 				- else if(slug == 'color')
 					// Do Color!
 					div(class='color '+me.getOpponentProfile(game.startTime, opponent))
+				- else if(slug == 'chat')
+					h3 !{me.getProfile(game.startTime)}
 				- if(heading)
 					h3 #{heading}: 
 					h3 !{me.getOpponentProfile(game.startTime, opponent)}
