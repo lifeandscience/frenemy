@@ -247,8 +247,8 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		email.sendMail(mailOptions, function(error, response){
 		    if(error){
 		        util.log('Email message not sent: '+util.inspect(error));
-//		    }else{
-//		        util.log("Message sent: " + response.message);
+		    }else{
+		        util.log("Message sent: " + response.message);
 		    }
 		    if(cb){
 		    	cb();
@@ -385,8 +385,11 @@ Player.find({email: config.defaultNonDefenderEmail}).run(function(err, players){
 		player.name = config.defaultNonDefenderEmail;
 		player.email = config.defaultNonDefenderEmail;
 		player.isAdmin = true;
-		player.defending = false;
-		player.save();
+/* 		player.defending = false; */
+		player.save(function(err, player){
+			player.defending = false;
+			player.save();
+		});
 	}
 });
 Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
@@ -396,8 +399,11 @@ Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
 		player.name = config.defaultDefenderEmail;
 		player.email = config.defaultDefenderEmail;
 		player.isAdmin = true;
-		player.defending = true;
-		player.save();
+/* 		player.defending = true; */
+		player.save(function(err, player){
+			player.defending = true;
+			player.save();
+		});
 	}
 });
 config.admins.forEach(function(item, index){

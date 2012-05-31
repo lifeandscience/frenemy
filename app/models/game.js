@@ -30,7 +30,14 @@ GameSchema.statics.setupGames = function(req, cb){
 			  , setupCount = 2
 			  , setupGamesForPlayers = function(fillInPlayer){
 					return function(err, players){
-						util.log('setupGamesForPlayers: '+util.inspect(players));
+						util.log('setupGamesForPlayers: '+players.length); //util.inspect(players));
+						for(var i=0; i<players.length; i++){
+							var player = players[i];
+							if( player._id.toString() == defendingPlayer._id.toString() ||
+								player._id.toString() == nonDefendingPlayer._id.toString()){
+								players.splice(i, 1);
+							}
+						}
 						if(err){
 							util.log('couldn\'t find players?!');
 							if(cb && --setupCount == 0){
@@ -49,6 +56,7 @@ GameSchema.statics.setupGames = function(req, cb){
 							return;
 						}else{
 							var pickPlayer = function(){
+									util.log('picking a player from a players array of length '+players.length);
 									if(players.length == 0){
 										util.log('using fill in player: ('+fillInPlayer.email+')');
 										return fillInPlayer;
@@ -78,8 +86,10 @@ GameSchema.statics.setupGames = function(req, cb){
 						}
 					};
 				};
-			Player.find({defending: true, active: true}).where('email').ne(config.defaultDefenderEmail).asc('_id').run(setupGamesForPlayers(defendingPlayer));
-			Player.find({defending: false, active: true}).where('email').ne(config.defaultNonDefenderEmail).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
+			util.log('attempting to exclude: '+defendingPlayer._id.toString());
+			Player.where('defending', true).where('active', true).where('_id').ne(defendingPlayer._id.toString()).run(setupGamesForPlayers(defendingPlayer));
+			util.log('attempting to exclude: '+nonDefendingPlayer._id.toString());
+			Player.find({defending: false, active: true}).where('_id').ne(nonDefendingPlayer._id.toString()).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
 		});
 	});
 };
