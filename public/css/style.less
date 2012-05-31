@@ -8,6 +8,7 @@
 
 html {
 	height: 100%;
+	overflow: hidden;
 }
 body {
 	height: 100%;
@@ -800,4 +801,11 @@ span.enemy {
 	left: 50%;
 	margin: -100px 0px 0px -100px;
 	text-indent: -999em;
+}
+
+@media all and (max-width: 1070px) {
+	html, body, .container {
+		width: 1070px;
+		overflow: hidden;
+	}
 }
