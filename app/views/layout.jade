@@ -18,40 +18,40 @@ html(lang="en")
       //if lt IE 9
         script(src='/js/modernizr.js')
   body
-    - if(everyauth.loggedIn)
-      .navbar
-        .navbar-inner
-          .container
-            a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
-            a.brand(href="/") Frenemy
-            .nav-collapse
-              - if(everyauth.loggedIn)
-                ul.nav
-                  li.dropdown
-                    a.dropdown-toggle(href="#", data-toggle="dropdown")
-                      | Games
-                      b.caret
-                    ul.dropdown-menu
-                      li: a(href="/games") Active Games
-                      li: a(href="/games/all") All Games
-                      li: a(href="/games/start") Force Start Day
-                      li: a(href="/games/end") Force End Day
-                  li.dropdown
-                    a.dropdown-toggle(href="#", data-toggle="dropdown")
-                      | Players
-                      b.caret
-                    ul.dropdown-menu
-                      li: a(href="/players") List Players
-                      li: a(href="/players/defending") List Defending Players
-                      li: a(href="/players/nondefending") List Non-Defending Players
-                      li: a(href="/players/add") Add Player
-                      li: a(href="/players/import") Import Players
-              ul.nav.pull-right
-                li: a(href="/logout") Logout
     div(class="container")
+      - if(everyauth.loggedIn)
+        .navbar
+          .navbar-inner
+            .container
+              a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+              a.brand(href="/") Frenemy
+              .nav-collapse
+                - if(everyauth.loggedIn)
+                  ul.nav
+                    li.dropdown
+                      a.dropdown-toggle(href="#", data-toggle="dropdown")
+                        | Games
+                        b.caret
+                      ul.dropdown-menu
+                        li: a(href="/games") Active Games
+                        li: a(href="/games/all") All Games
+                        li: a(href="/games/start") Force Start Day
+                        li: a(href="/games/end") Force End Day
+                    li.dropdown
+                      a.dropdown-toggle(href="#", data-toggle="dropdown")
+                        | Players
+                        b.caret
+                      ul.dropdown-menu
+                        li: a(href="/players") List Players
+                        li: a(href="/players/defending") List Defending Players
+                        li: a(href="/players/nondefending") List Non-Defending Players
+                        li: a(href="/players/add") Add Player
+                        li: a(href="/players/import") Import Players
+                ul.nav.pull-right
+                  li: a(href="/logout") Logout
       block messages
         #messages !{flashMessages}
       != body
