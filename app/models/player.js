@@ -366,7 +366,7 @@ PlayerSchema.methods.getOpponentProfile = function(d, opponent){
 		case 4:
 			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
 		default:
-			return this['opponent_profile_'+(d.getDate()+offset)];
+			return this['opponent_profile_'+((d.getDate() == 31 ? 7 : d.getDate())+offset)];
 	}
 };
 
