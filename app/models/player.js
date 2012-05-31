@@ -208,7 +208,7 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 };
 
 PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
-	util.log('notifying '+this.name+' of new round! ' + url);
+	util.log('notifying '+this.name+' of '+type+'! ' + url);
 
 	if(process.env.DO_NOTIFICATIONS){
 		util.log('will DO_NOTIFICATIONS');

@@ -11,7 +11,6 @@ var RoundSchema = new Schema({
 
 RoundSchema.methods.getVoteForPlayer = function(id){
 	for(var i=0; i<this.votes.length; i++){
-		util.log('vote: '+this.votes[i].player);
 		if(this.votes[i].player.toString() == id.toString()){
 			return this.votes[i];
 		}

@@ -8,23 +8,18 @@ var form = require('express-form')
   , util = require('util');
 
 app.get('/games', utilities.checkAdmin, function(req, res){
-	util.log('/games woo?');
 	Game.find({completed: false}).asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		util.log('games: '+util.inspect(games));
 		res.render('games/index', {title: 'Active Games', games: games, util: util});
 	});
 });
 
 app.get('/games/all', utilities.checkAdmin, function(req, res){
-	util.log('woo?');
 	Game.find().asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		util.log('games: '+util.inspect(games));
 		res.render('games/index', {title: 'Active Games', games: games, util: util});
 	});
 });
 
 app.get('/games/start', utilities.checkAdmin, function(req, res){
-	util.log('starting!');
 	Game.setupGames(req, function(){
 		req.flash('info', 'Day started successfully!');
 		res.redirect('/games');
@@ -411,14 +406,15 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 				}
 				currentRound.save(function(err){
 					Round.findById(currentRound._id).populate('votes').run(function(err, round){
-						if(currentRound.completed){
+						if(round.completed){
+							// This round is over!
 							// Should adjust the player's votes!
 							Player.findById(me).run(function(err, player){
 								player.score += round.getPointsForPlayer(me);
 								// Update my lastPlayed date
 								player.lastPlayed = Date.now();
 								player.save();
-								if(currentRound.number == game.numRounds){
+								if(currentRound.number.toString() == game.numRounds.toString()){
 									player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
 										util.log('did notify '+player.name+' of end of game! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 									});
@@ -431,7 +427,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 							Player.findById(opponent).run(function(err, player){
 								player.score += round.getPointsForPlayer(opponent);
 								player.save();
-								if(currentRound.number == game.numRounds){
+								if(currentRound.number.toString() == game.numRounds.toString()){
 									player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
 										util.log('did notify '+player.name+' of end of game! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 									});
@@ -441,17 +437,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 									});
 								}
 							});
-//						}else{
-//							Player.findById(opponent).run(function(err, player){
-//								player.notifyOfNewRound(round, 'nudge', '/games/'+game._id+'/'+currentRound._id+'/'+player._id, function(){
-//									util.log('did notify '+player.name+' of their turn!');
-//								});
-//							});
-						}
-						
-						
-						if(round.votes.length >= 2){
-							// This round is over!
+
 							game.rounds.push(round);
 							game.currentRound = null;
 							game.save(function(err, game){
