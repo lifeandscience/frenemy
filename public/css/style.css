@@ -12,7 +12,7 @@ body {
 body > .container {
   overflow: hidden;
   height: 100%;
-  width: 1070px;
+  width: 1200px;
 }
 body > .container > #container-inner {
   overflow: scroll;
@@ -432,7 +432,7 @@ h6 {
   width: 110px;
   float: left;
   text-transform: uppercase;
-  margin: 35px 20px 0 105px;
+  margin: 35px 20px 0 120px;
 }
 #header h1 a {
   background: transparent url('../img/logo.png') scroll no-repeat left top;
@@ -568,6 +568,8 @@ span.enemy {
   background-position: -42px top;
 }
 #scoring {
+  width: 1070px;
+  margin: 0 auto;
   clear: both;
   padding-bottom: 150px;
 }
@@ -682,7 +684,6 @@ span.enemy {
 }
 #vote.home {
   width: 1200px;
-  margin-left: -65px;
 }
 #vote.home h2 {
   width: 198px;
@@ -707,11 +708,11 @@ span.enemy {
   margin: -100px 0px 0px -100px;
   text-indent: -999em;
 }
-@media all and (max-width: 1070px) {
+@media all and (max-width: 1200px) {
   html,
   body,
   .container {
-    width: 1070px;
+    width: 1200px;
     overflow: hidden;
   }
 }
