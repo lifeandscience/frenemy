@@ -26,3 +26,6 @@
 						a.btn(href="/games/edit/#{game._id}") Edit
 						| 
 						a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
+						- if(game.startTime.getDay() == 4)
+							| 
+							a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat
