@@ -300,7 +300,7 @@ PlayerSchema.methods.getProfile = function(d){
 		case 3:
 			return 'Your voting record on the last seven games.';
 		case 4:
-			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
+			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the chat tab on the top of this page.</a>';
 		default:
 			return this['profile_'+(day ? day : d.getDay())];
 	}
