@@ -13,7 +13,7 @@
 	
 	
 	#vote.cf
-		a(href="/games/#{game._id}/#{round._id}/#{me._id}/friend", class='vote friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'disabled') : 'active'))
+		a(href="/games/#{game._id}/#{round._id}/#{me._id}/friend", class='vote friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'strikethrough disabled') : 'active'))
 			.avatar 
 				.inner 
 			h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}

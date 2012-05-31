@@ -566,7 +566,36 @@ h1, h2, h3, h4, h5, h6 {
 	}
 	
 	a.vote.strikethrough {
-		text-decoration: line-through;
+		text-decoration: none;
+		
+		h3 {
+			position: relative;
+		}
+		h3:before {
+			content: url('../img/strikethrough.png');
+			position: absolute;
+			top: 5px;
+			left: 50%;
+			margin-left: -75px;
+		}
+		
+		.avatar {
+			background-color: black;
+			  -webkit-box-shadow: none;
+			          box-shadow: none;
+
+			.inner {
+				background-color: black;
+				background-position: left -41px;
+			}
+		}
+	}
+	a.enemy.vote.strikethrough {
+		.avatar {
+			.inner {
+				background-position: -285px -41px;
+			}
+		}
 	}
 	
 	a.next-round {
@@ -594,7 +623,7 @@ h1, h2, h3, h4, h5, h6 {
 		text-align: center;
 		font-size: 40px;
 		line-height: 120%;
-		padding-top: 16px;
+		margin-top: 16px;
 	}
 }
 

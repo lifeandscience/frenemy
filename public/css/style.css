@@ -500,7 +500,29 @@ h6 {
   cursor: default;
 }
 #vote a.vote.strikethrough {
-  text-decoration: line-through;
+  text-decoration: none;
+}
+#vote a.vote.strikethrough h3 {
+  position: relative;
+}
+#vote a.vote.strikethrough h3:before {
+  content: url('../img/strikethrough.png');
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  margin-left: -75px;
+}
+#vote a.vote.strikethrough .avatar {
+  background-color: black;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+#vote a.vote.strikethrough .avatar .inner {
+  background-color: black;
+  background-position: left -41px;
+}
+#vote a.enemy.vote.strikethrough .avatar .inner {
+  background-position: -285px -41px;
 }
 #vote a.next-round {
   width: 100px;
@@ -530,7 +552,7 @@ h6 {
   text-align: center;
   font-size: 40px;
   line-height: 120%;
-  padding-top: 16px;
+  margin-top: 16px;
 }
 span.friend,
 span.enemy {
