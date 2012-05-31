@@ -2,7 +2,10 @@
 	#header
 		h2.lets Let's play
 		h1
-			a.next-round(title="Click here to get to the current round of this game!", href="/games/#{game._id}/#{game.currentRound}/#{me._id}") FRENEMY
+			- if(game.currentRound)
+				a.next-round(title="Click here to get to the current round of this game!", href="/games/#{game._id}/#{game.currentRound}/#{me._id}") FRENEMY
+			- else
+				a.next-round(title="Click here to see the results of this game!", href="/games/#{game._id}/#{me._id}") FRENEMY
 		h2.prompt
 			| ROUND ##{round.number}
 			br
