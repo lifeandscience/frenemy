@@ -719,3 +719,26 @@ span.enemy {
     overflow: hidden;
   }
 }
+@media all and (max-height: 750px) {
+  #me,
+  #my-opponent {
+    height: 80%;
+  }
+  #me .inner,
+  #my-opponent .inner {
+    height: 100%;
+  }
+  #me .inner .content,
+  #my-opponent .inner .content {
+    height: 100%;
+    overflow: scroll;
+  }
+  #me .inner .content h1,
+  #my-opponent .inner .content h1 {
+    padding: 10px 0;
+  }
+  #me .inner .content h2,
+  #my-opponent .inner .content h2 {
+    padding-bottom: 10px;
+  }
+}
