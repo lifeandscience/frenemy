@@ -195,8 +195,9 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 		email.sendMail(mailOptions, function(error, response){
 		    if(error){
 		        util.log('Email message not sent: '+util.inspect(error));
-//		    }else{
-//		        util.log("Message sent: " + response.message);
+		    }else{
+		        util.log("Message sent: "+util.inspect(mailOptions));
+		        util.log("Got a response of " + util.inspect(response));
 		    }
 		    if(cb){
 		    	cb();
@@ -248,7 +249,8 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		    if(error){
 		        util.log('Email message not sent: '+util.inspect(error));
 		    }else{
-		        util.log("Message sent: " + response.message);
+		        util.log("Message sent: "+util.inspect(mailOptions));
+		        util.log("Got a response of " + util.inspect(response));
 		    }
 		    if(cb){
 		    	cb();
