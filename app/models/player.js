@@ -214,6 +214,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	if(process.env.DO_NOTIFICATIONS){
 		util.log('will DO_NOTIFICATIONS');
 		url = (process.env.BASEURL || 'http://localhost:5000') + url;
+		url += '?utm_campaign='+type+'&utm_medium=email&utm_source='+all
 		var html = ''
 		  , title = ''
 		  , player = this;
