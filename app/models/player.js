@@ -2,20 +2,12 @@ var mongoose = require('mongoose')
   , mongooseAuth = require('mongoose-auth')
   , Schema = mongoose.Schema
   , config = require('../../config')
-  , nodemailer = require('nodemailer')
+  , email = require('../../email')
   , jade = require('jade')
   , fs = require('fs')
   , util = require('util');
 
 
-var awsAccessKey = process.env.AWS_ACCESS_KEY || 'AKIAJGTS6FVN4QPODUUA'
-  , awsSecret = process.env.AWS_SECRET || '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';
-
-// create reusable transport method (opens pool of SMTP connections)
-var email = nodemailer.createTransport("SES", {
-	AWSAccessKeyID: awsAccessKey
-  , AWSSecretKey: awsSecret
-});
 
 var path = __dirname + '/../views/players/email/new_game.jade'
   , str = fs.readFileSync(path, 'utf8')
@@ -192,17 +184,7 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 		}
 		
 		// send mail with defined transport object
-		email.sendMail(mailOptions, function(error, response){
-		    if(error){
-		        util.log('Email message not sent: '+util.inspect(error));
-		    }else{
-		        util.log("Message sent: "+util.inspect(mailOptions));
-		        util.log("Got a response of " + util.inspect(response));
-		    }
-		    if(cb){
-		    	cb();
-		    }
-		});
+		email.sendMail(mailOptions, cb);
 	}else if(cb){
 		cb();
 	}
@@ -246,17 +228,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		}
 		
 		// send mail with defined transport object
-		email.sendMail(mailOptions, function(error, response){
-		    if(error){
-		        util.log('Email message not sent: '+util.inspect(error));
-		    }else{
-		        util.log("Message sent: "+util.inspect(mailOptions));
-		        util.log("Got a response of " + util.inspect(response));
-		    }
-		    if(cb){
-		    	cb();
-		    }
-		});
+		email.sendMail(mailOptions, cb);
 	}else if(cb){
 		cb();
 	}
