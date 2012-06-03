@@ -89,7 +89,7 @@ GameSchema.statics.setupGames = function(req, cb){
 			util.log('attempting to exclude: '+defendingPlayer._id.toString());
 			Player.where('defending', true).where('active', true).where('_id').ne(defendingPlayer._id.toString()).run(setupGamesForPlayers(defendingPlayer));
 			util.log('attempting to exclude: '+nonDefendingPlayer._id.toString());
-			Player.find({defending: false, active: true}).where('_id').ne(nonDefendingPlayer._id.toString()).asc('_id').run(setupGamesForPlayers(nonDefendingPlayer));
+			Player.where('defending', false).where('active', true).where('_id').ne(nonDefendingPlayer._id.toString()).run(setupGamesForPlayers(nonDefendingPlayer));
 		});
 	});
 };
