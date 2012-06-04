@@ -13,7 +13,6 @@ body > .container {
   height: 100%;
   overflow: scroll;
   width: 1200px;
-  position: relative;
   /*
 		> #container-inner {
 			overflow: scroll;
