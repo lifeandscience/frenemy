@@ -27,6 +27,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res){
 					csv += addToCSV;
 					
 					if(--numVotes == 0){
+						res.attachment('export.csv');
 						res.contentType('csv');
 						res.send(csv);
 						return;
