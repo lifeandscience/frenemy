@@ -15,7 +15,7 @@ app.get('/games', utilities.checkAdmin, function(req, res){
 
 app.get('/games/all', utilities.checkAdmin, function(req, res){
 	Game.find().asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'Active Games', games: games, util: util});
+		res.render('games/index', {title: 'All Games', games: games, util: util});
 	});
 });
 
