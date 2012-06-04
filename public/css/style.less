@@ -21,6 +21,7 @@ body {
 		height: 100%;
 		overflow: scroll;
 		width: 1200px;
+		position: relative;
 		
 /*
 		> #container-inner {
@@ -831,6 +832,44 @@ span.enemy {
 					padding-bottom: 10px;
 				}
 			}
+		}
+	}
+}
+
+#faq-button {
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	font-weight: bold;
+	color: white;
+	font-size: 40px;
+	line-height: 1em;
+	text-decoration: none;
+
+	display: block;
+	padding-left: 9px;
+	width: 31px;
+	height: 40px;
+	border: 7px solid white;
+	.border-radius(27px, 27px, 27px, 27px);
+	
+	position: absolute;
+	right: 50px;
+	top: 48px;
+}
+#faq-button:hover,
+#faq-button:hover {
+	color: @blue;
+	border-color: @blue;
+}
+
+#faq {
+	background-color: rgba(0, 0, 0, 0.7);
+	border: 7px solid white;
+	padding: 20px 40px;
+	.border-radius();
+	
+	.modal-header {
+		button {
+			color: white;
 		}
 	}
 }

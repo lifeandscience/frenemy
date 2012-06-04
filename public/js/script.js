@@ -165,4 +165,9 @@ jQuery(function(){
 			}
 		});
 	});
+	
+	var faq = jQuery('#faq').modal({show: false});
+	jQuery('#faq-button').insertAfter('#messages').click(function(){
+		faq.modal('toggle');
+	});
 });

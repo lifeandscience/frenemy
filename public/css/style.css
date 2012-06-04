@@ -13,6 +13,7 @@ body > .container {
   height: 100%;
   overflow: scroll;
   width: 1200px;
+  position: relative;
   /*
 		> #container-inner {
 			overflow: scroll;
@@ -741,4 +742,43 @@ span.enemy {
   #my-opponent .inner .content h2 {
     padding-bottom: 10px;
   }
+}
+#faq-button {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: bold;
+  color: white;
+  font-size: 40px;
+  line-height: 1em;
+  text-decoration: none;
+  display: block;
+  padding-left: 9px;
+  width: 31px;
+  height: 40px;
+  border: 7px solid white;
+  -webkit-border-radius: 27px 27px 27px 27px;
+  border-radius: 27px 27px 27px 27px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  position: absolute;
+  right: 50px;
+  top: 48px;
+}
+#faq-button:hover,
+#faq-button:hover {
+  color: #278fd8;
+  border-color: #278fd8;
+}
+#faq {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 7px solid white;
+  padding: 20px 40px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+#faq .modal-header button {
+  color: white;
 }
