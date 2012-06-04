@@ -202,19 +202,19 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		  , player = this;
 		if(type == 'nudge'){
 			title = 'Your Turn in Frenemy!';
-			html = nudgeTemplate({user: player, url: url});
+			html = nudgeTemplate({user: player, round: round, url: url});
 		}else if(type == 'new-game'){
 			// Game Start!
 			title = 'New Game of Frenemy!';
-			html = newGameTemplate({user: player, url: url});
+			html = newGameTemplate({user: player, round: round, url: url});
 		}else if(type == 'end-of-round'){ // type == 'new-round'
 			// Just round start!
 			title = 'End of Round of Frenemy!';
-			html = endOfRoundTemplate({user: player, url: url});
+			html = endOfRoundTemplate({user: player, round: round, url: url});
 		}else { // type == 'end-of-game'
 			// Just round start!
 			title = 'End of Game of Frenemy!';
-			html = endOfGameTemplate({user: player, url: url});
+			html = endOfGameTemplate({user: player, round: round, url: url});
 		}
 		html = layoutTemplate({title: title, body: html});
 		
