@@ -280,6 +280,23 @@ PlayerSchema.methods.getProfile = function(d){
 			return this['profile_'+(day ? day : d.getDay())];
 	}
 };
+PlayerSchema.methods.getProfileForCSV = function(d){
+	return this['profile_'+(day ? day : d.getDay())];
+};
+
+PlayerSchema.methods.getOpponentProfile = function(d, opponent){
+	switch(d.getDay()){
+		case 3:
+			return 'Their voting record on the last seven games.';
+		case 4:
+			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
+		default:
+			return this['opponent_profile_'+((d.getDate() == 31 ? 7 : d.getDate())+offset)];
+	}
+};
+PlayerSchema.methods.getOpponentProfileForCSV = function(d, opponent){
+	return this['opponent_profile_'+((d.getDate() == 31 ? 7 : d.getDate())+offset)];
+};
 
 PlayerSchema.virtual('votingRecord');
 PlayerSchema.pre('init', function(next, t){
@@ -333,17 +350,6 @@ PlayerSchema.pre('init', function(next, t){
 		}
 	});
 });
-
-PlayerSchema.methods.getOpponentProfile = function(d, opponent){
-	switch(d.getDay()){
-		case 3:
-			return 'Their voting record on the last seven games.';
-		case 4:
-			return 'Today you have the ability to chat with your opponent.<br/><a href="#chat">Click on the tab above to do so.</a>';
-		default:
-			return this['opponent_profile_'+((d.getDate() == 31 ? 7 : d.getDate())+offset)];
-	}
-};
 
 Player = mongoose.model('Player', PlayerSchema);
 exports = Player;
