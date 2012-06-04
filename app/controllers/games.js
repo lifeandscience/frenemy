@@ -171,8 +171,13 @@ app.get('/games/:id/:round/:as', function(req, res){
 		}
 		
 		if(!round){
-			req.flash('error', 'Round not found in this game! '+req.url);
-			res.redirect('/');
+			res.render('games/round-expired', {
+				title: 'Game Expired'
+			  , game: game
+			  , util: util
+			  , me: me
+			  , opponent: opponent
+			});
 			return;
 		}
 		
@@ -272,8 +277,13 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 		}
 		
 		if(!round){
-			req.flash('error', 'Round not found in this game! '+req.url);
-			res.redirect('/');
+			res.render('games/round-expired', {
+				title: 'Game Expired'
+			  , game: game
+			  , util: util
+			  , me: me
+			  , opponent: opponent
+			});
 			return;
 		}
 		

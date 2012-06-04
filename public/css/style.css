@@ -450,6 +450,9 @@ h6 {
   float: left;
   margin: 35px 0 0 20px;
 }
+#header h2.oops {
+  margin-top: 55px;
+}
 #vote {
   clear: both;
   padding-top: 20px;
@@ -558,6 +561,19 @@ h6 {
   font-size: 40px;
   line-height: 120%;
   margin-top: 16px;
+}
+#expired {
+  clear: both;
+  padding-top: 120px;
+}
+#expired h2 {
+  font-size: 35px;
+  line-height: 120%;
+  color: white;
+  text-align: center;
+}
+#expired h2.blue {
+  color: #278fd8;
 }
 span.friend,
 span.enemy {

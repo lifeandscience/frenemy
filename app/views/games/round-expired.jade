@@ -1,0 +1,18 @@
+#container-inner
+	#header
+		h2.lets Let's play
+		h1
+			- if(game.currentRound)
+				a.next-round(title="Click here to get to the current move of this game!", href="/games/#{game._id}/#{game.currentRound}/#{me._id}") FRENEMY
+			- else
+				a.next-round(title="Click here to see the results of this game!", href="/games/#{game._id}/#{me._id}") FRENEMY
+		h2.oops.prompt.you OOPS!
+
+	#expired
+		h2 This game of frenemy has expired.
+		h2.blue
+			a(href="/games/#{game._id}/#{me._id}") Click to see the results of this game
+		h2 or
+		h2.blue Check your email for the current game.
+
+include ../panes
