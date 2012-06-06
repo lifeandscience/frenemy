@@ -13,8 +13,7 @@
 			each player, i in players
 				tr
 					td #{player.name}
-					td 
-						input(type="checkbox",disabled="disabled",checked=player.defending)
+					td #{player.defending ? 'yes' : 'no'}
 					td #{player.score}
 					td #{player.lastPlayed}
 					td

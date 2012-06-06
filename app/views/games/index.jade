@@ -13,8 +13,7 @@
 			each game, i in games
 				tr
 					td #{game.startTime}
-					td
-						input(type="checkbox", disabled="disabled", checked=game.completed)
+					td #{game.completed ? 'yes' : 'no'}
 					td
 						ul
 							each opponent in game.opponents
