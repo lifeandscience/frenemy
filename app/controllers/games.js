@@ -174,7 +174,7 @@ app.get('/games/:id/:round/:as', function(req, res){
 						round = game.currentRound;
 					}else{
 						for(var i=0; i<game.rounds.length; i++){
-							if(game.rounds[i].toString() == req.params.round){
+							if(game.rounds[i]._id.toString() == req.params.round){
 								round = game.rounds[i];
 								break;
 							}
@@ -297,11 +297,13 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 			//		}
 			
 					var round = null;
+					util.log('currentRound: '+game.currentRound);
+					util.log('vs current: '+req.params.round);
 					if(game.currentRound && game.currentRound.toString() == req.params.round){
 						round = game.currentRound;
 					}else{
 						for(var i=0; i<game.rounds.length; i++){
-							if(game.rounds[i].toString() == req.params.round){
+							if(game.rounds[i]._id.toString() == req.params.round){
 								round = game.rounds[i];
 								break;
 							}
