@@ -652,6 +652,7 @@ a.you:active {
   color: #767676;
 }
 #results {
+  clear: both;
   width: 100%;
   text-align: center;
   font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
