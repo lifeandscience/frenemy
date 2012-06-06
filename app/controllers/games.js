@@ -19,6 +19,12 @@ app.get('/games/all', utilities.checkAdmin, function(req, res){
 	});
 });
 
+app.get('/games/fully-played', utilities.checkAdmin, function(req, res){
+	Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+		res.render('games/index', {title: 'Fully-Played Games', games: games, util: util});
+	});
+});
+
 app.get('/games/start', utilities.checkAdmin, function(req, res){
 	Game.setupGames(req, function(){
 		req.flash('info', 'Day started successfully!');
