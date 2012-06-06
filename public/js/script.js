@@ -172,8 +172,9 @@ jQuery(function(){
 	});
 	
 	var playByPlay = jQuery('#play-by-play').modal({show: false});
-	console.log('play: ', jQuery('#play-by-play'), playByPlay);
 	jQuery('#play-by-play-trigger').click(function(){
 		playByPlay.modal('toggle');
 	});
+	
+	jQuery('.tablesorter').tablesorter();
 });

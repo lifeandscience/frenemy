@@ -45,14 +45,16 @@ h6 {
 .cf {
   *zoom: 1;
 }
+/*
 .table-striped tbody tr:nth-child(odd) td,
 .table-striped tbody tr:nth-child(odd) th {
-  background-color: #333;
+	background-color: #333;
 }
 .table tbody tr:hover td,
 .table tbody tr:hover th {
-  background-color: #666;
+	background-color: #666;
 }
+*/
 .pane {
   opacity: 0;
   -webkit-transition: all 0.3s ease-out;
@@ -809,4 +811,7 @@ a.you:active {
 #play-by-play {
   width: 720px;
   margin-left: -400px;
+}
+.tablesorter {
+  color: black;
 }
