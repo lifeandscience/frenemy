@@ -27,8 +27,14 @@
 		//else if game.currentRound.toString() != round._id.toString()
 		//	a.next-round(href="/games/#{game._id}/#{game.currentRound}/#{me._id}") click to play the current move!
 	
+
 	#scoring.cf
-		h4 Scoring Reminder
+		h4.cf
+			a#play-by-play-trigger.you
+				i.icon-star 
+				|  See the play-by-play of this game 
+				i.icon-star 
+			| Scoring Reminder
 		ul.cf
 			li#friend-friend
 				.visuals

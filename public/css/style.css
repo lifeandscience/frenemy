@@ -13,11 +13,12 @@ body > .container {
   height: 100%;
   overflow: scroll;
   width: 1200px;
+}
+body > .container > #container-inner {
+  padding-bottom: 60px;
   /*
-		> #container-inner {
 			overflow: scroll;
 			height: 100%;
-		}
 */
 
 }
@@ -641,6 +642,10 @@ span.enemy {
 .you {
   color: #ffcb05;
 }
+a.you:hover,
+a.you:active {
+  color: #ffcb05;
+}
 .them {
   color: #767676;
 }
@@ -784,7 +789,7 @@ span.enemy {
   color: #278fd8;
   border-color: #278fd8;
 }
-#faq {
+.modal {
   background-color: rgba(0, 0, 0, 0.7);
   border: 7px solid white;
   padding: 20px 40px;
@@ -794,6 +799,14 @@ span.enemy {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
-#faq .modal-header button {
+.modal .modal-header button {
   color: white;
+}
+#play-by-play-trigger {
+  float: right;
+  margin-top: -3px;
+}
+#play-by-play {
+  width: 720px;
+  margin-left: -400px;
 }

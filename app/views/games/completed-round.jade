@@ -40,7 +40,12 @@
 	
 	
 	#scoring.cf
-		h4 Scoring Reminder
+		h4.cf
+			a#play-by-play-trigger.you
+				i.icon-star
+				| See the play-by-play of this game
+				i.icon-star
+			| Scoring Reminder
 		ul.cf
 			li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'active' : null))
 				.visuals

@@ -22,12 +22,13 @@ body {
 		overflow: scroll;
 		width: 1200px;
 		
-/*
 		> #container-inner {
+			padding-bottom: 60px;
+/*
 			overflow: scroll;
 			height: 100%;
-		}
 */
+		}
 	}
 }
 
@@ -724,6 +725,10 @@ span.enemy {
 .you {
 	color: @yellow;
 }
+a.you:hover,
+a.you:active {
+	color: @yellow;
+}
 .them {
 	color: #767676;
 }
@@ -878,7 +883,7 @@ span.enemy {
 	border-color: @blue;
 }
 
-#faq {
+.modal {
 	background-color: rgba(0, 0, 0, 0.7);
 	border: 7px solid white;
 	padding: 20px 40px;
@@ -889,4 +894,13 @@ span.enemy {
 			color: white;
 		}
 	}
+}
+
+#play-by-play-trigger {
+	float: right;
+	margin-top: -3px;
+}
+#play-by-play {
+	width: 720px;
+	margin-left: -400px;
 }

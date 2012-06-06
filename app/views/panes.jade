@@ -74,3 +74,10 @@ slug = me.getProfileSlug(game.startTime);
 	.handle
 		a Leaderboard
 	.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/'+me._id)
+	
+#play-by-play.modal.fade.hide
+	.modal-header
+		button.close(type="button", data-dismiss="modal") x
+		h3.you PLAY-BY-PLAY
+	.modal-body
+		include games/results
