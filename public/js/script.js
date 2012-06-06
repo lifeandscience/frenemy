@@ -31,6 +31,10 @@ jQuery(function(){
 			  , 'z-index': 0
 			});
 		}
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/chat']);
+		}
+		return false;
 	});
 	jQuery('a[href="#chat"]').click(function(){
 		jQuery('#chat > .handle > a').click();
@@ -55,6 +59,10 @@ jQuery(function(){
 			  , 'z-index': 0
 			});
 		}
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/leaderboard']);
+		}
+		return false;
 	});
 		
 	var me = jQuery('#me');
@@ -76,6 +84,9 @@ jQuery(function(){
 			});
 		}
 //		jQuery('.icon-white', me).toggleClass('icon-forward').toggleClass('icon-backward');
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/me']);
+		}
 		return false;
 	});
 
@@ -96,6 +107,9 @@ jQuery(function(){
 				right: -550
 			  , 'z-index': 0
 			});
+		}
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/my-opponent']);
 		}
 		return false;
 	});
@@ -169,11 +183,17 @@ jQuery(function(){
 	var faq = jQuery('#faq').modal({show: false});
 	jQuery('#faq-button').insertAfter('#messages').click(function(){
 		faq.modal('toggle');
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/faq']);
+		}
 	});
 	
 	var playByPlay = jQuery('#play-by-play').modal({show: false});
 	jQuery('#play-by-play-trigger').click(function(){
 		playByPlay.modal('toggle');
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/play-by-play']);
+		}
 	});
 	
 	jQuery('.tablesorter').tablesorter();
