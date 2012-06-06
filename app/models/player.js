@@ -240,7 +240,9 @@ PlayerSchema.methods.getProfileSlug = function(d){
 		case 0:
 			return 'birthday';
 		case 1:
-			return 'personality';
+			// For #34
+			return 'no-info';
+/* 			return 'personality'; */
 		case 2:
 			return 'color';
 		case 3:
@@ -258,7 +260,9 @@ PlayerSchema.methods.getProfileHeading = function(d){
 		case 0:
 			return 'Birthday';
 		case 1:
-			return 'Personality Type';
+			// For #34
+			return null;
+/* 			return 'Personality Type'; */
 		case 2:
 			return 'Favorite Color';
 		case 3:
@@ -272,6 +276,9 @@ PlayerSchema.methods.getProfileHeading = function(d){
 };
 PlayerSchema.methods.getProfile = function(d){
 	switch(day ? day : d.getDay()){
+		case 1:
+			// For #34
+			return 'Today you have no information to help you make your decision.';
 		case 3:
 			return 'Your voting record on the last seven games.';
 		case 4:
@@ -286,6 +293,9 @@ PlayerSchema.methods.getProfileForCSV = function(d){
 
 PlayerSchema.methods.getOpponentProfile = function(d, opponent){
 	switch(d.getDay()){
+		case 1:
+			// For #34
+			return 'Today they have no information to help you make your decision.';
 		case 3:
 			return 'Their voting record on the last seven games.';
 		case 4:
