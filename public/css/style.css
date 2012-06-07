@@ -317,17 +317,17 @@ h6 {
   border-bottom: 1px solid #dfeef9;
   margin-bottom: 10px;
 }
-#leaderboard .inner .content .ul-container ul li span.name,
-#leaderboard .inner .content .ul-container ul li span.score {
+#leaderboard .inner .content .ul-container ul li .name,
+#leaderboard .inner .content .ul-container ul li .score {
   display: inline-block;
   width: 300px;
   color: black;
 }
-#leaderboard .inner .content .ul-container ul li span.name {
+#leaderboard .inner .content .ul-container ul li .name {
   font-size: 20px;
   line-height: 100%;
 }
-#leaderboard .inner .content .ul-container ul li span.score {
+#leaderboard .inner .content .ul-container ul li .score {
   font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
   font-size: 35px;
   line-height: 120%;
