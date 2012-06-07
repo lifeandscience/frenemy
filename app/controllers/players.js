@@ -201,6 +201,40 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 	});
 });
 
+app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
+	if(!req.params.id){
+		res.send(404);
+		return;
+	}
+	var Vote = mongoose.model('Vote');
+	Player.find().desc('score').run(function(err, players){
+		var toHandle = players.length
+		  , checkDone = function(){
+				if(--toHandle == 0){
+					players.sort(function(a, b){
+						return b.pointsPerVote - a.pointsPerVote;
+					});
+					res.render('players/points-per-move-leaderboard', {layout: false, players: players, util: util});
+				}
+			}
+		  , handlePlayer = function(index){
+				// Determine number of votes for this player!
+				Vote.count({player: players[index]}, function(err, count){
+					players[index].voteCount = count;
+					players[index].pointsPerVote = 0;
+					if(count > 0){
+						players[index].pointsPerVote = (players[index].defending ? players[index].score-10000 : players[index].score) / count;
+					}
+					checkDone();
+				});
+			};
+		for(var i=0; i<players.length; i++){
+			handlePlayer(i);
+		}
+		return;
+	});
+});
+
 app.get('/players/import', utilities.checkAdmin, function(req, res){
 	res.render('players/import', {title: 'Player import'});
 	return;
