@@ -36,7 +36,6 @@ body.confessional {
 	color: #333;
 	
 	#container-inner {
-		padding-bottom: 0;
 
 		#header {
 			h1 {
@@ -68,6 +67,14 @@ body.confessional {
 			display: block;
 			width: 160px;
 			margin: 20px auto 0 auto;
+		}
+		h3 {
+			color: #999;
+			font-size: 15px;
+			line-height: 1.2em;
+			margin: 0;
+			font-family: Arial, sans-serif;
+			text-align: center;
 		}
 	}
 }
@@ -901,27 +908,50 @@ a.you:active {
 	}
 }
 
-#faq-button {
+a.top-right-button {
 	font-family: "Helvetica Neue", Helvetica, sans-serif;
 	font-weight: bold;
 	color: white;
-	font-size: 40px;
+	font-size: 15px;
 	line-height: 1em;
 	text-decoration: none;
+	text-align: center;
+	cursor: pointer;
+}
+#faq-button {
+	position: absolute;
+	right: 150px;
+	top: 48px;
 
-	display: block;
-	padding-left: 9px;
-	width: 31px;
-	height: 40px;
-	border: 7px solid white;
-	.border-radius(27px, 27px, 27px, 27px);
-	
+	.inner {
+		color: white;
+		font-size: 60px;
+		line-height: 1em;
+		display: block;
+		width: 60px;
+		height: 60px;
+		border: 10px solid white;
+		.border-radius(40px, 40px, 40px, 40px);
+		margin-bottom: 5px;
+	}
+}
+#confessional-button {
 	position: absolute;
 	right: 50px;
 	top: 48px;
+	
+	.inner {
+		text-indent: -999em;
+		background: transparent url('../img/frenemy-confess.png') scroll no-repeat left top;
+		width: 86px;
+		height: 77px;
+		margin-bottom: 8px;
+	}
 }
-#faq-button:hover,
-#faq-button:hover {
+.top-right-button:hover,
+.top-right-button:active { //,
+//.top-right-button:hover .inner,
+//.top-right-button:active .inner {
 	color: @blue;
 	border-color: @blue;
 }

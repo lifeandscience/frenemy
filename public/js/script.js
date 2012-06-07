@@ -181,12 +181,17 @@ jQuery(function(){
 	});
 	
 	var faq = jQuery('#faq').modal({show: false});
-	jQuery('#faq-button').insertAfter('#messages').click(function(){
-		faq.modal('toggle');
-		if(_gaq){
-			_gaq.push(['_trackPageview', document.location.pathname+'/faq']);
-		}
-	});
+	var button = jQuery('#faq-button');
+	if(document.location.pathname.match(/^\/games\/(.*)/) || document.location.pathname.match(/^\/$/)){
+			button.insertAfter('#messages').click(function(){
+			faq.modal('toggle');
+			if(_gaq){
+				_gaq.push(['_trackPageview', document.location.pathname+'/faq']);
+			}
+		});
+	}else{
+		button.hide();
+	}
 	
 	var playByPlay = jQuery('#play-by-play').modal({show: false});
 	jQuery('#play-by-play-trigger').click(function(){
