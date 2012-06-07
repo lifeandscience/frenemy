@@ -5,6 +5,7 @@ var mongoose = require('mongoose')
   , email = require('../../email')
   , jade = require('jade')
   , fs = require('fs')
+  , moment = require('moment')
   , util = require('util');
 
 
@@ -172,7 +173,7 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 			title = 'Your Frenemy Account has been Deactivated!';
 			html = deactivationTemplate({user: player});
 		}
-		html = layoutTemplate({title: title, body: html});
+		html = layoutTemplate({title: title, body: html, moment: moment});
 		
 		// setup e-mail data with unicode symbols
 		var mailOptions = {
@@ -216,7 +217,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 			title = 'End of Game of Frenemy!';
 			html = endOfGameTemplate({user: player, round: round, url: url});
 		}
-		html = layoutTemplate({title: title, body: html});
+		html = layoutTemplate({title: title, body: html, moment: moment});
 		
 		// setup e-mail data with unicode symbols
 		var mailOptions = {

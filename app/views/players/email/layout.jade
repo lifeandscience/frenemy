@@ -16,3 +16,5 @@ html(lang="en")
   body
     div(class="container")
       != body
+    span.date
+      | Sent at #{moment().format('hh:mm A [on] MM/DD/YYYY')}
