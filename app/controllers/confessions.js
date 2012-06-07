@@ -23,8 +23,8 @@ var as = 'confession'
 	)
   , layout = 'layout-confessional';
 
-app.get('/confessional', utilities.checkAdmin, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
-app.post('/confessional', utilities.checkAdmin, formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
+app.get('/confessional', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
+app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
 
 
 app.get('/confessional/thanks', utilities.checkAdmin, function(req, res){
