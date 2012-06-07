@@ -1,0 +1,13 @@
+#container-inner
+	h1 #{title}
+	
+	table.table.tablesorter
+		thead
+			tr
+				th Date
+				th Text
+		tbody
+			each confession, i in confessions
+				tr
+					td #{moment(confession.date).format('YYYY-MM-DD hh:mm A')}
+					td !{confession.text.replace('\n', '<br/>')}

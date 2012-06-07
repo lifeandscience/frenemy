@@ -2,7 +2,7 @@ var async = require('async')
   , util = require('util');
 
 module.exports = {
-	doForm: function(as, populate, title, object, template, varNames, redirect, beforeRender, beforeSave){
+	doForm: function(as, populate, title, object, template, varNames, redirect, beforeRender, beforeSave, layout){
 		return function(req, res){
 	
 			var validated = false;
@@ -51,6 +51,11 @@ module.exports = {
 							if(beforeRender){
 								obj = beforeRender(obj);
 							}
+							if(layout){
+								util.log('layout: '+layout);
+								obj.layout = layout;
+							}
+							util.log('rendering: '+util.inspect(obj));
 							res.render(template, obj);
 							return;
 						}
@@ -68,6 +73,11 @@ module.exports = {
 				if(beforeRender){
 					obj = beforeRender(obj);
 				}
+				if(layout){
+					util.log('layout: '+layout);
+					obj.layout = layout;
+				}
+				util.log('rendering: '+util.inspect(obj));
 				res.render(template, obj);
 				return;
 			});
