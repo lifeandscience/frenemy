@@ -28,5 +28,5 @@ app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!
 
 
 app.get('/confessional/thanks', utilities.checkAdmin, function(req, res){
-	res.render('confessions/thanks', {title: 'Thanks for your confession!', layout: 'layout-confessional'});
+	res.render('confessions/thanks', {title: 'Your confession has been recorded.', layout: 'layout-confessional'});
 });
