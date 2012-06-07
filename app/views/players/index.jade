@@ -15,7 +15,7 @@
 					td #{player.name}
 					td #{player.defending ? 'yes' : 'no'}
 					td #{player.score}
-					td #{player.lastPlayed}
+					td #{moment(player.lastPlayed).format('YYYY-MM-DD hh:mm A')}
 					td
 						a.btn(href="/players/edit/#{player._id}") Edit
 						| 

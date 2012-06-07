@@ -4,22 +4,23 @@ var form = require('express-form')
   , mongoose = require('mongoose')
   , Player = mongoose.model('Player')
   , csv = require('csv')
+  , moment = require('moment')
   , util = require('util');
 
 app.get('/players', utilities.checkAdmin, function(req, res){
 	Player.find({}).asc('name').run(function(err, players){
-		res.render('players/index', {title: 'All Players', players: players});
+		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 
 app.get('/players/defending', utilities.checkAdmin, function(req, res){
 	Player.find({defending:true}).asc('name').run(function(err, players){
-		res.render('players/index', {title: 'All Players', players: players});
+		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 app.get('/players/nondefending', utilities.checkAdmin, function(req, res){
 	Player.find({defending:false}).asc('name').run(function(err, players){
-		res.render('players/index', {title: 'All Players', players: players});
+		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 

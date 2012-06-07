@@ -5,23 +5,24 @@ var form = require('express-form')
   , Game = mongoose.model('Game')
   , Player = mongoose.model('Player')
   , config = require('./config')
-  , util = require('util');
+  , util = require('util')
+  , moment = require('moment');
 
 app.get('/games', utilities.checkAdmin, function(req, res){
 	Game.find({completed: false}).asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'Active Games', games: games, util: util});
+		res.render('games/index', {title: 'Active Games', games: games, util: util, moment: moment});
 	});
 });
 
 app.get('/games/all', utilities.checkAdmin, function(req, res){
 	Game.find().asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'All Games', games: games, util: util});
+		res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment});
 	});
 });
 
 app.get('/games/fully-played', utilities.checkAdmin, function(req, res){
 	Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'Fully-Played Games', games: games, util: util});
+		res.render('games/index', {title: 'Fully-Played Games', games: games, util: util, moment: moment});
 	});
 });
 

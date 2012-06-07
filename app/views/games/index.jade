@@ -12,7 +12,7 @@
 		tbody
 			each game, i in games
 				tr
-					td #{game.startTime}
+					td #{moment(game.startTime).format('YYYY-MM-DD hh:mm A')}
 					td #{game.completed ? 'yes' : 'no'}
 					td
 						ul
