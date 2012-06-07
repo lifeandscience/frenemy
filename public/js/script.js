@@ -180,17 +180,17 @@ jQuery(function(){
 		});
 	});
 	
-	var faq = jQuery('#faq').modal({show: false});
-	var button = jQuery('#faq-button');
+	var faq = jQuery('#faq').modal({show: false})
+	  , faqButton = jQuery('#faq-button').hide()
+	  , confessButton = jQuery('#confessional-button').hide();
 	if(document.location.pathname.match(/^\/games\/(.*)/) || document.location.pathname.match(/^\/$/)){
-			button.insertAfter('#messages').click(function(){
+		confessButton.insertAfter('#messages').show();
+		faqButton.insertAfter('#messages').show().click(function(){
 			faq.modal('toggle');
 			if(_gaq){
 				_gaq.push(['_trackPageview', document.location.pathname+'/faq']);
 			}
 		});
-	}else{
-		button.hide();
 	}
 	
 	var playByPlay = jQuery('#play-by-play').modal({show: false});
