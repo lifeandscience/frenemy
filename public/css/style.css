@@ -425,7 +425,6 @@ h6 {
   -ms-transform: rotate(90deg);
   -o-transform: rotate(90deg);
   transform: rotate(90deg);
-  filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ M11=6.123031769111886e-17, M12=-1, M21=1, M22=6.123031769111886e-17, sizingMethod='auto expand');;
   zoom: 1;
 }
 #me .inner {
@@ -457,7 +456,6 @@ h6 {
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
   transform: rotate(-90deg);
-  filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ M11=6.123031769111886e-17, M12=1, M21=-1, M22=6.123031769111886e-17, sizingMethod='auto expand');
   zoom: 1;
 }
 #my-opponent .inner {

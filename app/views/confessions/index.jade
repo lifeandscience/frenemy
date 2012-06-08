@@ -4,10 +4,10 @@
 	table.table.tablesorter
 		thead
 			tr
-				th Date
+				th(width="150") Date
 				th Text
 		tbody
 			each confession, i in confessions
 				tr
 					td #{moment(confession.date).format('YYYY-MM-DD hh:mm A')}
-					td !{confession.text.replace('\n', '<br/>')}
+					td !{confession.text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>')}
