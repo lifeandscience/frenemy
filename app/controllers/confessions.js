@@ -9,6 +9,9 @@ var form = require('express-form')
 
 app.get('/confessions', utilities.checkAdmin, function(req, res){
 	Confession.find({}).asc('date').run(function(err, confessions){
+		for(var i=0; i<confessions.length; i++){
+			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
+		}
 		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment});
 	});
 });
