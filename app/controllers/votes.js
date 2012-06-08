@@ -2,6 +2,8 @@ var utilities = require('./utilities')
   , mongoose = require('mongoose');
 
 app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
+	var start = Date.now();
+	util.log('starting the log up! '+start);
 	// Export all game data as a CSV
 	var Game = mongoose.model('Game')
 	  , Round = mongoose.model('Round')
@@ -16,47 +18,76 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 		'Content-Disposition': 'attachment;filename=export.csv'
 	});
 
-	Game.find({}, ['_id', 'rounds', 'startTime', 'opponents', 'rounds']).populate('opponents').populate('rounds', ['number', 'votes'])/*.asc('startTime')*/.run(function(err, games){
-		var game = null
-		  , round = null
-		  , numVotes = 0
-		  , start = Date.now()
-		  , handleVote = function(game, round){
-				return function(err, vote){
-					// Handle the vote
-					var addToCSV = vote.player._id + ', ' + vote.player.email + ', ' + (vote.player.defending ? 'defending' : 'accumulating') + ', ' + game._id + ', ' + round.number + ', ' + vote.date + ', ' + vote.value + ', ' + vote.player.getProfileSlug(game.startTime) + ', ' + vote.player.getProfileForCSV(game.startTime) + ', ';
-
-					// Determine which of the players was this one in the round
-					var player = null;
-					if(game.opponents[0]._id == vote.player._id){
-						addToCSV += game.opponents[0].getOpponentProfileForCSV(game.startTime);
+	var numVotes = 0
+	  , stream = null
+	  , totallyDone = false
+	  , checkDone = function(){
+			if(--numVotes == 0){
+				if(totallyDone){
+					util.log('totally done!');
+					if(hasFoundGame){
+						// We found at least one game
+						// Maybe the query needs to be re-run starting at an offset of numGames
+						createQueryStream(numGames);
 					}else{
-						addToCSV += game.opponents[1].getOpponentProfileForCSV(game.startTime);
-					}
-					addToCSV += '\n';
-					res.write(addToCSV);
-					
-					if(--numVotes == 0){
-						util.log('done! '+Date.now());
-						util.log('total time: '+((Date.now()-start)/1000)+'s');
 						res.end();
 					}
 				}
-			};
-		util.log('starting: '+Date.now());
-		res.write(csv);
-		
-		for(var i=0; i<games.length; i++){
-			game = games[i];
+			}
+		}
+	  , handleVote = function(game, round){
+	  		++numVotes;
+			return function(err, vote){
+				// Handle the vote
+				var addToCSV = vote.player._id + ', ' + vote.player.email + ', ' + (vote.player.defending ? 'defending' : 'accumulating') + ', ' + game._id + ', ' + round.number + ', ' + vote.date + ', ' + vote.value + ', ' + vote.player.getProfileSlug(game.startTime) + ', ' + vote.player.getProfileForCSV(game.startTime) + ', ';
+
+				// Determine which of the players was this one in the round
+				var player = null;
+				if(game.opponents[0]._id == vote.player._id){
+					addToCSV += game.opponents[0].getOpponentProfileForCSV(game.startTime);
+				}else{
+					addToCSV += game.opponents[1].getOpponentProfileForCSV(game.startTime);
+				}
+				addToCSV += '\n';
+				res.write(addToCSV);
+
+				checkDone();
+			}
+		}
+	  , hasFoundGame = false
+	  , numGames = 0
+	  , games = {}
+	  , queryDataFunction = function(game){
+	  		numGames++;
+			hasFoundGame = true;
+			
 			for(var j=0; j<game.rounds.length; j++){
 				round = game.rounds[j];
-				numVotes += round.votes;
 				for(var k=0; k<round.votes.length; k++){
 					var vote = round.votes[k];
 					Vote.findById(vote).populate('player').run(handleVote(game, round));
 				}
 			}
 		}
-	});
+	  , queryErrorFunction = function(){
+			res.end();
+		}
+	  , queryCloseFunction = function(){
+			totallyDone = true;
+			++numVotes;
+			checkDone();
+		}
+	  , createQueryStream = function(skip){
+	  		var query = Game.find({}, ['_id', 'rounds', 'startTime', 'opponents', 'rounds']).populate('opponents').populate('rounds', ['number', 'votes']).asc('startTime');
+	  		if(skip){
+		  		query.skip(skip);
+	  		}
+	  		hasFoundGame = false;
+	  		stream = query.stream();
+			stream.on('data', queryDataFunction);
+			stream.on('error', queryErrorFunction);
+			stream.on('close', queryCloseFunction); //.run(function(err, games){
+	  	};
+	createQueryStream();
 	return;
 });
