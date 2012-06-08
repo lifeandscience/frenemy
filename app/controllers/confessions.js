@@ -27,6 +27,6 @@ app.get('/confessional', utilities.doForm(as, populate, 'Confess!', Confession, 
 app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
 
 
-app.get('/confessional/thanks', utilities.checkAdmin, function(req, res){
+app.get('/confessional/thanks', function(req, res){
 	res.render('confessions/thanks', {title: 'Your confession has been recorded.', layout: 'layout-confessional'});
 });
