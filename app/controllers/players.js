@@ -158,7 +158,7 @@ app.get('/players/leaderboard/:id', function(req, res){
 		return;
 	}
 	Player.findById(req.params.id).run(function(err, player){
-		Player.find({defending: player.defending}).desc('score').run(function(err, players){
+		Player.find({defending: player.defending, active: true}).desc('score').run(function(err, players){
 			res.render('players/leaderboard', {layout: false, players: players, util: util});
 			return;
 		});
@@ -172,7 +172,7 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 	}
 	var Vote = mongoose.model('Vote');
 	Player.findById(req.params.id).run(function(err, player){
-		Player.find({defending: player.defending}).desc('score').run(function(err, players){
+		Player.find({defending: player.defending, active: true}).desc('score').run(function(err, players){
 			var toHandle = players.length
 			  , checkDone = function(){
 					if(--toHandle == 0){
@@ -207,7 +207,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 		return;
 	}
 	var Vote = mongoose.model('Vote');
-	Player.find().desc('score').run(function(err, players){
+	Player.find({active: true}).desc('score').run(function(err, players){
 		var toHandle = players.length
 		  , checkDone = function(){
 				if(--toHandle == 0){
