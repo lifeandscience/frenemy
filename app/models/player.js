@@ -279,7 +279,7 @@ PlayerSchema.methods.getProfile = function(d){
 	switch(day ? day : d.getDay()){
 		case 1:
 			// For #34
-			return 'Today you have no information to help you make your decision.';
+			return 'Today you have no additional information about your opponent.';
 		case 3:
 			return 'Your voting record on the last seven games.';
 		case 4:
@@ -296,7 +296,7 @@ PlayerSchema.methods.getOpponentProfile = function(d, opponent){
 	switch(d.getDay()){
 		case 1:
 			// For #34
-			return 'Today they have no information to help you make your decision.';
+			return 'Today your opponent has no additional information about you.';
 		case 3:
 			return 'Their voting record on the last seven games.';
 		case 4:
