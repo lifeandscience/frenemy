@@ -206,11 +206,18 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 		res.send(404);
 		return;
 	}
-	var Vote = mongoose.model('Vote');
+	var Vote = mongoose.model('Vote')
+	  , d = new Date()
+	  , limit = ( d.getDate() - 3 ) * 3
 	Player.find({active: true}).desc('score').run(function(err, players){
 		var toHandle = players.length
 		  , checkDone = function(){
 				if(--toHandle == 0){
+					for(var i=players.length-1; i >= 0; i--){
+						if(players[i].voteCount < limit){
+							players.splice(i, 1);
+						}
+					}
 					players.sort(function(a, b){
 						return b.pointsPerVote - a.pointsPerVote;
 					});

@@ -282,6 +282,10 @@ h6 {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
+#leaderboard .inner .spinner {
+  left: 375px;
+  top: 100px;
+}
 #leaderboard .inner > a {
   text-decoration: none;
   text-transform: uppercase;

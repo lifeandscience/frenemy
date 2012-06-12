@@ -70,10 +70,13 @@ slug = me.getProfileSlug(game.startTime);
 				- if(heading)
 					h3 #{heading}: 
 					h3 !{me.getOpponentProfile(game.startTime, opponent)}
-#leaderboard.pane
+#leaderboard.pane(class=(everyauth.loggedIn ? 'logged-in' : null))
 	.handle
 		a Leaderboard
-	.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/'+me._id)
+	- if(everyauth.loggedIn)
+		.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/points-per-move/all/'+me._id)
+	- else
+		.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/'+me._id)
 	
 #play-by-play.modal.fade.hide
 	.modal-header

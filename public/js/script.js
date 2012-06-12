@@ -44,7 +44,7 @@ jQuery(function(){
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1
-	  , bottom: -475
+	  , bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
 	});
 	jQuery('#leaderboard > .handle > a').click(function(){
 		leaderboard.toggleClass('visible');
@@ -55,7 +55,7 @@ jQuery(function(){
 			});
 		}else{
 			leaderboard.css({
-				bottom: -475
+				bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
 			  , 'z-index': 0
 			});
 		}
@@ -116,7 +116,9 @@ jQuery(function(){
 	
 	jQuery('div[data-src]').each(function(index, item){
 		var container = jQuery(item)
-		  , url = container.data('src');
+		  , url = container.data('src')
+		  , spinner = new Spinner().spin();
+		container.append(spinner.el);
 		container.load(url, function(){
 			var content = jQuery('.content', container)
 			  , ul = jQuery('ul', content).css('left', 0)

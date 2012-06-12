@@ -3,7 +3,5 @@
 		ul
 			each player, i in players
 				li
-					.name Name: #{player.name}
-					.score Score: #{player.score}
-					.number Num Votes: #{player.voteCount}
-					.pointsPerVote Points per Vote: #{player.defending ? player.score-10000 : player.score} / #{player.voteCount} = #{player.pointsPerVote}
+					.name #{player.name}
+					.score #{Math.round(player.pointsPerVote*100)/100}
