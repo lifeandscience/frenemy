@@ -882,3 +882,52 @@ a.top-right-button {
 .tablesorter {
   color: black;
 }
+#container-inner ul.confessions {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+#container-inner ul.confessions > li {
+  padding: 20px 0;
+  border-bottom: 1px solid #BABABA;
+}
+#container-inner ul.confessions > li > .confession-label {
+  width: 170px;
+  float: left;
+  padding: 125px 0 0 0;
+  background: transparent url('../img/frenemy-confess.png') scroll no-repeat left 40px;
+  color: #278fd8;
+}
+#container-inner ul.confessions > li > .confession-content {
+  margin-left: 170px;
+}
+#container-inner ul.confessions > li > .confession-content > h2 {
+  text-align: left;
+}
+#container-inner ul.confessions > li > .confession-content > h3 {
+  display: block;
+  float: right;
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 1em;
+  color: black;
+  padding: 0 10px;
+  margin: 10px 0;
+}
+#container-inner ul.confessions > li > .confession-content > ul {
+  display: block;
+  float: right;
+  margin: 18px 0;
+}
+#container-inner ul.confessions > li > .confession-content > ul > li {
+  display: block;
+  float: left;
+  padding: 0 10px;
+  border-left: 1px solid #278fd8;
+  text-transform: uppercase;
+  font-size: 14px;
+  line-height: 1em;
+}
+#container-inner ul.confessions > li > .confession-content > ul > li:first-child {
+  border-left: none;
+}

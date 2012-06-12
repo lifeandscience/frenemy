@@ -2,25 +2,26 @@
 	#header
 		h1 FRENEMY CONFESSIONAL
 	
-	ul
+	ul.confessions
 		each confession, i in confessions
-			li
-				.label Confession ##{confession.number}
-				h2 !{confession.text}
-				d = moment(confession.date).clone()
-				- if(Math.round((d.minutes()/100)) > 0)
-					- d = d.add('hours', 1)
-				h3 #{d.format('MMMM Do, YYYY [around] hA')}
-				ul.actions
-					li.first
-						a(href="/confessions/flag/"+confession._id) Flag
-						- if(everyauth.loggedIn)
-							| (#{confession.flags})
-					li
-						a(href="/confessional/reply/"+confession.number) Reply
-					- if(everyauth.loggedIn)
+			li.cf
+				.confession-label Confession ##{confession.number}
+				.confession-content
+					h2 !{confession.text}
+					d = moment(confession.date).clone()
+					- if(Math.round((d.minutes()/100)) > 0)
+						- d = d.add('hours', 1)
+					ul.actions
+						li.first
+							a(href="/confessions/flag/"+confession._id) Flag
+							- if(everyauth.loggedIn)
+								| (#{confession.flags})
 						li
-							- if(!confession.active)
-								a(href="/confessions/publish/"+confession._id) Publish
-							- else
-								a(href="/confessions/unpublish/"+confession._id) Unpublish
+							a(href="/confessional/reply/"+confession.number) Reply
+						- if(everyauth.loggedIn)
+							li
+								- if(!confession.active)
+									a(href="/confessions/publish/"+confession._id) Publish
+								- else
+									a(href="/confessions/unpublish/"+confession._id) Unpublish
+					h3 #{d.format('MMMM Do, YYYY [around] hA')}
