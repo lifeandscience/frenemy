@@ -1,13 +1,26 @@
 #container-inner
-	h1 #{title}
+	#header
+		h1 FRENEMY CONFESSIONAL
 	
-	table.table.tablesorter
-		thead
-			tr
-				th(width="150") Date
-				th Text
-		tbody
-			each confession, i in confessions
-				tr
-					td #{moment(confession.date).format('YYYY-MM-DD hh:mm A')}
-					td !{confession.text}
+	ul
+		each confession, i in confessions
+			li
+				.label Confession ##{confession.number}
+				h2 !{confession.text}
+				d = moment(confession.date).clone()
+				- if(Math.round((d.minutes()/100)) > 0)
+					- d = d.add('hours', 1)
+				h3 #{d.format('MMMM Do, YYYY [around] hA')}
+				ul.actions
+					li.first
+						a(href="/confessions/flag/"+confession._id) Flag
+						- if(everyauth.loggedIn)
+							| (#{confession.flags})
+					li
+						a(href="/confessional/reply/"+confession.number) Reply
+					- if(everyauth.loggedIn)
+						li
+							- if(!confession.active)
+								a(href="/confessions/publish/"+confession._id) Publish
+							- else
+								a(href="/confessions/unpublish/"+confession._id) Unpublish

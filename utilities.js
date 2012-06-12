@@ -41,27 +41,31 @@ module.exports = {
 							item[name] = req.form[name];
 						}
 					});
-					if(beforeSave){
-						item = beforeSave(req, res, item);
-					}
-					item.save(function(err, result){
-						if(err){
-							var obj = {title: title};
-							obj[as] = item;
-							if(beforeRender){
-								obj = beforeRender(obj);
+					var complete = function(item){
+						item.save(function(err, result){
+							if(err){
+								var obj = {title: title};
+								obj[as] = item;
+								if(beforeRender){
+									obj = beforeRender(req, res, obj);
+								}
+								if(layout){
+									util.log('layout: '+layout);
+									obj.layout = layout;
+								}
+								util.log('rendering: '+util.inspect(obj));
+								res.render(template, obj);
+								return;
 							}
-							if(layout){
-								util.log('layout: '+layout);
-								obj.layout = layout;
-							}
-							util.log('rendering: '+util.inspect(obj));
-							res.render(template, obj);
+							res.redirect(redirect);
 							return;
-						}
-						res.redirect(redirect);
-						return;
-					});
+						});
+					};
+					if(beforeSave){
+						beforeSave(req, res, item, complete);
+					}else{
+						complete(item);
+					}
 					return;
 				}
 	
@@ -71,7 +75,7 @@ module.exports = {
 				var obj = {title: title};
 				obj[as] = item;
 				if(beforeRender){
-					obj = beforeRender(obj);
+					obj = beforeRender(req, res, obj);
 				}
 				if(layout){
 					util.log('layout: '+layout);

@@ -7,12 +7,108 @@ var form = require('express-form')
   , email = require('./email')
   , util = require('util');
 
-app.get('/confessions', utilities.checkAdmin, function(req, res){
-	Confession.find({}).asc('date').run(function(err, confessions){
+app.get('/confessions', function(req, res){
+	var query = Confession.find({});
+	if(!req.loggedIn || !req.user || !req.user.isAdmin){
+		query.where('active', true);
+	}
+	query.desc('number').run(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
 			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
 		}
-		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment});
+		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment, layout: 'layout-confessional'});
+	});
+});
+
+app.get('/confessions/numberExisting', utilities.checkAdmin, function(req, res){
+	var start = 1;
+	Confession.find().asc('date').run(function(err, confessions){
+		for(var i=0; i<confessions.length; i++){
+			if(!confessions[i].number || confessions[i].number == -1){
+				confessions[i].number = start++;
+				confessions[i].active = true;
+				confessions[i].save();
+			}
+		}
+		req.flash('info', 'Done numbering existing confessions!');
+		res.redirect('/confessions');
+	});
+});
+
+app.get('/confessions/flag/:id', function(req, res){
+	if(!req.params.id){
+		req.flash('error', 'Confession ID required!');
+		res.redirect('/confessions');
+		return;
+	}
+	Confession.findById(req.params.id).run(function(err, confession){
+		if(err || !confession){
+			req.flash('error', 'Confession not found!');
+			res.redirect('/confessions');
+			return;
+		}
+		confession.flags++;
+		confession.save(function(err){
+
+			var mailOptions = {
+		    	from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
+		    	to: 'experimonth+confessional@lifeandscience.org', // list of receivers
+		    	subject: 'Flagged Confession!', // Subject line
+		    	text: 'Confessional #'+confession.number+' was flagged, bringing it\'s total number of flags to '+confession.flags+' on '+moment().format('YYYY-MM-DD hh:mm A')+'\n\n---\n\n'+confession.text
+		    };
+
+		    // send mail with defined transport object
+			email.sendMail(mailOptions, null);
+
+			req.flash('info', 'Confession flagged!');
+			res.redirect('/confessions');
+			return;
+		});
+		return;
+	});
+});
+
+app.get('/confessions/publish/:id', utilities.checkAdmin, function(req, res){
+	if(!req.params.id){
+		req.flash('error', 'Confession ID required!');
+		res.redirect('/confessions');
+		return;
+	}
+	Confession.findById(req.params.id).run(function(err, confession){
+		if(err || !confession){
+			req.flash('error', 'Confession not found!');
+			res.redirect('/confessions');
+			return;
+		}
+		confession.active = true;
+		confession.save(function(err){
+			req.flash('info', 'Confession published!');
+			res.redirect('/confessions');
+			return;
+		});
+		return;
+	});
+});
+
+app.get('/confessions/unpublish/:id', utilities.checkAdmin, function(req, res){
+	if(!req.params.id){
+		req.flash('error', 'Confession ID required!');
+		res.redirect('/confessions');
+		return;
+	}
+	Confession.findById(req.params.id).run(function(err, confession){
+		if(err || !confession){
+			req.flash('error', 'Confession not found!');
+			res.redirect('/confessions');
+			return;
+		}
+		confession.active = false;
+		confession.save(function(err){
+			req.flash('info', 'Confession unpublished!');
+			res.redirect('/confessions');
+			return;
+		});
+		return;
 	});
 });
 
@@ -25,23 +121,32 @@ var as = 'confession'
   , formValidate = form(
 		field('text').trim().required()
 	)
-  , beforeSave = function(req, res, item){
+  , beforeRender = function(req, res, item){
+		item.confession.text = 'This is in reply to #'+req.params.number+': ';
+		return item;
+	}
+  , beforeSave = function(req, res, item, complete){
 		// Email to Beck
 		// setup e-mail data with unicode symbols
-		var mailOptions = {
-		    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
-		    to: 'experimonth+confessional@lifeandscience.org', // list of receivers
-		    subject: 'New confession!', // Subject line
-		    text: 'New Confessional posted on '+moment(item.date).format('YYYY-MM-DD hh:mm A')+'\n\n---\n\n'+item.text
-		};
+		Confession.count(function(err, count){
+			item.number = count;
 
-		// send mail with defined transport object
-		email.sendMail(mailOptions, null);
-		return item;
+			var mailOptions = {
+		    	from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
+		    	to: 'experimonth+confessional@lifeandscience.org', // list of receivers
+		    	subject: 'New confession!', // Subject line
+		    	text: 'New Confessional posted on '+moment(item.date).format('YYYY-MM-DD hh:mm A')+'\n\n---\n\n'+item.text
+		    };
+
+		    // send mail with defined transport object
+			email.sendMail(mailOptions, null);
+			complete(item);
+		});
 	}
   , layout = 'layout-confessional';
 
 app.get('/confessional', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
+app.get('/confessional/reply/:number', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, beforeRender, null, layout));
 app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, beforeSave, layout));
 
 

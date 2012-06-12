@@ -4,6 +4,9 @@ var mongoose = require('mongoose')
 
 var ConfessionSchema = new Schema({
 	date: {type: Date, default: function(){ return Date.now(); }}
+  , number: {type: Number, default: -1}
+  , active: {type: Boolean, default: true}
+  , flags: {type: Number, default: 0}
   , text: String
 });
 
