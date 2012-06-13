@@ -17,6 +17,8 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 		'Content-Type': 'text/csv',
 		'Content-Disposition': 'attachment;filename=export.csv'
 	});
+	
+	res.write(csv);
 
 	var numVotes = 0
 	  , stream = null
