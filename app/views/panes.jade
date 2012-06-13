@@ -4,10 +4,15 @@ slug = me.getProfileSlug(game.startTime);
 - if(game.startTime.getDay() == 4)
 	#chat.pane
 		.inner
+			p 
+				| If you're having trouble chatting, try in a different browser like 
+				a(href="http://www.mozilla.org/en-US/firefox/new/") Firefox
+				|  or 
+				a(href="https://www.google.com/intl/en/chrome/browser/") Chrome
+				| .
 			.content
-				#tlkio(data-channel=game._id.toString(), style="width:700px;height:475px;")
+				#tlkio(data-channel=game._id.toString(), style="width:700px;height:500px;")
 				script(src="http://tlk.io/embed.js", type="text/javascript")
-			p If you're having trouble chatting, try in a different browser like Firefox or Chrome.
 		.handle
 			a Chat
 

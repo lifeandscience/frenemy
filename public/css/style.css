@@ -402,20 +402,24 @@ h6 {
   background-clip: padding-box;
 }
 #chat .inner {
-  height: 500px;
+  height: 520px;
+  padding-top: 15px;
   -webkit-border-radius: 0 0 10px 10px;
   border-radius: 0 0 10px 10px;
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 }
+#chat .inner p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+#chat .inner p a {
+  color: #ffcb05;
+}
 #chat .inner .content {
   width: 700px;
   height: 500px;
-}
-#chat p {
-  margin-top: 10px;
-  text-align: center;
 }
 #me {
   width: 550px;

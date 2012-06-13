@@ -458,18 +458,23 @@ h1, h2, h3, h4, h5, h6 {
 	}
 
 	.inner {
-		height: 500px;
+		height: 520px;
+		padding-top: 15px;
 		.border-radius(0, 0, 10px, 10px);
+
+		p {
+			margin-bottom: 10px;
+			text-align: center;
+			
+			a {
+				color: @yellow;
+			}
+		}
 
 		.content {
 			width: 700px;
 			height: 500px;
 		}
-	}
-	
-	p {
-		margin-top: 10px;
-		text-align: center;
 	}
 }
 
