@@ -132,7 +132,7 @@ var as = 'confession'
 		// Email to Beck
 		// setup e-mail data with unicode symbols
 		Confession.count(function(err, count){
-			item.number = count;
+			item.number = count+1;
 
 			var mailOptions = {
 		    	from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
