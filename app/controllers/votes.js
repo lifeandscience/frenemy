@@ -11,11 +11,11 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID, player email, player type, game ID, round #, vote date, player\'s vote, info type this round, player\'s info this round, opponent\'s info this round\n';
+	var csv = 'player ID\t player email\t player type\t game ID\t round #\t vote date\t player\'s vote\t info type this round\t player\'s info this round\t opponent\'s info this round\n';
 	
 	res.writeHead(200, {
-		'Content-Type': 'text/csv',
-		'Content-Disposition': 'attachment;filename=export.csv'
+		'Content-Type': 'text/tsv',
+		'Content-Disposition': 'attachment;filename=export.tsv'
 	});
 	
 	res.write(csv);
@@ -41,7 +41,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 	  		++numVotes;
 			return function(err, vote){
 				// Handle the vote
-				var addToCSV = vote.player._id + ', ' + vote.player.email + ', ' + (vote.player.defending ? 'defending' : 'accumulating') + ', ' + game._id + ', ' + round.number + ', ' + vote.date + ', ' + vote.value + ', "' + vote.player.getProfileSlug(game.startTime) + '", "' + vote.player.getProfileForCSV(game.startTime) + '", "';
+				var addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + game._id + '\t ' + round.number + '\t ' + vote.date + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(game.startTime) + '\t ' + vote.player.getProfileForCSV(game.startTime) + '\t ';
 
 				// Determine which of the players was this one in the round
 				var player = null;
@@ -50,7 +50,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 				}else{
 					addToCSV += game.opponents[1].getOpponentProfileForCSV(game.startTime);
 				}
-				addToCSV += '"\n';
+				addToCSV += '\n';
 				res.write(addToCSV);
 
 				checkDone();
