@@ -41,7 +41,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 	  		++numVotes;
 			return function(err, vote){
 				// Handle the vote
-				var addToCSV = vote.player._id + ', ' + vote.player.email + ', ' + (vote.player.defending ? 'defending' : 'accumulating') + ', ' + game._id + ', ' + round.number + ', ' + vote.date + ', ' + vote.value + ', ' + vote.player.getProfileSlug(game.startTime) + ', ' + vote.player.getProfileForCSV(game.startTime) + ', ';
+				var addToCSV = vote.player._id + ', ' + vote.player.email + ', ' + (vote.player.defending ? 'defending' : 'accumulating') + ', ' + game._id + ', ' + round.number + ', ' + vote.date + ', ' + vote.value + ', "' + vote.player.getProfileSlug(game.startTime) + '", "' + vote.player.getProfileForCSV(game.startTime) + '", "';
 
 				// Determine which of the players was this one in the round
 				var player = null;
@@ -50,7 +50,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 				}else{
 					addToCSV += game.opponents[1].getOpponentProfileForCSV(game.startTime);
 				}
-				addToCSV += '\n';
+				addToCSV += '"\n';
 				res.write(addToCSV);
 
 				checkDone();
