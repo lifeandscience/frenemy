@@ -477,7 +477,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 										Player.findById(me).run(function(err, player){
 											player.score += round.getPointsForPlayer(me);
 											// Update my lastPlayed date
-											player.lastPlayed = Date.now();
+											player.lastPlayed = new Date();
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
 												player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
