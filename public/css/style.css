@@ -853,6 +853,19 @@ a.top-right-button {
   height: 77px;
   margin-bottom: 8px;
 }
+.confessional #faq-button {
+  color: #278fd8;
+}
+.confessional #faq-button .inner {
+  color: #278fd8;
+  border-color: #278fd8;
+}
+.confessional #confessional-button {
+  color: #278fd8;
+}
+.confessional #confessional-button .inner {
+  background-image: url('../img/confess.png');
+}
 .top-right-button:hover,
 .top-right-button:active {
   color: #278fd8;
@@ -895,7 +908,7 @@ a.top-right-button {
   width: 170px;
   float: left;
   padding: 125px 0 0 0;
-  background: transparent url('../img/frenemy-confess.png') scroll no-repeat left 40px;
+  background: transparent url('../img/confession.png') scroll no-repeat left 40px;
   color: #278fd8;
 }
 #container-inner ul.confessions > li > .confession-content {

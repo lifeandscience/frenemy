@@ -122,7 +122,10 @@ var as = 'confession'
 		field('text').trim().required()
 	)
   , beforeRender = function(req, res, item){
-		item.confession.text = 'This is in reply to #'+req.params.number+': ';
+		if(item.confession && req.params && req.params.number){
+			item.confession.text = 'This is in reply to confession #'+req.params.number+': ';
+		}
+		item.action = '/confessional';
 		return item;
 	}
   , beforeSave = function(req, res, item, complete){
@@ -145,9 +148,9 @@ var as = 'confession'
 	}
   , layout = 'layout-confessional';
 
-app.get('/confessional', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, null, layout));
+app.get('/confessional', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, beforeRender, null, layout));
 app.get('/confessional/reply/:number', utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, beforeRender, null, layout));
-app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, null, beforeSave, layout));
+app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!', Confession, template, varNames, redirect, beforeRender, beforeSave, layout));
 
 
 app.get('/confessional/thanks', function(req, res){

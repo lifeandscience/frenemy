@@ -185,7 +185,7 @@ jQuery(function(){
 	var faq = jQuery('#faq').modal({show: false})
 	  , faqButton = jQuery('#faq-button').hide()
 	  , confessButton = jQuery('#confessional-button').hide();
-	if(document.location.pathname.match(/^\/games\/(.*)/) || document.location.pathname.match(/^\/$/)){
+	if(document.location.pathname.match(/^\/games\/(.*)/) || document.location.pathname.match(/^\/$/) || document.location.pathname.match(/^\/confess/) ){
 		confessButton.insertAfter('#messages').show();
 		faqButton.insertAfter('#messages').show().click(function(){
 			faq.modal('toggle');
