@@ -413,6 +413,10 @@ h6 {
   width: 700px;
   height: 500px;
 }
+#chat p {
+  margin-top: 10px;
+  text-align: center;
+}
 #me {
   width: 550px;
   height: 740px;
