@@ -8,7 +8,7 @@ var GameSchema = new Schema({
   , numRounds: {
 		type: Number, 
 		default: function(){
-			return Math.floor(Math.random() * 5) + 3;  
+			return 5; //Math.floor(Math.random() * 5) + 3;  
 		}
 	}
   , completed: {type: Boolean, default: false}
