@@ -323,14 +323,14 @@ h6 {
   height: 380px;
 }
 #leaderboard .inner .content .headings {
-  width: 420px;
+  width: 520px;
   margin: 0 auto 10px auto;
   padding: 20px 0 0 0;
 }
 #leaderboard .inner .content .headings h3 {
   color: #8d8d8d;
   display: inline-block;
-  width: 300px;
+  width: 120px;
   text-align: left;
   padding: 0;
   margin: 0;
@@ -338,11 +338,12 @@ h6 {
   line-height: 120%;
 }
 #leaderboard .inner .content .headings h3.score {
-  width: 120px;
+  text-align: right;
+  width: 240px;
 }
 #leaderboard .inner .content .ul-container {
   overflow: hidden;
-  width: 420px;
+  width: 360px;
   height: 380px;
   margin: 0 auto;
   position: relative;
@@ -353,7 +354,7 @@ h6 {
   -ms-transition: all 0.3s ease-out;
   -o-transition: all 0.3s ease-out;
   transition: all 0.3s ease-out;
-  width: 420px;
+  width: 360px;
   margin: 0px auto;
   padding: 0;
   list-style-type: none;
@@ -367,7 +368,7 @@ h6 {
 #leaderboard .inner .content .ul-container ul li .name,
 #leaderboard .inner .content .ul-container ul li .score {
   display: inline-block;
-  width: 300px;
+  width: 120px;
   color: black;
 }
 #leaderboard .inner .content .ul-container ul li .name {
@@ -378,7 +379,8 @@ h6 {
   font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
   font-size: 35px;
   line-height: 120%;
-  width: 120px;
+  width: 240px;
+  text-align: right;
   color: #278fd8;
 }
 #leaderboard .inner .content .ul-container ul li:last-child {
