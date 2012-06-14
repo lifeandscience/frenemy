@@ -127,7 +127,7 @@ jQuery(function(){
 			  , numPages = 1
 			  , uls = [ul];
 			var headings = jQuery('<div class="headings"><h3 class="leader">leader</h3></div>').insertBefore(ul);
-			jQuery('<h3 class="score">average points per move</h3>').appendTo(headings).tooltip({
+			jQuery('<h3 class="score">average points per move <i class="icon-question-sign"></i></h3>').appendTo(headings).tooltip({
 				title: 'Average Points Per Move = your total number of points divided by your total number of moves. To appear in the results list, players must play, on average, at least three times a day.'
 			});
 			var prev = jQuery('<a class="prev disabled"><i class="icon-chevron-left"></i> Previous</a>').insertBefore(content).click(function(){
