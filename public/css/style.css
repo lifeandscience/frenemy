@@ -380,7 +380,7 @@ h6 {
   font-size: 35px;
   line-height: 120%;
   width: 360px;
-  text-align: center;
+  text-align: right;
   color: #278fd8;
 }
 #leaderboard .inner .content .ul-container ul li:last-child {
