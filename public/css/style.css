@@ -28,6 +28,9 @@ body.confessional {
   background-color: white;
   color: #333;
 }
+body.confessional #container-inner {
+  width: 940px;
+}
 body.confessional #container-inner #header h1 {
   background-image: url('../img/frenemy-confessional-logo.png');
   float: none;
