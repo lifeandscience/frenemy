@@ -28,14 +28,15 @@
 						- if(game.startTime.getDay() == 4)
 							| 
 							a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat
-	.pagination
-		ul
-			- if(page > 0)
-				li
-					a(href="/games/all/"+(page-1)) Prev
-			- for(var i=0; i<pages; i++)
-				li(class=(i == page ? 'active' : null))
-					a(href="/games/all/"+i) #{i+1}
-			- if(page < pages-1)
-				li
-					a(href="/games/all/"+(page+1)) Next
+	- if(pages > 1)
+		.pagination
+			ul
+				- if(page > 0)
+					li
+						a(href=baseurl+'/'+(page-1)) Prev
+				- for(var i=0; i<pages; i++)
+					li(class=(i == page ? 'active' : null))
+						a(href=baseurl+'/'+i) #{i+1}
+				- if(page < pages-1)
+					li
+						a(href=baseurl+'/'+(page+1)) Next

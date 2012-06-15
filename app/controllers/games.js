@@ -10,7 +10,7 @@ var form = require('express-form')
 
 app.get('/games', utilities.checkAdmin, function(req, res){
 	Game.find({completed: false}).asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'Active Games', games: games, util: util, moment: moment});
+		res.render('games/index', {title: 'Active Games', games: games, util: util, moment: moment, page: 0, pages: 1, baseurl: '/games'});
 	});
 });
 
@@ -22,18 +22,27 @@ var index = function(req, res){
 	}
 	Game.count(function(err, count){
 		Game.find().asc('startTime').limit(perPage).skip(page*perPage).populate('opponents').run(function(err, games){
-			res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage)});
+			res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage), baseurl: '/games/all'});
 		});
 	});
 };
 app.get('/games/all', utilities.checkAdmin, index);
 app.get('/games/all/:page', utilities.checkAdmin, index);
 
-app.get('/games/fully-played', utilities.checkAdmin, function(req, res){
-	Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'Fully-Played Games', games: games, util: util, moment: moment});
+var fullyPlayed = function(req, res){
+	var page = Number(req.params.page)
+	  , perPage = 100;
+	if(!page || isNaN(page)){
+		page = 0;
+	}
+	Game.count({$where: 'this.rounds.length == this.numRounds'}, function(err, count){
+		Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').limit(perPage).skip(page*perPage).populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+			res.render('games/index', {title: 'Fully-Played Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage), baseurl: '/games/fully-played'});
+		});
 	});
-});
+};
+app.get('/games/fully-played', utilities.checkAdmin, fullyPlayed);
+app.get('/games/fully-played/:page', utilities.checkAdmin, fullyPlayed);
 
 app.get('/games/start', utilities.checkAdmin, function(req, res){
 	Game.setupGames(req, function(){
