@@ -14,11 +14,20 @@ app.get('/games', utilities.checkAdmin, function(req, res){
 	});
 });
 
-app.get('/games/all', utilities.checkAdmin, function(req, res){
-	Game.find().asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
-		res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment});
+var index = function(req, res){
+	var page = Number(req.params.page)
+	  , perPage = 100;
+	if(!page || isNaN(page)){
+		page = 0;
+	}
+	Game.count(function(err, count){
+		Game.find().asc('startTime').limit(perPage).skip(page*perPage).populate('opponents').run(function(err, games){
+			res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage)});
+		});
 	});
-});
+};
+app.get('/games/all', utilities.checkAdmin, index);
+app.get('/games/all/:page', utilities.checkAdmin, index);
 
 app.get('/games/fully-played', utilities.checkAdmin, function(req, res){
 	Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
