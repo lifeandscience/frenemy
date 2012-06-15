@@ -68,6 +68,9 @@ body.confessional #container-inner h3 {
   font-family: Arial, sans-serif;
   text-align: center;
 }
+body.confessional .modal {
+  color: white;
+}
 h1,
 h2,
 h3,
