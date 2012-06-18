@@ -136,11 +136,27 @@ jQuery(function(){
 				// Store the sort in a cookie
 				var sort = [];
 				jQuery('th', table).each(function(index, item){
-					var i = jQuery(item);
+					var i = jQuery(item)
+					  , event = '/leaderboard-sort'
+					  , didSort = false;
+					if(i.hasClass('name')){
+						event += 'name-';
+					}else if(i.hasClass('score')){
+						event += 'pointsPerVote-';
+					}
+					
 					if(i.hasClass('headerSortUp')){
+						didSort = true;
+						event += 'descending';
 						sort.push([index, 1]);
 					}else if(i.hasClass('headerSortDown')){
+						didSort = true;
+						event += 'ascending';
 						sort.push([index, 0]);
+					}
+
+					if(_gaq && didSort){
+						_gaq.push(['_trackPageview', document.location.pathname+event]);
 					}
 				});
 				jQuery.cookie('leaderboard_sort', JSON.stringify(sort));
