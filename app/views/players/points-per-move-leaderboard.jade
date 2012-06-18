@@ -1,7 +1,17 @@
 .content
-	.ul-container.cf
-		ul
-			each player, i in players
-				li
-					.name #{player.name}
-					.score #{Math.round(player.pointsPerVote*100)/100}
+	.table-header-container
+	.table-container
+		table
+			thead
+				tr
+					th.name
+						.th-inner leader
+					th.score
+						.th-inner
+							| average points per move 
+							i.icon-question-sign
+			tbody
+				each player, i in players
+					tr
+						td.name #{player.name}
+						td.score #{Math.round(player.pointsPerVote*100)/100}

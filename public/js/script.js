@@ -120,6 +120,32 @@ jQuery(function(){
 		  , spinner = new Spinner().spin();
 		container.append(spinner.el);
 		container.load(url, function(){
+			console.log('all done loading!');
+			jQuery('th.score .th-inner', container).tooltip({
+				title: 'Average Points Per Move = your total number of points divided by your total number of moves. To appear in the results list, players must play, on average, at least three times a day.'
+			});
+			// Check the cookie and programmatically sort the table on load
+			var lastSort = jQuery.cookie('leaderboard_sort')
+			  , obj = {};
+			if(lastSort){
+				lastSort = JSON.parse(lastSort);
+				obj.sortList = lastSort;
+			}
+			
+			var table = jQuery('table', container).tablesorter(obj).bind('sortEnd', function(){
+				// Store the sort in a cookie
+				var sort = [];
+				jQuery('th', table).each(function(index, item){
+					var i = jQuery(item);
+					if(i.hasClass('headerSortUp')){
+						sort.push([index, 1]);
+					}else if(i.hasClass('headerSortDown')){
+						sort.push([index, 0]);
+					}
+				});
+				jQuery.cookie('leaderboard_sort', JSON.stringify(sort));
+			});
+			/*
 			var content = jQuery('.content', container)
 			  , ul = jQuery('ul', content).css('left', 0)
 			  , i = -1
@@ -182,6 +208,7 @@ jQuery(function(){
 			if(numPages == 1){
 				next.addClass('disabled');
 			}
+			//*/
 		});
 	});
 	
