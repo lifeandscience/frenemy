@@ -208,7 +208,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 	}
 	var Vote = mongoose.model('Vote')
 	  , d = new Date()
-	  , limit = ( d.getDate() - 3 ) * 3
+	  , limit = ( d.getDate() - 13 ) * 3
 	Player.find({active: true}).desc('score').run(function(err, players){
 		var toHandle = players.length
 		  , checkDone = function(){
