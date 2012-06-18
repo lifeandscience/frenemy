@@ -40,30 +40,6 @@ jQuery(function(){
 		jQuery('#chat > .handle > a').click();
 		return false;
 	});
-
-	var leaderboard = jQuery('#leaderboard');
-	leaderboard.css({
-		opacity: 1
-	  , bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
-	});
-	jQuery('#leaderboard > .handle > a').click(function(){
-		leaderboard.toggleClass('visible');
-		if(leaderboard.hasClass('visible')){
-			leaderboard.css({
-				bottom: 0
-			  , 'z-index': 200
-			});
-		}else{
-			leaderboard.css({
-				bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
-			  , 'z-index': 0
-			});
-		}
-		if(_gaq){
-			_gaq.push(['_trackPageview', document.location.pathname+'/leaderboard']);
-		}
-		return false;
-	});
 		
 	var me = jQuery('#me');
 	me.css({
@@ -113,6 +89,38 @@ jQuery(function(){
 		}
 		return false;
 	});
+
+	var leaderboard = jQuery('#leaderboard');
+	leaderboard.css({
+		opacity: 1
+	  , bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
+	});
+	jQuery('#leaderboard > .handle > a').click(function(){
+		leaderboard.toggleClass('visible');
+		if(leaderboard.hasClass('visible')){
+			leaderboard.css({
+				bottom: 0
+			  , 'z-index': 200
+			});
+		}else{
+			leaderboard.css({
+				bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
+			  , 'z-index': 0
+			});
+		}
+		if(_gaq){
+			_gaq.push(['_trackPageview', document.location.pathname+'/leaderboard']);
+		}
+
+		if(leaderboard.hasClass('visible') && jQuery('table', leaderboard).length > 0){
+			var lastSort = jQuery.cookie('leaderboard_sort');
+			if(lastSort){
+				lastSort = JSON.parse(lastSort);
+				jQuery('table', leaderboard).trigger('sorton', lastSort);
+			}
+		}
+		return false;
+	});
 	
 	jQuery('div[data-src]').each(function(index, item){
 		var container = jQuery(item)
@@ -120,19 +128,12 @@ jQuery(function(){
 		  , spinner = new Spinner().spin();
 		container.append(spinner.el);
 		container.load(url, function(){
-			console.log('all done loading!');
 			jQuery('th.score .th-inner', container).tooltip({
 				title: 'Average Points Per Move = your total number of points divided by your total number of moves. To appear in the results list, players must play, on average, at least three times a day.'
 			});
 			// Check the cookie and programmatically sort the table on load
-			var lastSort = jQuery.cookie('leaderboard_sort')
-			  , obj = {};
-			if(lastSort){
-				lastSort = JSON.parse(lastSort);
-				obj.sortList = lastSort;
-			}
 			
-			var table = jQuery('table', container).tablesorter(obj).bind('sortEnd', function(){
+			var table = jQuery('table', container).tablesorter().bind('sortEnd', function(){
 				// Store the sort in a cookie
 				var sort = [];
 				jQuery('th', table).each(function(index, item){
@@ -159,72 +160,14 @@ jQuery(function(){
 						_gaq.push(['_trackPageview', document.location.pathname+event]);
 					}
 				});
-				jQuery.cookie('leaderboard_sort', JSON.stringify(sort));
+				jQuery.cookie('leaderboard_sort', JSON.stringify([sort]));
 			});
-			/*
-			var content = jQuery('.content', container)
-			  , ul = jQuery('ul', content).css('left', 0)
-			  , i = -1
-			  , page = 0
-			  , numPages = 1
-			  , uls = [ul];
-			var headings = jQuery('<div class="headings"><h3 class="leader">leader</h3></div>').insertBefore(ul);
-			jQuery('<h3 class="score">average points per move <i class="icon-question-sign"></i></h3>').appendTo(headings).tooltip({
-				title: 'Average Points Per Move = your total number of points divided by your total number of moves. To appear in the results list, players must play, on average, at least three times a day.'
-			});
-			var prev = jQuery('<a class="prev disabled"><i class="icon-chevron-left"></i> Previous</a>').insertBefore(content).click(function(){
-				if(prev.hasClass('disabled')){
-					return;
-				}
-				var oldPage = uls[page--]
-				  , newPage = uls[page];
-
-				oldPage.css({left: oldPage.width()});
-				newPage.css({left: 0});
-
-				if(page == 0){
-					prev.addClass('disabled');
-				}
-				if(page+1 < numPages){
-					next.removeClass('disabled');
-				}
-				return false;
-			});
-			var next = jQuery('<a class="next">Next <i class="icon-chevron-right"></i></a>').insertBefore(content).click(function(){
-				if(next.hasClass('disabled')){
-					return;
-				}
-
-				var oldPage = uls[page++]
-				  , newPage = uls[page];
-
-				oldPage.css({left: -oldPage.width()});
-				newPage.css({left: 0});
-
-				if(page > 0){
-					prev.removeClass('disabled');
-				}
-				if(page+1 == numPages){
-					next.addClass('disabled');
-				}
-				return false;
-			});
-			jQuery('li', ul).each(function(index, li){
-				if(++i < 5){
-					return;
-				}
-				if(i % 5 == 0){
-					// Create a new list and append it!
-					ul = jQuery('<ul></ul>').insertAfter(ul);
-					uls.push(ul);
-					numPages++;
-				}
-				jQuery(li).appendTo(ul);
-			});
-			if(numPages == 1){
-				next.addClass('disabled');
+			
+			var lastSort = jQuery.cookie('leaderboard_sort');
+			if(container.parent().hasClass('visible') && lastSort){
+				lastSort = JSON.parse(lastSort);
+				table.trigger('sorton', lastSort);
 			}
-			//*/
 		});
 	});
 	
