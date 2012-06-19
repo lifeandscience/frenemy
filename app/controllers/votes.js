@@ -1,4 +1,5 @@
 var utilities = require('./utilities')
+  , moment = require('moment')
   , mongoose = require('mongoose');
 
 app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
@@ -11,7 +12,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\t player email\t player type\t game ID\t round #\t vote date\t player\'s vote\t info type this round\t player\'s info this round\t opponent\'s info this round\n';
+	var csv = 'player ID\t player email\t player type\t game ID\t round #\t vote date\t vote time\t player\'s vote\t info type this round\t player\'s info this round\t opponent\'s info this round\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -41,7 +42,8 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 	  		++numVotes;
 			return function(err, vote){
 				// Handle the vote
-				var addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + round.number + '\t ' + vote.date + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
+				var d = moment(vote.date)
+				  , addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + round.number + '\t ' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
 
 				// Determine which of the players was this one in the round
 				addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\n';
@@ -98,7 +100,7 @@ app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\t player email\t player type\t game ID\t vote date\t player\'s vote\t info type this round\t player\'s info this round\t opponent\'s info this round\n';
+	var csv = 'player ID\t player email\t player type\t game ID\t vote date\t vote time\t player\'s vote\t info type this round\t player\'s info this round\t opponent\'s info this round\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -133,7 +135,8 @@ app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
 	  		++numVotes;
 	  		hasFoundGame = true;
 
-			var addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + vote.date + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
+			var d = moment(vote.date)
+			  , addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + round.number + '\t ' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
 
 			// Determine which of the players was this one in the round
 			addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\n';
