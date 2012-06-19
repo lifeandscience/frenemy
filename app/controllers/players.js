@@ -373,3 +373,18 @@ app.get('/players/export', utilities.checkAdmin, function(req, res, next){
 	createQueryStream();
 	return;
 });
+
+app.get('/players/resetScores/d23bd87', utilities.checkAdmin, function(req, res, next){
+	Player.update({defending: true}, { $set: { score: 10000 }}, { multi: true }, function(){
+		util.log('did reset defending players!');
+		util.log(util.inspect(arguments));
+
+		Player.update({defending: false}, { $set: { score: 0 }}, { multi: true }, function(){
+			util.log('did reset accumulating players!');
+			util.log(util.inspect(arguments));
+
+			req.flash('error', 'Player scores reset!');
+			res.redirect('/players');
+		});
+	});
+});
