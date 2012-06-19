@@ -303,3 +303,73 @@ app.post('/players/import', utilities.checkAdmin, function(req, res){
 	});
 	
 });
+
+app.get('/players/export', utilities.checkAdmin, function(req, res, next){
+	var start = Date.now();
+	util.log('starting the log up! '+start);
+	// Export all game data as a CSV
+	var Player = mongoose.model('Player');
+
+/* 	res.contentType('.csv'); */
+
+	var csv = 'player ID\t player name\t player email\t player type\t player score\n';
+	
+	res.writeHead(200, {
+		'Content-Type': 'text/tsv',
+		'Content-Disposition': 'attachment;filename=player-export-all.tsv'
+	});
+	
+	res.write(csv);
+
+	var numPlayers = 0
+	  , stream = null
+	  , totallyDone = false
+	  , checkDone = function(){
+			if(--numPlayers == 0){
+				if(totallyDone){
+					util.log('totally done!');
+					if(hasFoundPlayer){
+						// We found at least one game
+						// Maybe the query needs to be re-run starting at an offset of offset
+						createQueryStream(offset);
+					}else{
+						res.end();
+					}
+				}
+			}
+		}
+	  , hasFoundPlayer = false
+	  , offset = 0
+	  , games = {}
+	  , queryDataFunction = function(player){
+	  		++offset;
+
+	  		++numPlayers;
+	  		hasFoundPlayer = true;
+			var addToCSV = player._id + '\t ' + player.name + '\t' + player.email + '\t ' + (player.defending ? 'defending' : 'accumulating') + '\t ' + player.score + '\n';
+			// Determine which of the players was this one in the round
+			res.write(addToCSV);
+			checkDone();
+		}
+	  , queryErrorFunction = function(){
+			res.end();
+		}
+	  , queryCloseFunction = function(){
+			totallyDone = true;
+			++numPlayers;
+			checkDone();
+		}
+	  , createQueryStream = function(skip){
+	  		var query = Player.find().asc('name');
+	  		if(skip){
+		  		query.skip(skip);
+	  		}
+	  		hasFoundPlayer = false;
+	  		stream = query.stream();
+			stream.on('data', queryDataFunction);
+			stream.on('error', queryErrorFunction);
+			stream.on('close', queryCloseFunction); //.run(function(err, games){
+	  	};
+	createQueryStream();
+	return;
+});
