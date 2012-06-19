@@ -5,13 +5,20 @@
 			thead
 				tr
 					th.name
-						.th-inner leader
+						.th-inner
+							| leader 
+							i.icon-question-sign
+					th.friendliness
+						.th-inner 
+							| Friendliness 
+							i.icon-question-sign
 					th.score
 						.th-inner
-							| average points per move 
+							| APPM 
 							i.icon-question-sign
 			tbody
 				each player, i in players
 					tr
 						td.name #{player.name}
+						td.friendliness #{Math.round(player.friendCount / player.voteCount*10000)/100}
 						td.score #{Math.round(player.pointsPerVote*100)/100}

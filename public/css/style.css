@@ -418,7 +418,7 @@ h6 {
   overflow-y: auto;
 }
 #leaderboard .inner .content .table-container table {
-  width: 80%;
+  width: 600px;
   margin: 0 auto;
   overflow-x: hidden;
   overflow-y: auto;
@@ -432,17 +432,28 @@ h6 {
 #leaderboard .inner .content .table-container table thead tr th {
   padding: 0;
 }
-#leaderboard .inner .content .table-container table thead tr .name,
+#leaderboard .inner .content .table-container table thead tr .name {
+  width: 200px;
+}
 #leaderboard .inner .content .table-container table thead tr .name .th-inner {
-  width: 100px;
+  padding-right: 20px;
+  width: 115px;
+}
+#leaderboard .inner .content .table-container table thead tr .friendliness {
+  width: 200px;
+}
+#leaderboard .inner .content .table-container table thead tr .friendliness .th-inner {
+  text-align: center;
+  padding-right: 20px;
+  width: 200px;
 }
 #leaderboard .inner .content .table-container table thead tr .score {
-  width: 450px;
+  width: 200px;
 }
 #leaderboard .inner .content .table-container table thead tr .score .th-inner {
   text-align: right;
   padding-right: 20px;
-  width: 450px;
+  width: 200px;
 }
 #leaderboard .inner .content .table-container table thead tr .th-inner {
   position: absolute;
@@ -473,18 +484,22 @@ h6 {
   background-image: url('./jquery-tablesorter-themes/blue/desc.gif');
 }
 #leaderboard .inner .content .table-container table tbody .name,
+#leaderboard .inner .content .table-container table tbody .friendliness,
 #leaderboard .inner .content .table-container table tbody .score {
-  width: 120px;
   color: black;
   font-size: 20px;
   line-height: 100%;
 }
+#leaderboard .inner .content .table-container table tbody .friendliness,
 #leaderboard .inner .content .table-container table tbody .score {
   font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
   font-size: 25px;
   line-height: 100%;
   text-align: right;
   color: #278fd8;
+}
+#leaderboard .inner .content .table-container table tbody .friendliness {
+  text-align: center;
 }
 #chat {
   width: 770px;

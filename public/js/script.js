@@ -128,8 +128,14 @@ jQuery(function(){
 		  , spinner = new Spinner().spin();
 		container.append(spinner.el);
 		container.load(url, function(){
+			jQuery('th.name .th-inner', container).tooltip({
+				title: 'To appear in the results list, players must play, on average, at least three times a day.'
+			});
+			jQuery('th.friendliness .th-inner', container).tooltip({
+				title: 'Friendliness = The number of times you\'ve chosen friend divided by the number of moves you made.'
+			});
 			jQuery('th.score .th-inner', container).tooltip({
-				title: 'Average Points Per Move = your total number of points divided by your total number of moves. To appear in the results list, players must play, on average, at least three times a day.'
+				title: 'Average Points Per Move (APPM) = your total number of points divided by your total number of moves.'
 			});
 			// Check the cookie and programmatically sort the table on load
 			

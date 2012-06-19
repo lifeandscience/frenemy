@@ -226,13 +226,16 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 			}
 		  , handlePlayer = function(index){
 				// Determine number of votes for this player!
-				Vote.count({player: players[index]}, function(err, count){
-					players[index].voteCount = count;
-					players[index].pointsPerVote = 0;
-					if(count > 0){
-						players[index].pointsPerVote = (players[index].defending ? players[index].score-10000 : players[index].score) / count;
-					}
-					checkDone();
+				Vote.count({player: players[index]}, function(err, voteCount){
+					Vote.count({player: players[index], value: 'friend'}, function(err, friendCount){
+						players[index].friendCount = friendCount;
+						players[index].voteCount = voteCount;
+						players[index].pointsPerVote = 0;
+						if(voteCount > 0){
+							players[index].pointsPerVote = (players[index].defending ? players[index].score-10000 : players[index].score) / voteCount;
+						}
+						checkDone();
+					});
 				});
 			};
 		for(var i=0; i<players.length; i++){
