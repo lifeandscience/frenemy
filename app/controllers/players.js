@@ -214,7 +214,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 		  , checkDone = function(){
 				if(--toHandle == 0){
 					for(var i=players.length-1; i >= 0; i--){
-						if(players[i].voteCount < limit || players[i].voteCount <= 0){
+						if(players[i].voteCount < limit || players[i].voteCount < 2){
 							players.splice(i, 1);
 						}
 					}
