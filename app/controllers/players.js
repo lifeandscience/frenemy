@@ -208,13 +208,13 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 	}
 	var Vote = mongoose.model('Vote')
 	  , d = new Date()
-	  , limit = ( d.getDate() - 13 ) * 3
+	  , limit = ( d.getDate() - 13 - 21) * 3
 	Player.find({active: true}).desc('score').run(function(err, players){
 		var toHandle = players.length
 		  , checkDone = function(){
 				if(--toHandle == 0){
 					for(var i=players.length-1; i >= 0; i--){
-						if(players[i].voteCount < limit){
+						if(players[i].voteCount < limit || players[i].voteCount <= 0){
 							players.splice(i, 1);
 						}
 					}
@@ -226,8 +226,8 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 			}
 		  , handlePlayer = function(index){
 				// Determine number of votes for this player!
-				Vote.count({player: players[index]}, function(err, voteCount){
-					Vote.count({player: players[index], value: 'friend'}, function(err, friendCount){
+				Vote.count({player: players[index]}).where('date').gte(new Date(2012, 5, 21)).run(function(err, voteCount){
+					Vote.count({player: players[index], value: 'friend'}).where('date').gte(new Date(2012, 5, 21)).run(function(err, friendCount){
 						players[index].friendCount = friendCount;
 						players[index].voteCount = voteCount;
 						players[index].pointsPerVote = 0;
