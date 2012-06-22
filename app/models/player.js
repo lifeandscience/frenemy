@@ -39,6 +39,9 @@ var shouldNextPlayerDefend = true
 	  , email: String
 	  , isAdmin: {type: Boolean, default: false}
 	  , timezone: {type: String, enum: ['Eastern', 'Central', 'Mountain', 'Pacific'], default: 'Eastern'}
+	  
+	  , numVotes: {type: Number, default: 0}
+	  , friendCount: {type: Number, default: 0}
 
 	  , defending: {type: Boolean, default: false}
 	  , defendingNum: {type: Number, default: -1}

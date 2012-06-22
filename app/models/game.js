@@ -151,7 +151,126 @@ GameSchema.pre('save', function(next){
 	}
 });
 
+var players = null
+  , regenerateCallbacks = null;
+GameSchema.statics.regenerateLeaderboard = function(){
+	var numVotes = 0
+	  , stream = null
+	  , totallyDone = false
+	  , handleVote = function(err, vote){
+			if(vote && vote.player.active){
+				if(!players[vote.player._id]){
+					players[vote.player._id] = {
+						numVotes: 0
+					  , friendCount: 0
+					};
+				}
+				players[vote.player._id].numVotes++;
+				if(vote.value == 'friend'){
+					players[vote.player._id].friendCount++;
+				}
+			}
+			checkDone();
+		}
+	  , checkDone = function(){
+			if(--numVotes == 0 && totallyDone){
+				util.log('totally done!');
+				if(hasFoundGame){
+					// We found at least one game
+					// Maybe the query needs to be re-run starting at an offset of numGames
+					console.log('iterating on a new query stream!!');
+					createQueryStream(numGames);
+				}else if(regenerateCallbacks && regenerateCallbacks.length){
+					// Done!
+					// Call all of the callbacks
+					console.log('calling callbacks! ' + util.inspect(players));
+					for(var i=0; i<regenerateCallbacks.length; i++){
+						regenerateCallbacks[i](players);
+					}
+				}else{
+					console.log('no callbacks: '+util.inspect(players));
+					
+					var numPlayers = 0
+					  , Player = mongoose.model('Player');
+					for(var id in players){
+						util.log('item: '+id+' -> '+util.inspect(players[id]));
+						++numPlayers;
+						Player.findById(id).run(function(err, player){
+							player.numVotes = players[player._id].numVotes;
+							player.friendCount = players[player._id].friendCount;
+							player.save(function(){
+								if(--numPlayers == 0){
+									// Done!
+									util.log('saved all players!');
+								}
+							});
+						});
+					};
+				}
+			}
+		}
+	  , hasFoundGame = false
+	  , numGames = 0
+	  , games = {}
+	  , queryDataFunction = function(game){
+	  		++numGames;
+	  		hasFoundGame = true;
+	  		// TODO:
+			var Vote = mongoose.model('Vote')
+			  , round = null;
+			for(var j=0; j<game.rounds.length; j++){
+				round = game.rounds[j];
+				if(round.votes.length == 2){
+					// It was a full round!
+					for(var k=0; k<2; k++){
+						numVotes++;
+						Vote.findById(round.votes[k], ['value', 'player']).populate('player').run(handleVote);
+					}
+				}
+			}
+		}
+	  , queryErrorFunction = function(){
+			res.end();
+		}
+	  , queryCloseFunction = function(){
+			totallyDone = true;
+			++numVotes;
+			checkDone();
+		}
+	  , createQueryStream = function(skip){
+	  		var query = Game.find({}, ['startTime', 'rounds']).populate('rounds').desc('startTime').where('startTime').gt(new Date(2012, 5, 22));
+	  		if(skip){
+		  		query.skip(skip);
+	  		}
+	  		hasFoundGame = false;
+	  		stream = query.stream();
+			stream.on('data', queryDataFunction);
+			stream.on('error', queryErrorFunction);
+			stream.on('close', queryCloseFunction); //.run(function(err, games){
+	  	};
+	players = {};
+	createQueryStream();
+};
+GameSchema.statics.getLeaderboard = function(cb){
+	if(players){
+		cb(players);
+		return;
+	}
+	if(!regenerateCallbacks){
+		if(cb){
+			regenerateCallbacks = [cb];
+		}
+		Game.regenerateLeaderboard();
+		return;
+	}
+	if(cb){
+		regenerateCallbacks.push(cb);
+	}
+	return;
+};
+
 var Game = mongoose.model('Game', GameSchema);
+Game.getLeaderboard();
 exports = Game;
 
 /*

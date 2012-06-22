@@ -206,43 +206,17 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 		res.send(404);
 		return;
 	}
-	var Vote = mongoose.model('Vote')
-	  , d = new Date()
-	  , limit = ( d.getDate() - 13 - 21) * 3
 	Player.find({active: true}).desc('score').run(function(err, players){
-		var toHandle = players.length
-		  , checkDone = function(){
-				if(--toHandle == 0){
-					for(var i=players.length-1; i >= 0; i--){
-						if(players[i].voteCount < limit || players[i].voteCount < 2){
-							players.splice(i, 1);
-						}
-					}
-					players.sort(function(a, b){
-						return b.pointsPerVote - a.pointsPerVote;
-					});
-					res.render('players/points-per-move-leaderboard', {layout: false, players: players, util: util});
-				}
+		for(var i=players.length-1; i>=0; i--){
+			if(players[i].numVotes == 0){
+				players.splice(i, 1);
+			}else if(players[i].numVotes > 0){
+				players[i].pointsPerVote = (players[i].defending ? players[i].score-10000 : players[i].score) / players[i].numVotes;
 			}
-		  , handlePlayer = function(index){
-				// Determine number of votes for this player!
-				Vote.count({player: players[index]}).where('date').gte(new Date(2012, 5, 21)).run(function(err, voteCount){
-					Vote.count({player: players[index], value: 'friend'}).where('date').gte(new Date(2012, 5, 21)).run(function(err, friendCount){
-						players[index].friendCount = friendCount;
-						players[index].voteCount = voteCount;
-						players[index].pointsPerVote = 0;
-						if(voteCount > 0){
-							players[index].pointsPerVote = (players[index].defending ? players[index].score-10000 : players[index].score) / voteCount;
-						}
-						checkDone();
-					});
-				});
-			};
-		for(var i=0; i<players.length; i++){
-			handlePlayer(i);
 		}
-		return;
+		res.render('players/points-per-move-leaderboard', {layout: false, players: players, util: util});
 	});
+	return;
 });
 
 app.get('/players/import', utilities.checkAdmin, function(req, res){

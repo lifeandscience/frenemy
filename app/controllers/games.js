@@ -495,6 +495,10 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 										Player.findById(me).run(function(err, player){
 											player.score += round.getPointsForPlayer(me);
 											// Update my lastPlayed date
+											player.numVotes++;
+											if(round.getValueForPlayer(me) == 'friend'){
+												player.friendCount++;
+											}
 											player.lastPlayed = new Date();
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
@@ -509,6 +513,10 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 										});
 										Player.findById(opponent).run(function(err, player){
 											player.score += round.getPointsForPlayer(opponent);
+											player.numVotes++;
+											if(round.getValueForPlayer(opponent) == 'friend'){
+												player.friendCount++;
+											}
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
 												player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){

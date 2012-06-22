@@ -40,6 +40,19 @@ RoundSchema.methods.getPointsForPlayer = function(id){
 		return config.points.win;
 	}
 };
+
+RoundSchema.methods.getValueForPlayer = function(id){
+	var player_vote = null
+	  , opponent_vote = null;
+	if(this.votes[0].player.toString() == id.toString()){
+		player_vote = this.votes[0];
+		opponent_vote = this.votes[1];
+	}else{
+		player_vote = this.votes[1];
+		opponent_vote = this.votes[0];
+	}
+	return player_vote.value;
+};
 RoundSchema.methods.getStringPointsForPlayer = function(id, points){
 	if(!points){
 		points = this.getPointsForPlayer(id);
