@@ -912,6 +912,9 @@ a.you:active {
     width: 1200px;
     overflow: hidden;
   }
+  .navbar .container {
+    overflow: visible;
+  }
 }
 @media all and (max-height: 750px) {
   #me,
