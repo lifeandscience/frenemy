@@ -270,7 +270,7 @@ GameSchema.statics.getLeaderboard = function(cb){
 };
 
 var Game = mongoose.model('Game', GameSchema);
-Game.getLeaderboard();
+/* Game.getLeaderboard(); */
 exports = Game;
 
 /*

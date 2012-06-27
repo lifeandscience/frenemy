@@ -136,7 +136,7 @@ app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
 	  		hasFoundGame = true;
 
 			var d = moment(vote.date)
-			  , addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + round.number + '\t ' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
+			  , addToCSV = vote.player._id + '\t ' + vote.player.email + '\t ' + (vote.player.defending ? 'defending' : 'accumulating') + '\t ' + vote.game + '\t ' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t ' + vote.value + '\t ' + vote.player.getProfileSlug(vote.date) + '\t ' + vote.player.getProfileForCSV(vote.date) + '\t ';
 
 			// Determine which of the players was this one in the round
 			addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\n';
