@@ -95,18 +95,18 @@ var shouldNextPlayerDefend = true
 	  , opponent_profile_29: {type: String, default: 'Opponent Profile (29)'}
 	  , opponent_profile_30: {type: String, default: 'Opponent Profile (30)'}
 	  
-	  , Birthdate: {type: String}
-	  , Zip: {type: String}
-	  , Gender: {type: String}
-	  , Ethnicity: {type: String}
-	  , Color: {type: String}
-	  , Transport: {type: String}
-	  , Sports: {type: String}
-	  , Personality: {type: String}
-	  , Politics: {type: String}
-	  , Glasses: {type: String}
-	  , Pets: {type: String}
-	  , Birthplace: {type: String}
+	  , Birthdate: {type: String, default: ''}
+	  , Zip: {type: String, default: ''}
+	  , Gender: {type: String, default: ''}
+	  , Ethnicity: {type: String, default: ''}
+	  , Color: {type: String, default: ''}
+	  , Transport: {type: String, default: ''}
+	  , Sports: {type: String, default: ''}
+	  , Personality: {type: String, default: ''}
+	  , Politics: {type: String, default: ''}
+	  , Glasses: {type: String, default: ''}
+	  , Pets: {type: String, default: ''}
+	  , Birthplace: {type: String, default: ''}
 	})
   , Player = null;
 
