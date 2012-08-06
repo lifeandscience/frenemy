@@ -251,7 +251,7 @@ app.post('/players/import', utilities.checkAdmin, function(req, res){
 					p = new Player();
 				}
 				for(var i=0; i<data.length; i++){
-					if(i < map.length && map[i] && data[i]){
+					if(i < map.length && map[i] && data[i] && map[i] != 'ID' && data[i] != 'undefined'){
 						p[map[i]] = data[i];
 					}
 				}
@@ -286,7 +286,7 @@ app.get('/players/export', utilities.checkAdmin, function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\t player name\t player email\t player type\t player score\n';
+	var csv = 'ID\tname\temail\tplayer type\tplayer score\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -320,7 +320,7 @@ app.get('/players/export', utilities.checkAdmin, function(req, res, next){
 
 	  		++numPlayers;
 	  		hasFoundPlayer = true;
-			var addToCSV = player._id + '\t ' + player.name + '\t' + player.email + '\t ' + (player.defending ? 'defending' : 'accumulating') + '\t ' + player.score + '\n';
+			var addToCSV = player._id + '\t' + player.name + '\t' + player.email + '\t' + (player.defending ? 'defending' : 'accumulating') + '\t' + player.score + '\t' + player.Birthdate + '\t' + player.Zip + '\t' + player.Gender + '\t' + player.Ethnicity + '\t' + player.Color + '\t' + player.Transport + '\t' + player.Sports + '\t' + player.Personality + '\t' + player.Politics + '\t' + player.Glasses + '\t' + player.Pets + '\t' + player.Birthplace + '\n';
 			// Determine which of the players was this one in the round
 			res.write(addToCSV);
 			checkDone();

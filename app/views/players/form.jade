@@ -98,6 +98,68 @@
 					.controls
 						textarea(id='opponent_profile_'+i, class='span8', name='opponent_profile_'+i) !{player['opponent_profile_'+i]}
 	
+		fieldset
+			legend Extra Data
+			
+			.control-group
+				label.control-label(for="Birthdate") Birthdate:
+				.controls
+					textarea#Birthdate.span8(name="Birthdate") !{player.Birthdate}
+			
+			.control-group
+				label.control-label(for="Zip") Zip:
+				.controls
+					textarea#Zip.span8(name="Zip") !{player.Zip}
+			
+			.control-group
+				label.control-label(for="Gender") Gender:
+				.controls
+					textarea#Gender.span8(name="Gender") !{player.Gender}
+			
+			.control-group
+				label.control-label(for="Ethnicity") Ethnicity:
+				.controls
+					textarea#Ethnicity.span8(name="Ethnicity") !{player.Ethnicity}
+			
+			.control-group
+				label.control-label(for="Color") Color:
+				.controls
+					textarea#Color.span8(name="Color") !{player.Color}
+			
+			.control-group
+				label.control-label(for="Transport") Transport:
+				.controls
+					textarea#Transport.span8(name="Transport") !{player.Transport}
+			
+			.control-group
+				label.control-label(for="Sports") Sports:
+				.controls
+					textarea#Sports.span8(name="Sports") !{player.Sports}
+			
+			.control-group
+				label.control-label(for="Personality") Personality:
+				.controls
+					textarea#Personality.span8(name="Personality") !{player.Personality}
+			
+			.control-group
+				label.control-label(for="Politics") Politics:
+				.controls
+					textarea#Politics.span8(name="Politics") !{player.Politics}
+			
+			.control-group
+				label.control-label(for="Glasses") Glasses:
+				.controls
+					textarea#Glasses.span8(name="Glasses") !{player.Glasses}
+			
+			.control-group
+				label.control-label(for="Pets") Pets:
+				.controls
+					textarea#Pets.span8(name="Pets") !{player.Pets}
+			
+			.control-group
+				label.control-label(for="Birthplace") Birthplace:
+				.controls
+					textarea#Birthplace.span8(name="Birthplace") !{player.Birthplace}
 	
 		.form-actions
 			button.btn.btn-primary(type="submit") Submit

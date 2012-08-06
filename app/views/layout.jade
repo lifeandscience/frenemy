@@ -51,6 +51,13 @@ html(lang="en")
                       li: a(href="/players/nondefending") List Non-Defending Players
                       li: a(href="/players/add") Add Player
                       li: a(href="/players/import") Import Players
+                  li.dropdown
+                    a.dropdown-toggle(href="#", data-toggle="dropdown")
+                      | Votes
+                      b.caret
+                    ul.dropdown-menu
+                      li: a(href="/votes/export") Export
+                      li: a(href="/votes/export/all") Export All
               ul.nav.pull-right
                 li: a(href="/logout") Logout
     div(class="container")
