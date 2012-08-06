@@ -8,7 +8,7 @@
   }
   , "dependencies": {
       "async": ">= 0.0.1"
-    , "aws2js": "<= 0.7.0"
+    , "aws2js": "< 0.7.0"
     , "express": "2.5.8"
     , "express-form": ">= 0.0.1"
     , "jade": ">= 0.0.1"
