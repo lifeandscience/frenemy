@@ -12,7 +12,7 @@ app.get('/confessions', function(req, res){
 	if(!req.loggedIn || !req.user || !req.user.isAdmin){
 		query.where('active', true);
 	}
-	query.desc('number').run(function(err, confessions){
+	query.desc('number').exec(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
 			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
 		}
@@ -22,7 +22,7 @@ app.get('/confessions', function(req, res){
 
 app.get('/confessions/numberExisting', utilities.checkAdmin, function(req, res){
 	var start = 1;
-	Confession.find().asc('date').run(function(err, confessions){
+	Confession.find().sort('date').exec(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
 			if(!confessions[i].number || confessions[i].number == -1){
 				confessions[i].number = start++;
@@ -41,7 +41,7 @@ app.get('/confessions/flag/:id', function(req, res){
 		res.redirect('/confessions');
 		return;
 	}
-	Confession.findById(req.params.id).run(function(err, confession){
+	Confession.findById(req.params.id).exec(function(err, confession){
 		if(err || !confession){
 			req.flash('error', 'Confession not found!');
 			res.redirect('/confessions');
@@ -74,7 +74,7 @@ app.get('/confessions/publish/:id', utilities.checkAdmin, function(req, res){
 		res.redirect('/confessions');
 		return;
 	}
-	Confession.findById(req.params.id).run(function(err, confession){
+	Confession.findById(req.params.id).exec(function(err, confession){
 		if(err || !confession){
 			req.flash('error', 'Confession not found!');
 			res.redirect('/confessions');
@@ -96,7 +96,7 @@ app.get('/confessions/unpublish/:id', utilities.checkAdmin, function(req, res){
 		res.redirect('/confessions');
 		return;
 	}
-	Confession.findById(req.params.id).run(function(err, confession){
+	Confession.findById(req.params.id).exec(function(err, confession){
 		if(err || !confession){
 			req.flash('error', 'Confession not found!');
 			res.redirect('/confessions');

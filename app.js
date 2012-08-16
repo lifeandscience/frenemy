@@ -3,16 +3,18 @@
  * Module dependencies.
  */
 
-var   express = require('express')
+var   http = require('http')
+	, express = require('express')
 	, mongooseAuth = require('mongoose-auth')
 	, db = require('./db')
 	, vm = require('vm')
 	, fs = require('fs')
 	, MongoStore = require('connect-mongo')(express)
-	, util = require('util');
+	, util = require('util')
+	, flash = require('connect-flash');
 
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // Models
 var dir = __dirname + '/app/models';
@@ -25,7 +27,8 @@ fs.readdirSync(dir).forEach(function(file){
 app.configure(function(){
 	app.set('views', __dirname + '/app/views');
 	app.set('view engine', 'jade');
-	app.use(express.compiler({ src: __dirname + '/public', enable: ['less']}));
+/* 	app.use(express.compiler({ src: __dirname + '/public', enable: ['less']})); */
+	app.use(require('less-middleware')({ src: __dirname + '/public' }));
 	app.use(express.static(__dirname + '/public'));
 
 	app.use(express.bodyParser());
@@ -38,10 +41,21 @@ app.configure(function(){
 	}));
 
 	// mongoose-auth: Step 2
-	app.use(mongooseAuth.middleware());
+	app.use(mongooseAuth.middleware(app));
+	
+	app.use(flash());
 //	app.use(app.router);
 
 //	app.use(express.methodOverride());
+	var helpers = require('./helpers');
+	app.locals(helpers.staticHelpers);
+	/* app.dynamicHelpers(helpers.dynamicHelpers); */
+	for(var key in helpers.dynamicHelpers){
+		app.use(function(req, res, next){
+			res.locals[key] = helpers.dynamicHelpers[key](req, res);
+			next();
+		});
+	}
 });
 
 app.configure('development', function(){
@@ -52,9 +66,6 @@ app.configure('production', function(){
 	app.use(express.errorHandler());
 });
 
-var helpers = require('./helpers');
-app.helpers(helpers.staticHelpers);
-app.dynamicHelpers(helpers.dynamicHelpers);
 
 ///*
 // Routes
@@ -75,10 +86,12 @@ fs.readdirSync(dir).forEach(function(file){
 	vm.runInNewContext(str, context, file);
 });
 
+/*
 // mongoose-auth: Step 3
 mongooseAuth.helpExpress(app);
+*/
 
 var port = process.env.PORT || 3000;
-app.listen(port, function(){
-	console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+(http.createServer(app)).listen(port, function(){
+	console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 });

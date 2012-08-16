@@ -116,6 +116,12 @@ PlayerSchema.plugin(mongooseAuth, {
 			User: function () {
 				return Player;
 			}
+		  , findUserById: function (userId, fn) {
+				var User = mongoose.model("Player");
+				User.findById(userId, fn);
+				// For some reason, the 'this' context isn't being set correctly, so hacking this in here for now.
+				//this.User()().findById(userId, fn);
+			}
 		}
 	}
   , facebook: {
@@ -128,6 +134,7 @@ PlayerSchema.plugin(mongooseAuth, {
 		  , findOrCreateUser: function (sess, accessTok, accessTokExtra, fbUser) {
 				var promise = this.Promise()
 				  , User = this.User()();
+				console.log('user: ', User);
 				// TODO Check user in session or request helper first
 				//	  e.g., req.user or sess.auth.userId
 				User.findOne({'fb.id': fbUser.id}, function (err, foundUser) {
@@ -329,7 +336,7 @@ PlayerSchema.virtual('votingRecord');
 PlayerSchema.pre('init', function(next, t){
 	var Game = mongoose.model('Game')
 	  , Round = mongoose.model('Round');
-	Game.find({opponents: t._id, completed: true}).desc('startTime').limit(7).run(function(err, games){
+	Game.find({opponents: t._id, completed: true}).sort('-startTime').limit(7).exec(function(err, games){
 		t.votingRecord = [];
 		var count = 0
 		  , finished = function(){
@@ -351,7 +358,7 @@ PlayerSchema.pre('init', function(next, t){
 					--count;
 					count += game.rounds.length;
 					game.rounds.forEach(function(roundId, index){
-						Round.findById(roundId).populate('votes').run(function(err, round){
+						Round.findById(roundId).populate('votes').exec(function(err, round){
 							if(round && round.votes){
 								for(var k=0; k<round.votes.length; k++){
 									var vote = round.votes[k];
@@ -386,7 +393,7 @@ Player.count({}, function(err, totalPlayerCount){
 		shouldNextPlayerDefend = (totalPlayerCount - defendingPlayerCount ) > defendingPlayerCount;
 	});
 });
-Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
+Player.find({email: config.defaultDefenderEmail}).exec(function(err, players){
 	if(err || !players || players.length == 0){
 		// Create a player!
 		var player = new Player();
@@ -400,7 +407,7 @@ Player.find({email: config.defaultDefenderEmail}).run(function(err, players){
 		});
 	}
 });
-Player.find({email: config.defaultNonDefenderEmail}).run(function(err, players){
+Player.find({email: config.defaultNonDefenderEmail}).exec(function(err, players){
 	if(err || !players || players.length == 0){
 		// Create a player!
 		var player = new Player();
@@ -415,7 +422,7 @@ Player.find({email: config.defaultNonDefenderEmail}).run(function(err, players){
 	}
 });
 config.admins.forEach(function(item, index){
-	Player.find({email: item}).run(function(err, players){
+	Player.find({email: item}).exec(function(err, players){
 		var player = null;
 		if(err || !players || players.length == 0){
 			// Create a player!

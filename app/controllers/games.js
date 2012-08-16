@@ -9,7 +9,7 @@ var form = require('express-form')
   , moment = require('moment');
 
 app.get('/games', utilities.checkAdmin, function(req, res){
-	Game.find({completed: false}).asc('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+	Game.find({completed: false}).sort('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').exec(function(err, games){
 		res.render('games/index', {title: 'Active Games', games: games, util: util, moment: moment, page: 0, pages: 1, baseurl: '/games'});
 	});
 });
@@ -21,7 +21,7 @@ var index = function(req, res){
 		page = 0;
 	}
 	Game.count(function(err, count){
-		Game.find().asc('startTime').limit(perPage).skip(page*perPage).populate('opponents').run(function(err, games){
+		Game.find().sort('startTime').limit(perPage).skip(page*perPage).populate('opponents').exec(function(err, games){
 			res.render('games/index', {title: 'All Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage), baseurl: '/games/all'});
 		});
 	});
@@ -36,7 +36,7 @@ var fullyPlayed = function(req, res){
 		page = 0;
 	}
 	Game.count({$where: 'this.rounds.length == this.numRounds'}, function(err, count){
-		Game.find().$where('this.rounds.length == this.numRounds').asc('startTime').limit(perPage).skip(page*perPage).populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').run(function(err, games){
+		Game.find().$where('this.rounds.length == this.numRounds').sort('startTime').limit(perPage).skip(page*perPage).populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').exec(function(err, games){
 			res.render('games/index', {title: 'Fully-Played Games', games: games, util: util, moment: moment, page: page, pages: Math.ceil(count / perPage), baseurl: '/games/fully-played'});
 		});
 	});
@@ -70,7 +70,7 @@ app.get('/games/:id/:as', function(req, res){
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -100,7 +100,7 @@ app.get('/games/:id/:as', function(req, res){
 			  , Round = mongoose.model('Round')
 			  , roundMap = {}
 			  , populateRound = function(index){
-					Round.findById(game.rounds[index]).populate('votes').run(function(err, round){
+					Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
 						game.rounds[index] = round;
 						if(--count == 0){
 							res.render('games/completed-game', {
@@ -149,7 +149,7 @@ app.get('/games/:id/:round/:as', function(req, res){
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -212,7 +212,7 @@ app.get('/games/:id/:round/:as', function(req, res){
 					}
 					
 					var Round = mongoose.model('Round');
-					Round.findById(round).populate('votes').run(function(err, round){
+					Round.findById(round).populate('votes').exec(function(err, round){
 						// Identify if any votes in this round are for this player
 						var my_vote = null
 						  , their_vote = null;
@@ -243,7 +243,7 @@ app.get('/games/:id/:round/:as', function(req, res){
 				}
 			}
 		  , populateRound = function(index){
-				Round.findById(game.rounds[index]).populate('votes').run(function(err, round){
+				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
 					game.rounds[index] = round;
 					checkDone();
 				});
@@ -276,7 +276,7 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).populate('opponents').run(function(err, game){
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -341,7 +341,7 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 					}
 					
 					var Round = mongoose.model('Round');
-					Round.findById(round).populate('votes').run(function(err, round){
+					Round.findById(round).populate('votes').exec(function(err, round){
 					
 						if(!round.votes || round.votes.length < 2){
 							req.flash('error', 'Round not complete!!');
@@ -379,7 +379,7 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 				}
 			}
 		  , populateRound = function(index){
-				Round.findById(game.rounds[index]).populate('votes').run(function(err, round){
+				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
 					game.rounds[index] = round;
 					checkDone();
 				});
@@ -423,7 +423,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 		return;
 	}
 
-	Game.findById(req.params.id).run(function(err, game){
+	Game.findById(req.params.id).exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -455,7 +455,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 					}
 					
 					var Round = mongoose.model('Round');
-					Round.findById(game.currentRound).populate('votes').run(function(err, currentRound){
+					Round.findById(game.currentRound).populate('votes').exec(function(err, currentRound){
 						if(currentRound.votes && currentRound.votes.length){
 							if(currentRound.votes.length == 2){
 								// Already have two votes!
@@ -488,11 +488,11 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 								currentRound.completed = true;
 							}
 							currentRound.save(function(err){
-								Round.findById(currentRound._id).populate('votes').run(function(err, round){
+								Round.findById(currentRound._id).populate('votes').exec(function(err, round){
 									if(round.completed){
 										// This round is over!
 										// Should adjust the player's votes!
-										Player.findById(me).run(function(err, player){
+										Player.findById(me).exec(function(err, player){
 											player.score += round.getPointsForPlayer(me);
 											// Update my lastPlayed date
 											player.numVotes++;
@@ -511,7 +511,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 												});
 											}
 										});
-										Player.findById(opponent).run(function(err, player){
+										Player.findById(opponent).exec(function(err, player){
 											player.score += round.getPointsForPlayer(opponent);
 											player.numVotes++;
 											if(round.getValueForPlayer(opponent) == 'friend'){
@@ -546,7 +546,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 				}
 			}
 		  , populateRound = function(index){
-				Round.findById(game.rounds[index]).populate('votes').run(function(err, round){
+				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
 					game.rounds[index] = round;
 					checkDone();
 				});

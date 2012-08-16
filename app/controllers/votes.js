@@ -63,7 +63,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 				round = game.rounds[j];
 				for(var k=0; k<round.votes.length; k++){
 					var vote = round.votes[k];
-					Vote.findById(vote).populate('player').run(handleVote(round));
+					Vote.findById(vote).populate('player').exec(handleVote(round));
 				}
 			}
 		}
@@ -76,7 +76,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 			checkDone();
 		}
 	  , createQueryStream = function(skip){
-	  		var query = Game.find({}, ['_id', 'rounds', 'startTime', 'opponents', 'rounds']).populate('opponents').populate('rounds', ['number', 'votes']).asc('startTime');
+	  		var query = Game.find().populate('opponents').populate('rounds').sort('startTime');
 	  		if(skip){
 		  		query.skip(skip);
 	  		}
@@ -153,7 +153,7 @@ app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
 			checkDone();
 		}
 	  , createQueryStream = function(skip){
-	  		var query = Vote.find().populate('player').asc('date');
+	  		var query = Vote.find().populate('player').sort('date');
 	  		if(skip){
 		  		query.skip(skip);
 	  		}

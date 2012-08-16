@@ -1,83 +1,86 @@
-#container-inner
-	#header
-		h2.lets Let's play
-		h1
-			- if(game.currentRound)
-				a.next-round(title="Click here to get to the current move of this game!", href="/games/#{game._id}/#{game.currentRound}/#{me._id}") FRENEMY
-			- else
-				a.next-round(title="Click here to see the results of this game!", href="/games/#{game._id}/#{me._id}") FRENEMY
-		h2.prompt
-			| MOVE ##{round.number}
-			br
-			| RESULTS:
-	
-	
-	#vote.cf
-		- if(round.completed)
-			// Gotta populate my vote and their vote
-			a(class=my_vote.value+' vote chosen disabled')
-				.avatar 
-					.inner 
-				h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'you chose enemy'}
-			a(class=their_vote.value+' vote chosen disabled')
-				.avatar 
-					.inner 
-				h3 #{their_vote && their_vote.value == 'friend' ? 'they chose friend' : 'they chose enemy'}
-		- else	
-			a(href="/games/#{game._id}/#{round._id}/#{me._id}/friend", class='vote friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'disabled') : 'active'))
-				.avatar 
-					.inner 
-				h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}
-			a(href="/games/#{game._id}/#{round._id}/#{me._id}/enemy", class='vote enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active')) 
-				.avatar 
-					.inner
-				h3 #{my_vote && my_vote.value == 'enemy' ? 'you chose enemy' : 'enemy'}
-	
-		if !game.currentRound
-			a.next-round(href="/games/#{game._id}/#{me._id}") click to see the results!
-		else if game.currentRound.toString() != round._id.toString()
-			a.next-round(href="/games/#{game._id}/#{game.currentRound}/#{me._id}") click to play the current move!
-	
-	
-	#scoring.cf
-		h4.cf
-			a#play-by-play-trigger.you
-				i.icon-star
-				| See the play-by-play of this game
-				i.icon-star
-			| Scoring Reminder
-		ul.cf
-			li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'active' : null))
-				.visuals
-					span.friend
-					span.friend
-				.text
-					span.points 15
-					span.comma ,
-					span.points 15
-			li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
-				.visuals
-					span.friend
-					span.enemy
-				.text
-					span.points -5
-					span.comma ,
-					span.points 25
-			li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'active' : null))
-				.visuals
-					span.enemy
-					span.friend
-				.text
-					span.points 25
-					span.comma ,
-					span.points -5
-			li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
-				.visuals
-					span.enemy
-					span.enemy
-				.text
-					span.points 5
-					span.comma ,
-					span.points 5
+extends ../layout
 
-include ../panes
+block body
+	#container-inner
+		#header
+			h2.lets Let's play
+			h1
+				- if(game.currentRound)
+					a.next-round(title="Click here to get to the current move of this game!", href="/games/#{game._id}/#{game.currentRound}/#{me._id}") FRENEMY
+				- else
+					a.next-round(title="Click here to see the results of this game!", href="/games/#{game._id}/#{me._id}") FRENEMY
+			h2.prompt
+				| MOVE ##{round.number}
+				br
+				| RESULTS:
+		
+		
+		#vote.cf
+			- if(round.completed)
+				// Gotta populate my vote and their vote
+				a(class=my_vote.value+' vote chosen disabled')
+					.avatar 
+						.inner 
+					h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'you chose enemy'}
+				a(class=their_vote.value+' vote chosen disabled')
+					.avatar 
+						.inner 
+					h3 #{their_vote && their_vote.value == 'friend' ? 'they chose friend' : 'they chose enemy'}
+			- else	
+				a(href="/games/#{game._id}/#{round._id}/#{me._id}/friend", class='vote friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'disabled') : 'active'))
+					.avatar 
+						.inner 
+					h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}
+				a(href="/games/#{game._id}/#{round._id}/#{me._id}/enemy", class='vote enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active')) 
+					.avatar 
+						.inner
+					h3 #{my_vote && my_vote.value == 'enemy' ? 'you chose enemy' : 'enemy'}
+		
+			if !game.currentRound
+				a.next-round(href="/games/#{game._id}/#{me._id}") click to see the results!
+			else if game.currentRound.toString() != round._id.toString()
+				a.next-round(href="/games/#{game._id}/#{game.currentRound}/#{me._id}") click to play the current move!
+		
+		
+		#scoring.cf
+			h4.cf
+				a#play-by-play-trigger.you
+					i.icon-star
+					| See the play-by-play of this game
+					i.icon-star
+				| Scoring Reminder
+			ul.cf
+				li#friend-friend(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+					.visuals
+						span.friend
+						span.friend
+					.text
+						span.points 15
+						span.comma ,
+						span.points 15
+				li#friend-enemy(class=(my_vote && my_vote.value == 'friend' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+					.visuals
+						span.friend
+						span.enemy
+					.text
+						span.points -5
+						span.comma ,
+						span.points 25
+				li#enemy-friend(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'friend' ? 'active' : null))
+					.visuals
+						span.enemy
+						span.friend
+					.text
+						span.points 25
+						span.comma ,
+						span.points -5
+				li#enemy-enemy(class=(my_vote && my_vote.value == 'enemy' && their_vote && their_vote.value == 'enemy' ? 'active' : null))
+					.visuals
+						span.enemy
+						span.enemy
+					.text
+						span.points 5
+						span.comma ,
+						span.points 5
+	
+	include ../panes

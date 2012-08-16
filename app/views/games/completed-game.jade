@@ -1,10 +1,13 @@
-#container-inner
-	#header
-		h2.lets Let's play
-		h1
-			a FRENEMY
-		h2.prompt.you
-			| END OF GAME
-	include results
+extends ../layout
 
-include ../panes
+block body
+	#container-inner
+		#header
+			h2.lets Let's play
+			h1
+				a FRENEMY
+			h2.prompt.you
+				| END OF GAME
+		include results
+	
+	include ../panes

@@ -1,46 +1,49 @@
-#container-inner
-	h1 #{title}
-	
-	table.table.tablesorter
-		thead
-			tr
-				th Name
-				th Defending?
-				th Score
-				th Last Played
-				th Actions
-		tbody
-			each player, i in players
+extends ../layout
+
+block body
+	#container-inner
+		h1 #{title}
+		
+		table.table.tablesorter
+			thead
 				tr
-					td #{player.name}
-					td #{player.defending ? 'yes' : 'no'}
-					td #{player.score}
-					td #{moment(player.lastPlayed).format('YYYY-MM-DD hh:mm A')}
-					td
-						a.btn(href="/players/edit/#{player._id}") Edit
-						| 
-						//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
-						//| 
-						- if(player.isAdmin)
-							a.btn.btn-success(href="/players/demote/#{player._id}")
-								i.icon-chevron-down.icon-white
-								|  Demote
-						- else
-							a.btn.btn-danger(href="/players/promote/#{player._id}")
-								i.icon-chevron-up.icon-white
-								|  Promote
-						| 
-						- if(player.active)
-							a.btn.btn-warning(href="/players/deactivate/#{player._id}")
-								i.icon-remove.icon-white
-								|  De-activate
-						- else
-							a.btn.btn-primary(href="/players/activate/#{player._id}")
-								i.icon-ok.icon-white
-								|  Activate
-						br
-						a.btn.btn-info(href="/players/leaderboard/#{player._id}") Production Leaderboard
-						br
-						a.btn.btn-info(href="/players/leaderboard/points-per-move/#{player._id}") Points / Move Leaderboard
-						br
-						a.btn.btn-info(href="/players/leaderboard/points-per-move/all/#{player._id}") Points / Move Leaderboard (ALL PLAYERS)
+					th Name
+					th Defending?
+					th Score
+					th Last Played
+					th Actions
+			tbody
+				each player, i in players
+					tr
+						td #{player.name}
+						td #{player.defending ? 'yes' : 'no'}
+						td #{player.score}
+						td #{moment(player.lastPlayed).format('YYYY-MM-DD hh:mm A')}
+						td
+							a.btn(href="/players/edit/#{player._id}") Edit
+							| 
+							//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
+							//| 
+							- if(player.isAdmin)
+								a.btn.btn-success(href="/players/demote/#{player._id}")
+									i.icon-chevron-down.icon-white
+									|  Demote
+							- else
+								a.btn.btn-danger(href="/players/promote/#{player._id}")
+									i.icon-chevron-up.icon-white
+									|  Promote
+							| 
+							- if(player.active)
+								a.btn.btn-warning(href="/players/deactivate/#{player._id}")
+									i.icon-remove.icon-white
+									|  De-activate
+							- else
+								a.btn.btn-primary(href="/players/activate/#{player._id}")
+									i.icon-ok.icon-white
+									|  Activate
+							br
+							a.btn.btn-info(href="/players/leaderboard/#{player._id}") Production Leaderboard
+							br
+							a.btn.btn-info(href="/players/leaderboard/points-per-move/#{player._id}") Points / Move Leaderboard
+							br
+							a.btn.btn-info(href="/players/leaderboard/points-per-move/all/#{player._id}") Points / Move Leaderboard (ALL PLAYERS)

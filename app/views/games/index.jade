@@ -1,42 +1,45 @@
-#container-inner
-	h1 #{title}
-	
-	table.table.tablesorter
-		thead
-			tr
-				th Started
-				th Completed?
-				th Opponents
-				th Completed Moves
-				th Actions
-		tbody
-			each game, i in games
+extends ../layout
+
+block body
+	#container-inner
+		h1 #{title}
+		
+		table.table.tablesorter
+			thead
 				tr
-					td #{moment(game.startTime).format('YYYY-MM-DD hh:mm A')}
-					td #{game.completed ? 'yes' : 'no'}
-					td
-						ul
-							each opponent in game.opponents
-								li
-									#{opponent.name}
-									a.btn(href="/games/#{game._id}/#{opponent._id}") View Game (as this player)
-					td #{game.rounds.length} / #{game.numRounds}
-					td
-						a.btn(href="/games/edit/#{game._id}") Edit
-						| 
-						a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
-						- if(game.startTime.getDay() == 4)
+					th Started
+					th Completed?
+					th Opponents
+					th Completed Moves
+					th Actions
+			tbody
+				each game, i in games
+					tr
+						td #{moment(game.startTime).format('YYYY-MM-DD hh:mm A')}
+						td #{game.completed ? 'yes' : 'no'}
+						td
+							ul
+								each opponent in game.opponents
+									li
+										#{opponent.name}
+										a.btn(href="/games/#{game._id}/#{opponent._id}") View Game (as this player)
+						td #{game.rounds.length} / #{game.numRounds}
+						td
+							a.btn(href="/games/edit/#{game._id}") Edit
 							| 
-							a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat
-	- if(pages > 1)
-		.pagination
-			ul
-				- if(page > 0)
-					li
-						a(href=baseurl+'/'+(page-1)) Prev
-				- for(var i=0; i<pages; i++)
-					li(class=(i == page ? 'active' : null))
-						a(href=baseurl+'/'+i) #{i+1}
-				- if(page < pages-1)
-					li
-						a(href=baseurl+'/'+(page+1)) Next
+							a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
+							- if(game.startTime.getDay() == 4)
+								| 
+								a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat
+		- if(pages > 1)
+			.pagination
+				ul
+					- if(page > 0)
+						li
+							a(href=baseurl+'/'+(page-1)) Prev
+					- for(var i=0; i<pages; i++)
+						li(class=(i == page ? 'active' : null))
+							a(href=baseurl+'/'+i) #{i+1}
+					- if(page < pages-1)
+						li
+							a(href=baseurl+'/'+(page+1)) Next

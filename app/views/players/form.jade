@@ -1,167 +1,170 @@
-#container-inner
-	form(method="POST")#playerForm.form-horizontal
-		fieldset
-			legend #{title}
-					
-			.control-group
-				label.control-label(for="email") Email Address:
-				.controls
-					input#email.span5(type="text", placeholder="", name="email", value=player.email)
-					p.help-block The email address for the player.
-			
-			.control-group
-				label.control-label(for="image") Profile Image (url):
-				.controls
-					input#image.span5(type="text", placeholder="", name="image", value=player.image)
-	
-			.control-group
-				label.control-label(for="name") Player Name:
-				.controls
-					input#name.span5(type="text", placeholder="", name="name", value=player.name)
-					p.help-block The name of the player.
-	
-			.control-group
-				label.control-label(for="twitter") Twitter (url):
-				.controls
-					input#twitter.span5(type="text", placeholder="", name="twitter", value=player.twitter)
-	
-			.control-group
-				label.control-label(for="facebook") Facebook (url):
-				.controls
-					input#facebook.span5(type="text", placeholder="", name="facebook", value=player.facebook)
-	
-			.control-group
-				label.control-label(for="flickr") Flickr (url):
-				.controls
-					input#flickr.span5(type="text", placeholder="", name="flickr", value=player.flickr)
-	
-			.control-group
-				label.control-label(for="tubmlr") Tumblr (url):
-				.controls
-					input#tubmlr.span5(type="text", placeholder="", name="tubmlr", value=player.tubmlr)
-	
-			.control-group
-				label.control-label(for="youtube") YouTube (url):
-				.controls
-					input#youtube.span5(type="text", placeholder="", name="youtube", value=player.youtube)
-	
-			.control-group
-				label.control-label(for="score") Score:
-				.controls
-					input#score.span5(type="text", placeholder="", name="score", value=player.score)
-					p.help-block The score for the player.
-		
-		fieldset
-			legend Player's Profile
-	
-			.control-group
-				label.control-label(for="profile_0") Sunday Profile:
-				.controls
-					textarea#profile_0.span8(name="profile_0") !{player.profile_0}
-	
-			.control-group
-				label.control-label(for="profile_1") Monday Profile:
-				.controls
-					textarea#profile_1.span8(name="profile_1") !{player.profile_1}
-	
-			.control-group
-				label.control-label(for="profile_2") Tuesday Profile:
-				.controls
-					textarea#profile_2.span8(name="profile_2") !{player.profile_2}
-	
-			.control-group
-				label.control-label(for="profile_3") Wednesday Profile:
-				.controls
-					textarea#profile_3.span8(name="profile_3") !{player.profile_3}
-	
-			.control-group
-				label.control-label(for="profile_4") Thursday Profile:
-				.controls
-					textarea#profile_4.span8(name="profile_4") !{player.profile_4}
-	
-			.control-group
-				label.control-label(for="profile_5") Friday Profile:
-				.controls
-					textarea#profile_5.span8(name="profile_5") !{player.profile_5}
-	
-			.control-group
-				label.control-label(for="profile_6") Saturday Profile:
-				.controls
-					textarea#profile_6.span8(name="profile_6") !{player.profile_6}
-	
-		fieldset
-			legend Opponent's Profile
-	
-			- for(var i=1; i<31; i++)
+extends ../layout
+
+block body
+	#container-inner
+		form(method="POST")#playerForm.form-horizontal
+			fieldset
+				legend #{title}
+						
 				.control-group
-					label.control-label(for="opponent_profile_#{i}") Opponent Profile (June #{i}):
+					label.control-label(for="email") Email Address:
 					.controls
-						textarea(id='opponent_profile_'+i, class='span8', name='opponent_profile_'+i) !{player['opponent_profile_'+i]}
-	
-		fieldset
-			legend Extra Data
+						input#email.span5(type="text", placeholder="", name="email", value=player.email)
+						p.help-block The email address for the player.
+				
+				.control-group
+					label.control-label(for="image") Profile Image (url):
+					.controls
+						input#image.span5(type="text", placeholder="", name="image", value=player.image)
+		
+				.control-group
+					label.control-label(for="name") Player Name:
+					.controls
+						input#name.span5(type="text", placeholder="", name="name", value=player.name)
+						p.help-block The name of the player.
+		
+				.control-group
+					label.control-label(for="twitter") Twitter (url):
+					.controls
+						input#twitter.span5(type="text", placeholder="", name="twitter", value=player.twitter)
+		
+				.control-group
+					label.control-label(for="facebook") Facebook (url):
+					.controls
+						input#facebook.span5(type="text", placeholder="", name="facebook", value=player.facebook)
+		
+				.control-group
+					label.control-label(for="flickr") Flickr (url):
+					.controls
+						input#flickr.span5(type="text", placeholder="", name="flickr", value=player.flickr)
+		
+				.control-group
+					label.control-label(for="tubmlr") Tumblr (url):
+					.controls
+						input#tubmlr.span5(type="text", placeholder="", name="tubmlr", value=player.tubmlr)
+		
+				.control-group
+					label.control-label(for="youtube") YouTube (url):
+					.controls
+						input#youtube.span5(type="text", placeholder="", name="youtube", value=player.youtube)
+		
+				.control-group
+					label.control-label(for="score") Score:
+					.controls
+						input#score.span5(type="text", placeholder="", name="score", value=player.score)
+						p.help-block The score for the player.
 			
-			.control-group
-				label.control-label(for="Birthdate") Birthdate:
-				.controls
-					textarea#Birthdate.span8(name="Birthdate") !{player.Birthdate}
-			
-			.control-group
-				label.control-label(for="Zip") Zip:
-				.controls
-					textarea#Zip.span8(name="Zip") !{player.Zip}
-			
-			.control-group
-				label.control-label(for="Gender") Gender:
-				.controls
-					textarea#Gender.span8(name="Gender") !{player.Gender}
-			
-			.control-group
-				label.control-label(for="Ethnicity") Ethnicity:
-				.controls
-					textarea#Ethnicity.span8(name="Ethnicity") !{player.Ethnicity}
-			
-			.control-group
-				label.control-label(for="Color") Color:
-				.controls
-					textarea#Color.span8(name="Color") !{player.Color}
-			
-			.control-group
-				label.control-label(for="Transport") Transport:
-				.controls
-					textarea#Transport.span8(name="Transport") !{player.Transport}
-			
-			.control-group
-				label.control-label(for="Sports") Sports:
-				.controls
-					textarea#Sports.span8(name="Sports") !{player.Sports}
-			
-			.control-group
-				label.control-label(for="Personality") Personality:
-				.controls
-					textarea#Personality.span8(name="Personality") !{player.Personality}
-			
-			.control-group
-				label.control-label(for="Politics") Politics:
-				.controls
-					textarea#Politics.span8(name="Politics") !{player.Politics}
-			
-			.control-group
-				label.control-label(for="Glasses") Glasses:
-				.controls
-					textarea#Glasses.span8(name="Glasses") !{player.Glasses}
-			
-			.control-group
-				label.control-label(for="Pets") Pets:
-				.controls
-					textarea#Pets.span8(name="Pets") !{player.Pets}
-			
-			.control-group
-				label.control-label(for="Birthplace") Birthplace:
-				.controls
-					textarea#Birthplace.span8(name="Birthplace") !{player.Birthplace}
-	
-		.form-actions
-			button.btn.btn-primary(type="submit") Submit
-			|  
-			a.btn(href="/players") Cancel
+			fieldset
+				legend Player's Profile
+		
+				.control-group
+					label.control-label(for="profile_0") Sunday Profile:
+					.controls
+						textarea#profile_0.span8(name="profile_0") !{player.profile_0}
+		
+				.control-group
+					label.control-label(for="profile_1") Monday Profile:
+					.controls
+						textarea#profile_1.span8(name="profile_1") !{player.profile_1}
+		
+				.control-group
+					label.control-label(for="profile_2") Tuesday Profile:
+					.controls
+						textarea#profile_2.span8(name="profile_2") !{player.profile_2}
+		
+				.control-group
+					label.control-label(for="profile_3") Wednesday Profile:
+					.controls
+						textarea#profile_3.span8(name="profile_3") !{player.profile_3}
+		
+				.control-group
+					label.control-label(for="profile_4") Thursday Profile:
+					.controls
+						textarea#profile_4.span8(name="profile_4") !{player.profile_4}
+		
+				.control-group
+					label.control-label(for="profile_5") Friday Profile:
+					.controls
+						textarea#profile_5.span8(name="profile_5") !{player.profile_5}
+		
+				.control-group
+					label.control-label(for="profile_6") Saturday Profile:
+					.controls
+						textarea#profile_6.span8(name="profile_6") !{player.profile_6}
+		
+			fieldset
+				legend Opponent's Profile
+		
+				- for(var i=1; i<31; i++)
+					.control-group
+						label.control-label(for="opponent_profile_#{i}") Opponent Profile (June #{i}):
+						.controls
+							textarea(id='opponent_profile_'+i, class='span8', name='opponent_profile_'+i) !{player['opponent_profile_'+i]}
+		
+			fieldset
+				legend Extra Data
+				
+				.control-group
+					label.control-label(for="Birthdate") Birthdate:
+					.controls
+						textarea#Birthdate.span8(name="Birthdate") !{player.Birthdate}
+				
+				.control-group
+					label.control-label(for="Zip") Zip:
+					.controls
+						textarea#Zip.span8(name="Zip") !{player.Zip}
+				
+				.control-group
+					label.control-label(for="Gender") Gender:
+					.controls
+						textarea#Gender.span8(name="Gender") !{player.Gender}
+				
+				.control-group
+					label.control-label(for="Ethnicity") Ethnicity:
+					.controls
+						textarea#Ethnicity.span8(name="Ethnicity") !{player.Ethnicity}
+				
+				.control-group
+					label.control-label(for="Color") Color:
+					.controls
+						textarea#Color.span8(name="Color") !{player.Color}
+				
+				.control-group
+					label.control-label(for="Transport") Transport:
+					.controls
+						textarea#Transport.span8(name="Transport") !{player.Transport}
+				
+				.control-group
+					label.control-label(for="Sports") Sports:
+					.controls
+						textarea#Sports.span8(name="Sports") !{player.Sports}
+				
+				.control-group
+					label.control-label(for="Personality") Personality:
+					.controls
+						textarea#Personality.span8(name="Personality") !{player.Personality}
+				
+				.control-group
+					label.control-label(for="Politics") Politics:
+					.controls
+						textarea#Politics.span8(name="Politics") !{player.Politics}
+				
+				.control-group
+					label.control-label(for="Glasses") Glasses:
+					.controls
+						textarea#Glasses.span8(name="Glasses") !{player.Glasses}
+				
+				.control-group
+					label.control-label(for="Pets") Pets:
+					.controls
+						textarea#Pets.span8(name="Pets") !{player.Pets}
+				
+				.control-group
+					label.control-label(for="Birthplace") Birthplace:
+					.controls
+						textarea#Birthplace.span8(name="Birthplace") !{player.Birthplace}
+		
+			.form-actions
+				button.btn.btn-primary(type="submit") Submit
+				|  
+				a.btn(href="/players") Cancel

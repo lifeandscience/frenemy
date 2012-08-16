@@ -8,18 +8,18 @@ var form = require('express-form')
   , util = require('util');
 
 app.get('/players', utilities.checkAdmin, function(req, res){
-	Player.find({}).asc('name').run(function(err, players){
+	Player.find({}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 
 app.get('/players/defending', utilities.checkAdmin, function(req, res){
-	Player.find({defending:true}).asc('name').run(function(err, players){
+	Player.find({defending:true}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 app.get('/players/nondefending', utilities.checkAdmin, function(req, res){
-	Player.find({defending:false}).asc('name').run(function(err, players){
+	Player.find({defending:false}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
@@ -123,7 +123,7 @@ app.get('/players/demote/:id', utilities.checkAdmin, function(req, res){
 	});
 });
 app.get('/players/activate/:id', utilities.checkAdmin, function(req, res){
-	Player.findById(req.params.id).run(function(err, player){
+	Player.findById(req.params.id).exec(function(err, player){
 /* 	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){ */
 		player.active = true;
 		player.save();
@@ -135,7 +135,7 @@ app.get('/players/activate/:id', utilities.checkAdmin, function(req, res){
 	});
 });
 app.get('/players/deactivate/:id', utilities.checkAdmin, function(req, res){
-	Player.findById(req.params.id).run(function(err, player){
+	Player.findById(req.params.id).exec(function(err, player){
 		player.active = false;
 		player.save();
 		player.notifyOfActivation(false, function(){
@@ -157,8 +157,8 @@ app.get('/players/leaderboard/:id', function(req, res){
 		res.send(404);
 		return;
 	}
-	Player.findById(req.params.id).run(function(err, player){
-		Player.find({defending: player.defending, active: true}).desc('score').run(function(err, players){
+	Player.findById(req.params.id).exec(function(err, player){
+		Player.find({defending: player.defending, active: true}).sort('-score').exec(function(err, players){
 			res.render('players/leaderboard', {layout: false, players: players, util: util});
 			return;
 		});
@@ -171,8 +171,8 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 		return;
 	}
 	var Vote = mongoose.model('Vote');
-	Player.findById(req.params.id).run(function(err, player){
-		Player.find({defending: player.defending, active: true}).desc('score').run(function(err, players){
+	Player.findById(req.params.id).exec(function(err, player){
+		Player.find({defending: player.defending, active: true}).sort('-score').exec(function(err, players){
 			var toHandle = players.length
 			  , checkDone = function(){
 					if(--toHandle == 0){
@@ -206,7 +206,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 		res.send(404);
 		return;
 	}
-	Player.find({active: true}).desc('score').run(function(err, players){
+	Player.find({active: true}).sort('-score').exec(function(err, players){
 		for(var i=players.length-1; i>=0; i--){
 			if(players[i].numVotes == 0){
 				players.splice(i, 1);
@@ -242,7 +242,7 @@ app.post('/players/import', utilities.checkAdmin, function(req, res){
 			return;
 		}
 		if(data[emailColumn]){
-			Player.find({email: data[emailColumn]}).run(function(err, players){
+			Player.find({email: data[emailColumn]}).exec(function(err, players){
 				var p = null;
 				if(players.length){
 					util.log('found exisitng player!');
@@ -334,7 +334,7 @@ app.get('/players/export', utilities.checkAdmin, function(req, res, next){
 			checkDone();
 		}
 	  , createQueryStream = function(skip){
-	  		var query = Player.find().asc('name');
+	  		var query = Player.find().sort('name');
 	  		if(skip){
 		  		query.skip(skip);
 	  		}

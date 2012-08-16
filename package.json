@@ -9,15 +9,17 @@
   , "dependencies": {
       "async": ">= 0.0.1"
     , "aws2js": "< 0.7.0"
-    , "express": "2.5.8"
+    , "express": ">= 0.0.1"
     , "express-form": ">= 0.0.1"
     , "jade": ">= 0.0.1"
     , "mongoose": ">= 0.0.1"
     , "connect-mongo": ">= 0.0.1"
-    , "mongoose-auth": ">= 0.0.1"
+    , "mongoose-3x-auth": ">= 0.0.1"
     , "nodemailer": ">= 0.0.1"
     , "less": ">= 0.0.1"
     , "csv": ">= 0.0.1"
     , "moment": ">= 0.0.1"
+    , "less-middleware": ">= 0.0.1"
+    , "connect-flash": ">= 0.0.1"
   }
 }
