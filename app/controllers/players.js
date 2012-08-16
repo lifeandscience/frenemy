@@ -159,7 +159,7 @@ app.get('/players/leaderboard/:id', function(req, res){
 	}
 	Player.findById(req.params.id).exec(function(err, player){
 		Player.find({defending: player.defending, active: true}).sort('-score').exec(function(err, players){
-			res.render('players/leaderboard', {layout: false, players: players, util: util});
+			res.render('players/leaderboard', {players: players, util: util});
 			return;
 		});
 	});
@@ -179,7 +179,7 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 						players.sort(function(a, b){
 							return b.pointsPerVote - a.pointsPerVote;
 						});
-						res.render('players/points-per-move-leaderboard', {layout: false, players: players, util: util});
+						res.render('players/points-per-move-leaderboard', {players: players, util: util});
 					}
 				}
 			  , handlePlayer = function(index){
@@ -214,7 +214,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 				players[i].pointsPerVote = (players[i].defending ? players[i].score-10000 : players[i].score) / players[i].numVotes;
 			}
 		}
-		res.render('players/points-per-move-leaderboard', {layout: false, players: players, util: util});
+		res.render('players/points-per-move-leaderboard', {players: players, util: util});
 	});
 	return;
 });

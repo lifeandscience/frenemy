@@ -16,7 +16,7 @@ app.get('/confessions', function(req, res){
 		for(var i=0; i<confessions.length; i++){
 			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
 		}
-		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment, layout: 'layout-confessional'});
+		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment});
 	});
 });
 
@@ -154,5 +154,5 @@ app.post('/confessional', formValidate, utilities.doForm(as, populate, 'Confess!
 
 
 app.get('/confessional/thanks', function(req, res){
-	res.render('confessions/thanks', {title: 'Your confession has been recorded.', layout: 'layout-confessional'});
+	res.render('confessions/thanks', {title: 'Your confession has been recorded.'});
 });

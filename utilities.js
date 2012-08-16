@@ -49,10 +49,12 @@ module.exports = {
 								if(beforeRender){
 									obj = beforeRender(req, res, obj);
 								}
+/*
 								if(layout){
 									util.log('layout: '+layout);
 									obj.layout = layout;
 								}
+*/
 								util.log('rendering: '+util.inspect(obj));
 								res.render(template, obj);
 								return;
@@ -77,10 +79,12 @@ module.exports = {
 				if(beforeRender){
 					obj = beforeRender(req, res, obj);
 				}
+/*
 				if(layout){
 					util.log('layout: '+layout);
 					obj.layout = layout;
 				}
+*/
 				util.log('rendering: '+util.inspect(obj));
 				res.render(template, obj);
 				return;

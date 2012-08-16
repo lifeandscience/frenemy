@@ -49,6 +49,12 @@ app.configure(function(){
 //	app.use(express.methodOverride());
 	var helpers = require('./helpers');
 	app.locals(helpers.staticHelpers);
+	app.use(function(req, res, next){
+		res.local = function(key, val){
+			res.locals[key] = val;
+		};
+		next();
+	});
 	/* app.dynamicHelpers(helpers.dynamicHelpers); */
 	for(var key in helpers.dynamicHelpers){
 		app.use(function(req, res, next){
