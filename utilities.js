@@ -21,7 +21,7 @@ module.exports = {
 						if(populate){
 							query.populate(populate);
 						}
-						query.run(callback);
+						query.exec(callback);
 					}else{
 						callback(null);
 					}
@@ -98,7 +98,7 @@ module.exports = {
 				for(var i=0; i<populate.length; i++){
 					query.populate(populate[i]);
 				}
-				query.run(function(err, item){
+				query.exec(function(err, item){
 					if(!err){
 						req[title] = item;
 					}else{
