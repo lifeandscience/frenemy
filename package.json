@@ -14,7 +14,7 @@
     , "jade": ">= 0.0.1"
     , "mongoose": ">= 0.0.1"
     , "connect-mongo": ">= 0.0.1"
-    , "mongoose-3x-auth": ">= 0.0.1"
+    , "mongoose-auth": "git://github.com/SpiderStrategies/mongoose-auth.git"
     , "nodemailer": ">= 0.0.1"
     , "less": ">= 0.0.1"
     , "csv": ">= 0.0.1"
