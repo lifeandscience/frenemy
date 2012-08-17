@@ -12,7 +12,7 @@ app.get('/confessions', function(req, res){
 	if(!req.loggedIn || !req.user || !req.user.isAdmin){
 		query.where('active', true);
 	}
-	query.desc('number').exec(function(err, confessions){
+	query.sort('-number').exec(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
 			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
 		}
