@@ -238,7 +238,7 @@ GameSchema.statics.regenerateLeaderboard = function(){
 			checkDone();
 		}
 	  , createQueryStream = function(skip){
-	  		var query = Game.find({}, ['startTime', 'rounds']).populate('rounds').desc('startTime').where('startTime').gt(new Date(2012, 5, 22));
+	  		var query = Game.find({}, ['startTime', 'rounds']).populate('rounds').sort('-startTime').where('startTime').gt(new Date(2012, 5, 22));
 	  		if(skip){
 		  		query.skip(skip);
 	  		}
