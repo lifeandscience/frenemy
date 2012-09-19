@@ -76,6 +76,7 @@ slug = me.getProfileSlug(game.startTime);
 				- if(heading)
 					h3 #{heading}: 
 					h3 !{me.getOpponentProfile(game.startTime, opponent)}
+// TODO: EVERYAUTH
 #leaderboard.pane(class=(everyauth.loggedIn ? 'logged-in' : null))
 	.handle
 		a Results

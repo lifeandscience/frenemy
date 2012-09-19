@@ -11,6 +11,7 @@ var GameSchema = new Schema({
 			return Math.floor(Math.random() * 5) + 3;  
 		}
 	}
+  , experimonth: {type: Schema.ObjectId, ref: 'Experimonth'}
   , completed: {type: Boolean, default: false}
   , opponents: [{type: Schema.ObjectId, ref: 'Player'}]
   , currentRound: {type: Schema.ObjectId, ref: 'Round'}

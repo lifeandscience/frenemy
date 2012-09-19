@@ -16,7 +16,7 @@ module.exports = {
 	  , losingTie: 5
 	}
 	
-  , defaultDefenderEmail: 'beck@becktench.com'
-  , defaultNonDefenderEmail: 'elizfleming@gmail.com'
+//  , defaultDefenderEmail: 'beck@becktench.com'
+//  , defaultNonDefenderEmail: 'elizfleming@gmail.com'
   , admins: ['ben.schell@gmail.com']
 };

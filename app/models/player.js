@@ -1,11 +1,13 @@
 var mongoose = require('mongoose')
-  , mongooseAuth = require('mongoose-auth')
+//  , mongooseAuth = require('mongoose-auth')
   , Schema = mongoose.Schema
   , config = require('../../config')
   , email = require('../../email')
   , jade = require('jade')
   , fs = require('fs')
   , moment = require('moment')
+  , bcrypt = require('bcrypt')
+  , crypto = require('crypto')
   , util = require('util');
 
 
@@ -28,6 +30,9 @@ var path = __dirname + '/../views/players/email/new_game.jade'
   , path = __dirname + '/../views/players/email/deactivation.jade'
   , str = fs.readFileSync(path, 'utf8')
   , deactivationTemplate = jade.compile(str, { filename: path, pretty: true })
+  , path = __dirname + '/../views/players/email/confirm_email.jade'
+  , str = fs.readFileSync(path, 'utf8')
+  , confirmEmailTemplate = jade.compile(str, { filename: path, pretty: true })
   , path = __dirname + '/../views/players/email/layout.jade'
   , str = fs.readFileSync(path, 'utf8')
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
@@ -36,7 +41,44 @@ var path = __dirname + '/../views/players/email/new_game.jade'
 var shouldNextPlayerDefend = true
   , PlayerSchema = new Schema({
 		name: String
+	  , hash: String
+	  , salt: String
 	  , email: String
+		// STATE
+		//	Replaces "active", known values:
+		//	 0: Newly-registered
+		//	 1: Registered, but no email provided (Twitter)
+		//	 2: Email address confirmed - Fully Active
+		//	 3: Email provided by external service (FB) - Fully Active
+		//	10: Fully Active (manual?)
+	  , state: {type: Number, default: 0}
+	  , active: {type: Boolean, default: true}
+	  	// ROLE
+	  	// 	Replaces "isAdmin"; known values:
+	  	//	 0: Basic user
+	  	//	10: Admin
+	  , role: {type: Number, default: 0}
+	  , games: [{type: Schema.ObjectId, ref: 'Game'}]
+	  , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
+	  , votes: [{type: Schema.ObjectId, ref: 'Vote'}]
+	  , experimonths: [{type: Schema.ObjectId, ref: 'Experimonth'}]
+	  
+	  , activationCode: String
+	  , fb: Schema.Types.Mixed // FB Profile
+	  , twid: String
+	  , tw: Schema.Types.Mixed // Twitter Profile
+
+	  , score: {type: Number, default: 0}
+	  , lastPlayed: {type: Date}
+
+	  , twitter: {type: String}
+	  , facebook: {type: String}
+	  , flickr: {type: String}
+	  , tumblr: {type: String}
+	  , youtube: {type: String}
+
+	  , opt_out: {type: Boolean, default: false}
+/*
 	  , isAdmin: {type: Boolean, default: false}
 	  , timezone: {type: String, enum: ['Eastern', 'Central', 'Mountain', 'Pacific'], default: 'Eastern'}
 	  
@@ -45,16 +87,8 @@ var shouldNextPlayerDefend = true
 
 	  , defending: {type: Boolean, default: false}
 	  , defendingNum: {type: Number, default: -1}
-	  , score: {type: Number, default: -1}
-	  , active: {type: Boolean, default: true}
-	  , lastPlayed: {type: Date}
 	  
 	  , image: {type: String}
-	  , twitter: {type: String}
-	  , facebook: {type: String}
-	  , flickr: {type: String}
-	  , tumblr: {type: String}
-	  , youtube: {type: String}
 	  
 	  , profile_0: {type: String, default: 'My Profile (Sunday)'}
 	  , profile_1: {type: String, default: 'My Profile (Monday)'}
@@ -107,9 +141,128 @@ var shouldNextPlayerDefend = true
 	  , Glasses: {type: String, default: ''}
 	  , Pets: {type: String, default: ''}
 	  , Birthplace: {type: String, default: ''}
+*/
 	})
   , Player = null;
 
+
+PlayerSchema.virtual('password').get(function (){
+	return this._password;
+}).set(function (password) {
+	this._password = password;
+	var salt = this.salt = bcrypt.genSaltSync(10);
+	this.hash = bcrypt.hashSync(password, salt);
+});
+
+PlayerSchema.method('verifyPassword', function(password, callback) {
+	bcrypt.compare(password, this.hash, callback);
+});
+
+PlayerSchema.method('generateActivationCode', function(){
+	this.activationCode = bcrypt.genSaltSync(10);
+});
+PlayerSchema.method('sendActivationEmail', function(){
+	var base_url = (process.env.BASEURL || 'http://localhost:5000')
+	  , activation_url = base_url + '/auth/local/confirm/'+new Buffer(this.email).toString('base64')+'/'+new Buffer(this.activationCode).toString('base64')
+	  , html = confirmEmailTemplate({email: this.email, base_url: base_url, activation_url: activation_url});
+	html = layoutTemplate({title: 'Confirm Your Email Address', body: html, moment: moment});
+
+	// setup e-mail data with unicode symbols
+	var mailOptions = {
+	    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
+	    to: this.email, // list of receivers
+	    subject: 'Frenemy: Confirm Your Email Address', // Subject line
+	    generateTextFromHTML: true,
+	    html: html // html body
+	}
+
+	// send mail with defined transport object
+	email.sendMail(mailOptions);
+});
+PlayerSchema.method('notify', function(message, callback){
+	if(!message){
+		return callback(new Error('Can\t notify without a message!'));
+	}
+	var Notification = mongoose.model('Notification')
+	  , n = new Notification();
+	n.text = message;
+	n.player = this;
+	n.save(function(err){
+		if(err){ return callback(new Error('Trouble saving new notification!')); }
+		callback(null);
+	});
+});
+
+PlayerSchema.static('authenticate', function(email, password, callback) {
+	this.findOne({ email: email }, function(err, player) {
+		if (err) { return callback(err); }
+		if (!player) { return callback(null, false, 'Either your email or password was incorrect. Please try again.'); }
+		player.verifyPassword(password, function(err, passwordCorrect) {
+			if (err) { return callback(err, false); }
+			if (!passwordCorrect) { return callback(null, false, 'Either your email or password was incorrect. Please try again.'); }
+			if(player.state < 1){
+				return callback(null, player, 'Please check your email to verify your email address. (<a href="/auth/local/register/resend/'+email+'">Resend?</a>)');
+			}
+			return callback(null, player);
+		});
+	});
+});
+PlayerSchema.static('facebookAuthenticate', function(profile, callback){
+	var email = profile.emails[0].value;
+	this.findOne({email: email}, function(err, player){
+		if(err){ return callback(err); }
+		if(player){ return callback(null, player); }
+
+		// Register new player!
+		player = new Player();
+		player.email = email;
+		player.state = 3;
+		player.fb = profile;
+		player.markModified('fb');
+		player.save(function(err){
+			if(err){ return callback(err); }
+			callback(null, player, 'Thanks for signing up! Please fill out your profile.');
+		});
+	});
+});
+PlayerSchema.static('twitterAuthenticate', function(profile, callback){
+	this.findOne({twid: profile.id_str}, function(err, player){
+		if(err){ return callback(err); }
+		if(player){ return callback(null, player); }
+
+		// Register new player!
+		player = new Player();
+		player.twid = profile.id_str;
+		player.state = 1;
+		player.tw = profile;
+		player.markModified('tw');
+		player.save(function(err){
+			if(err){ return callback(err); }
+			callback(null, player, 'Thanks for signing up! Please supply your email address.');
+		});
+	});
+});
+PlayerSchema.static('notifyAll', function(notification, callback){
+	this.find().exec(function(err, players){
+		if(err || !players || players.length == 0){
+			callback(new Error('Error finding players to notify.'));
+			return;
+		}
+		var count = players.length-1
+		  , check = function(){
+				console.log('count', count);
+				if(--count == 0){
+					// Done iterating over players
+					callback(null);
+				}
+			};
+		players.forEach(function(player){
+			player.notify(notification, check);
+		});
+	});
+});
+// TODO: EVERYAUTH
+/*
 PlayerSchema.plugin(mongooseAuth, {
 	everymodule: {
 		everyauth: {
@@ -163,6 +316,7 @@ PlayerSchema.plugin(mongooseAuth, {
 		}
 	}
 });
+*/
 
 PlayerSchema.pre('save', function(next){
 	if(this.defendingNum == -1){
@@ -181,7 +335,7 @@ PlayerSchema.pre('save', function(next){
 });
 
 PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
-	util.log('notifying '+this.name+' of deactivation');
+	util.log('notifying '+this.email+' of deactivation');
 
 	if(process.env.DO_NOTIFICATIONS){
 		util.log('will DO_NOTIFICATIONS');
@@ -333,6 +487,9 @@ PlayerSchema.methods.getOpponentProfileForCSV = function(d, opponent){
 };
 
 PlayerSchema.virtual('votingRecord');
+PlayerSchema.virtual('email_hash').get(function(){
+	return crypto.createHash('md5').update(this.email.toLowerCase().trim()).digest('hex');
+});
 PlayerSchema.pre('init', function(next, t){
 	var Game = mongoose.model('Game')
 	  , Round = mongoose.model('Round');
@@ -388,6 +545,7 @@ PlayerSchema.pre('init', function(next, t){
 Player = mongoose.model('Player', PlayerSchema);
 exports = Player;
 
+/*
 Player.count({}, function(err, totalPlayerCount){
 	Player.count({defending: true}, function(err, defendingPlayerCount){
 		shouldNextPlayerDefend = (totalPlayerCount - defendingPlayerCount ) > defendingPlayerCount;
@@ -400,7 +558,7 @@ Player.find({email: config.defaultDefenderEmail}).exec(function(err, players){
 		player.name = config.defaultDefenderEmail;
 		player.email = config.defaultDefenderEmail;
 		player.isAdmin = true;
-/* 		player.defending = true; */
+/* 		player.defending = true; * /
 		player.save(function(err, player){
 			player.defending = true;
 			player.save();
@@ -414,13 +572,16 @@ Player.find({email: config.defaultNonDefenderEmail}).exec(function(err, players)
 		player.name = config.defaultNonDefenderEmail;
 		player.email = config.defaultNonDefenderEmail;
 		player.isAdmin = true;
-/* 		player.defending = false; */
+/* 		player.defending = false; * /
 		player.save(function(err, player){
 			player.defending = false;
 			player.save();
 		});
 	}
 });
+*/
+// TODO: Put back?
+/*
 config.admins.forEach(function(item, index){
 	Player.find({email: item}).exec(function(err, players){
 		var player = null;
@@ -433,7 +594,8 @@ config.admins.forEach(function(item, index){
 		}else{
 			player = players[0];
 		}
-		player.isAdmin = true;
+		player.role = 10;
 		player.save();
 	});
 });
+//*/

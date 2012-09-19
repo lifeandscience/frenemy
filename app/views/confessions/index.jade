@@ -17,14 +17,16 @@ block body
 						ul.actions
 							li.first
 								a(href="/confessions/flag/"+confession._id) Flag
-								- if(everyauth.loggedIn)
-									| (#{confession.flags})
+								// TODO: EVERYAUTH
+								//- if(everyauth.loggedIn)
+								//	| (#{confession.flags})
 							li
 								a(href="/confessional/reply/"+confession.number) Reply
-							- if(everyauth.loggedIn)
-								li
-									- if(!confession.active)
-										a(href="/confessions/publish/"+confession._id) Publish
-									- else
-										a(href="/confessions/unpublish/"+confession._id) Unpublish
+							// TODO: EVERYAUTH
+							//- if(everyauth.loggedIn)
+							//	li
+							//		- if(!confession.active)
+							//			a(href="/confessions/publish/"+confession._id) Publish
+							//		- else
+							//			a(href="/confessions/unpublish/"+confession._id) Unpublish
 						h3 #{d.format('MMMM Do, YYYY [around] hA')}

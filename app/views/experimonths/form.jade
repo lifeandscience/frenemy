@@ -1,0 +1,37 @@
+extends ../layout
+
+block body
+	#container-inner
+		form(method="POST")#playerForm.form-horizontal
+			fieldset
+				legend #{title}
+						
+				.control-group
+					label.control-label(for="startDate") Start Date:
+					.controls
+						input#startDate.span5(type="date", placeholder="", name="startDate", value=moment(experimonth.startDate).utc().format('YYYY-MM-DD'))
+						p.help-block The start date for this Experimonth.
+						
+				.control-group
+					label.control-label(for="endDate") End Date:
+					.controls
+						input#endDate.span5(type="date", placeholder="", name="endDate", value=moment(experimonth.endDate).utc().format('YYYY-MM-DD'))
+						p.help-block The end date for this Experimonth.
+				
+				.control-group
+					label.control-label(for="playerLimit") Player Limit:
+					.controls
+						input#playerLimit.span5(type="text", placeholder="100", name="playerLimit", value=experimonth.playerLimit)
+						p.help-block How many players will this Experimonth allow for?
+		
+				.control-group
+					.controls
+						label.checkbox(for="open")
+							input#open.span5(type="checkbox", name="open", checked=experimonth.open)
+							|  Open?
+						p.help-block Is this Experimonth presently open for enrollment?
+		
+			.form-actions
+				button.btn.btn-primary(type="submit") Submit
+				|  
+				a.btn(href="/players") Cancel

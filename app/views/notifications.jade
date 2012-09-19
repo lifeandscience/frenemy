@@ -1,0 +1,11 @@
+mixin do_notifications()
+	- if(notifications && notifications.length > 0)
+		ul
+			- each notification, i in notifications
+				li(class='notification'+(notification.read ? ' read' : ''))
+					| #{moment(notification.date).format('LLLL')}
+					| !{notification.text}
+					a.close(href='/notification/read/'+notification._id)
+						i.icon-remove
+	- else
+		h2 No Notifications!

@@ -14,12 +14,17 @@
     , "jade": ">= 0.0.1"
     , "mongoose": ">= 0.0.1"
     , "connect-mongo": ">= 0.0.1"
-    , "mongoose-auth": "git://github.com/SpiderStrategies/mongoose-auth.git"
     , "nodemailer": ">= 0.0.1"
     , "less": ">= 0.0.1"
     , "csv": ">= 0.0.1"
     , "moment": ">= 0.0.1"
     , "less-middleware": ">= 0.0.1"
     , "connect-flash": ">= 0.0.1"
+
+    , "bcrypt": ">= 0.0.1"
+    , "passport": ">= 0.0.1"
+    , "passport-local": ">= 0.0.1"
+    , "passport-facebook": ">= 0.0.1"
+    , "passport-twitter": ">= 0.0.1"
   }
 }

@@ -1,9 +1,9 @@
-var utilities = require('./utilities')
-  , moment = require('moment')
+var moment = require('moment')
   , mongoose = require('mongoose')
-  , config = require('./config');
+  , config = require('./config')
+  , auth = require('./auth');
 
-app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
+app.get('/votes/export', auth.authorize(2, 10), function(req, res, next){
 	var start = Date.now();
 	util.log('starting the log up! '+start);
 	// Export all game data as a CSV
@@ -91,7 +91,7 @@ app.get('/votes/export', utilities.checkAdmin, function(req, res, next){
 	return;
 });
 
-app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
+app.get('/votes/export/all', auth.authorize(2, 10), function(req, res, next){
 	var start = Date.now();
 	util.log('starting the log up! '+start);
 	// Export all game data as a CSV
@@ -171,7 +171,7 @@ app.get('/votes/export/all', utilities.checkAdmin, function(req, res, next){
 
 
 
-app.get('/votes/export/score', utilities.checkAdmin, function(req, res, next){
+app.get('/votes/export/score', auth.authorize(2, 10), function(req, res, next){
 	var start = Date.now();
 	util.log('starting the log up! '+start);
 	// Export all game data as a CSV

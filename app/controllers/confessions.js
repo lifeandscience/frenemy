@@ -5,22 +5,23 @@ var form = require('express-form')
   , Confession = mongoose.model('Confession')
   , moment = require('moment')
   , email = require('./email')
-  , util = require('util');
+  , util = require('util')
+  , auth = require('./auth');
 
 app.get('/confessions', function(req, res){
 	var query = Confession.find({});
-	if(!req.loggedIn || !req.user || !req.user.isAdmin){
+	if(!req.loggedIn || !req.user || req.user.role < 10){
 		query.where('active', true);
 	}
 	query.sort('-number').exec(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
 			confessions[i].text = confessions[i].text.replace(/\r\n/gmi, '<br/>').replace(/\r/gmi, '<br/>').replace(/\n/gmi, '<br/>');
 		}
-		res.render('confessions/index', {title: 'All Confessions', confessions: confessions, moment: moment});
+		res.render('confessions', {title: 'All Confessions', confessions: confessions, moment: moment});
 	});
 });
 
-app.get('/confessions/numberExisting', utilities.checkAdmin, function(req, res){
+app.get('/confessions/numberExisting', auth.authorize(2, 10), function(req, res){
 	var start = 1;
 	Confession.find().sort('date').exec(function(err, confessions){
 		for(var i=0; i<confessions.length; i++){
@@ -68,7 +69,7 @@ app.get('/confessions/flag/:id', function(req, res){
 	});
 });
 
-app.get('/confessions/publish/:id', utilities.checkAdmin, function(req, res){
+app.get('/confessions/publish/:id', auth.authorize(2, 10), function(req, res){
 	if(!req.params.id){
 		req.flash('error', 'Confession ID required!');
 		res.redirect('/confessions');
@@ -90,7 +91,7 @@ app.get('/confessions/publish/:id', utilities.checkAdmin, function(req, res){
 	});
 });
 
-app.get('/confessions/unpublish/:id', utilities.checkAdmin, function(req, res){
+app.get('/confessions/unpublish/:id', auth.authorize(2, 10), function(req, res){
 	if(!req.params.id){
 		req.flash('error', 'Confession ID required!');
 		res.redirect('/confessions');

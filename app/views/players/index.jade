@@ -7,16 +7,14 @@ block body
 		table.table.tablesorter
 			thead
 				tr
-					th Name
-					th Defending?
+					th Email
 					th Score
 					th Last Played
 					th Actions
 			tbody
 				each player, i in players
 					tr
-						td #{player.name}
-						td #{player.defending ? 'yes' : 'no'}
+						td #{player.email}
 						td #{player.score}
 						td #{moment(player.lastPlayed).format('YYYY-MM-DD hh:mm A')}
 						td
@@ -24,7 +22,7 @@ block body
 							| 
 							//a.btn.btn-danger(href="/players/delete/#{player._id}") Delete
 							//| 
-							- if(player.isAdmin)
+							- if(player.role == 10)
 								a.btn.btn-success(href="/players/demote/#{player._id}")
 									i.icon-chevron-down.icon-white
 									|  Demote

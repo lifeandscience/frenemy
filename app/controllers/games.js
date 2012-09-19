@@ -6,9 +6,10 @@ var form = require('express-form')
   , Player = mongoose.model('Player')
   , config = require('./config')
   , util = require('util')
-  , moment = require('moment');
+  , moment = require('moment')
+  , auth = require('./auth');
 
-app.get('/games', utilities.checkAdmin, function(req, res){
+app.get('/games', auth.authorize(2, 10), function(req, res){
 	Game.find({completed: false}).sort('startTime').populate('opponents').populate('currentRound').populate('currentRound.votes').populate('rounds').exec(function(err, games){
 		res.render('games/index', {title: 'Active Games', games: games, util: util, moment: moment, page: 0, pages: 1, baseurl: '/games'});
 	});
@@ -26,8 +27,8 @@ var index = function(req, res){
 		});
 	});
 };
-app.get('/games/all', utilities.checkAdmin, index);
-app.get('/games/all/:page', utilities.checkAdmin, index);
+app.get('/games/all', auth.authorize(2, 10), index);
+app.get('/games/all/:page', auth.authorize(2, 10), index);
 
 var fullyPlayed = function(req, res){
 	var page = Number(req.params.page)
@@ -41,17 +42,17 @@ var fullyPlayed = function(req, res){
 		});
 	});
 };
-app.get('/games/fully-played', utilities.checkAdmin, fullyPlayed);
-app.get('/games/fully-played/:page', utilities.checkAdmin, fullyPlayed);
+app.get('/games/fully-played', auth.authorize(2, 10), fullyPlayed);
+app.get('/games/fully-played/:page', auth.authorize(2, 10), fullyPlayed);
 
-app.get('/games/start', utilities.checkAdmin, function(req, res){
+app.get('/games/start', auth.authorize(2, 10), function(req, res){
 	Game.setupGames(req, function(){
 		req.flash('info', 'Day started successfully!');
 		res.redirect('/games');
 	});
 });
 
-app.get('/games/end', utilities.checkAdmin, function(req, res){
+app.get('/games/end', auth.authorize(2, 10), function(req, res){
 	Game.endGames(function(){
 		req.flash('info', 'Day ended successfully!');
 		res.redirect('/games');

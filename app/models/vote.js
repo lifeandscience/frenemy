@@ -4,7 +4,7 @@ var mongoose = require('mongoose')
 
 var VoteSchema = new Schema({
 	player: {type: Schema.ObjectId, ref: 'Player'}
-  , game: {type: Schema.ObjectId, ref: 'Game'}
+  , round: {type: Schema.ObjectId, ref: 'Round'}
   , date: {type: Date, default: function(){ return Date.now(); }}
   , value: {type: String, enum: ['friend', 'enemy']}
 });

@@ -1,0 +1,132 @@
+extends ../layout
+
+include ../notifications
+
+block body
+	#container-inner
+		u = user(2);
+		- if(!u)
+			h1 Please provide your email address:
+			form.form-horizontal(action='/auth/addEmail', method='POST')
+				#login.control-group
+					label.control-label(for='email') Email: 
+					.controls
+						.input-prepend
+							span.add-on
+								i.icon-envelope
+							input(type='text', name='email', placeholder='email@email.com', tabindex=1)
+				#submit.control-group
+					.controls
+						input.btn(type='submit', value='Submit!', tabindex=3) Submit
+		- else 
+			- if(u.email)
+				img(src='http://www.gravatar.com/avatar/'+u.email_hash)
+			h1 Welcome to your profile!
+
+			h1 Notifications
+			mixin do_notifications()
+			
+			h1
+				| Experimonths 
+				a.btn(href="/experimonths") Enroll in More!
+			- if(experimonths && experimonths.length > 0)
+				ul
+					- each experimonth, i in experimonths
+						li(class='experimonth')
+							| #{moment(experimonth.startDate).utc().format('YYYY-MM-DD')} - #{moment(experimonth.endDate).utc().format('YYYY-MM-DD')}
+			
+			h1 Tell us more about you!
+			h2 Basic Info
+			form(method="POST", action="/players/edit/#{u._id}")#playerForm
+				.control-group
+					label.control-label(for="email") Email Address:
+					.controls
+						input#email.span5.disabled(type="text", placeholder="", name="email", value=u.email, disabled="disabled")
+
+				.control-group
+					label.control-label(for="name") Name:
+					.controls
+						input#name.span5(type="text", placeholder="", name="name", value=u.name)
+		
+				.control-group
+					label.control-label(for="twitter") Twitter (url):
+					.controls
+						input#twitter.span5(type="text", placeholder="", name="twitter", value=u.twitter)
+		
+				.control-group
+					label.control-label(for="facebook") Facebook (url):
+					.controls
+						input#facebook.span5(type="text", placeholder="", name="facebook", value=u.facebook)
+		
+				.control-group
+					label.control-label(for="flickr") Flickr (url):
+					.controls
+						input#flickr.span5(type="text", placeholder="", name="flickr", value=u.flickr)
+		
+				.control-group
+					label.control-label(for="tubmlr") Tumblr (url):
+					.controls
+						input#tubmlr.span5(type="text", placeholder="", name="tubmlr", value=u.tubmlr)
+		
+				.control-group
+					label.control-label(for="youtube") YouTube (url):
+					.controls
+						input#youtube.span5(type="text", placeholder="", name="youtube", value=u.youtube)
+		
+				.control-group
+					label.control-label(for="score") Score:
+					.controls
+						input#score.span5(type="text", placeholder="", name="score", value=u.score, disabled="disabled")
+						p.help-block Your Score.
+
+				.control-group
+					.controls
+						button.btn.btn-primary(type="submit") Save
+			
+			h3 Additional Info
+			- if(answers && answers.length > 0)
+				ul
+					- each answer, i in answers
+						li(class='question')
+							form(method="POST", action="/profile/questions/answer/#{answer.question._id}")
+								input(type="hidden", name="answerid", value=answer._id)
+								.control-group
+									label.control-label(for="value") Q: #{answer.question.text}
+									- if(answer.question.type == 'open')
+										.controls
+											input(type="text", name="value", value=answer.value)
+									- else if(answer.question.type == 'multiple-choice')
+										.controls
+											- for choice, j in answer.question.choices
+												label.radio
+													input(type="radio", name="value", value=choice, checked=(choice == answer.value))
+													| #{choice}
+								.control-group
+									.controls
+										button.btn.btn-primary(type="submit") Submit
+			- if(questions && questions.length > 0)
+				ul
+					- each question, i in questions
+						li(class='question')
+							form(method="POST", action="/profile/questions/answer/#{question._id}")
+								.control-group
+									label.control-label(for="value") Q: #{question.text}
+									- if(question.type == 'open')
+										.controls
+											input(type="text", name="value")
+									- else if(question.type == 'multiple-choice')
+										.controls
+											- for choice, j in question.choices
+												label.radio
+													input(type="radio", name="value", value="choice")
+													| #{choice}
+								.control-group
+									.controls
+										button.btn.btn-primary(type="submit") Submit
+								
+			h6 User
+			pre !{u}
+			h6 Answers
+			pre !{answers}
+			h6 Questions
+			pre !{questions}

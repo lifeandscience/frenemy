@@ -1,4 +1,5 @@
 var async = require('async')
+  , moment = require('moment')
   , util = require('util');
 
 module.exports = {
@@ -36,6 +37,8 @@ module.exports = {
 					if(!item){
 						item = new object();
 					}
+					console.log(varNames);
+					console.log(req.form);
 					varNames.forEach(function(name){
 						if(req.form[name]){
 							item[name] = req.form[name];
@@ -44,7 +47,7 @@ module.exports = {
 					var complete = function(item){
 						item.save(function(err, result){
 							if(err){
-								var obj = {title: title};
+								var obj = {title: title, moment: moment};
 								obj[as] = item;
 								if(beforeRender){
 									obj = beforeRender(req, res, obj);
@@ -55,8 +58,9 @@ module.exports = {
 									obj.layout = layout;
 								}
 */
-								util.log('rendering: '+util.inspect(obj));
-								res.render(template, obj);
+								if(obj){
+									res.render(template, obj);
+								}
 								return;
 							}
 							res.redirect(redirect);
@@ -74,7 +78,7 @@ module.exports = {
 				if(!item){
 					item = {};
 				}
-				var obj = {title: title};
+				var obj = {title: title, moment: moment};
 				obj[as] = item;
 				if(beforeRender){
 					obj = beforeRender(req, res, obj);
@@ -85,8 +89,9 @@ module.exports = {
 					obj.layout = layout;
 				}
 */
-				util.log('rendering: '+util.inspect(obj));
-				res.render(template, obj);
+				if(obj){
+					res.render(template, obj);
+				}
 				return;
 			});
 		}
@@ -118,7 +123,7 @@ module.exports = {
 	}
 
   , checkAdmin: function(req, res, next){
-		if(req.loggedIn && req.user && req.user.isAdmin){
+		if(req.loggedIn && req.user && req.user.role == 10){
 			// Check if they're an admin!
 			next();
 			return;

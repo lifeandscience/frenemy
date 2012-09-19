@@ -1,5 +1,4 @@
-var mongoose = require('mongoose')
-  , mongooseAuth = require('mongoose-auth');
+var mongoose = require('mongoose');
 
 // Database
 var db = process.env.MONGOHQ_URL || 'mongodb://localhost/frenemy';

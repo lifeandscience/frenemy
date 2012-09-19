@@ -5,91 +5,61 @@ var form = require('express-form')
   , Player = mongoose.model('Player')
   , csv = require('csv')
   , moment = require('moment')
-  , util = require('util');
+  , util = require('util')
+  , auth = require('./auth');
 
-app.get('/players', utilities.checkAdmin, function(req, res){
+app.get('/players', auth.authorize(2, 10), function(req, res){
 	Player.find({}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
 
-app.get('/players/defending', utilities.checkAdmin, function(req, res){
+/*
+// Saving for now.
+app.get('/players/defending', auth.authorize(2, 10), function(req, res){
 	Player.find({defending:true}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
-app.get('/players/nondefending', utilities.checkAdmin, function(req, res){
+app.get('/players/nondefending', auth.authorize(2, 10), function(req, res){
 	Player.find({defending:false}).sort('name').exec(function(err, players){
 		res.render('players/index', {title: 'All Players', players: players, moment: moment});
 	});
 });
+*/
 
 // (as, populate, title, object, template, varNames, redirect, beforeRender, beforeSave)
 var as = 'player'
   , populate = 'votes'
   , template = 'players/form'
-  , varNames = ['email', 'image', 'name', 'twitter', 'facebook', 'flickr', 'tumblr', 'youtube', 'score', 'profile_0', 'profile_1', 'profile_2', 'profile_3', 'profile_4', 'profile_5', 'profile_6', 'opponent_profile_1', 'opponent_profile_2', 'opponent_profile_3', 'opponent_profile_4', 'opponent_profile_5', 'opponent_profile_6', 'opponent_profile_7', 'opponent_profile_8', 'opponent_profile_9', 'opponent_profile_10', 'opponent_profile_11', 'opponent_profile_12', 'opponent_profile_13', 'opponent_profile_14', 'opponent_profile_15', 'opponent_profile_16', 'opponent_profile_17', 'opponent_profile_18', 'opponent_profile_19', 'opponent_profile_20', 'opponent_profile_21', 'opponent_profile_22', 'opponent_profile_23', 'opponent_profile_24', 'opponent_profile_25', 'opponent_profile_26', 'opponent_profile_27', 'opponent_profile_28', 'opponent_profile_29', 'opponent_profile_30']
-  , redirect = '/players'
+  , varNames = ['email', 'name', 'twitter', 'facebook', 'flickr', 'tumblr', 'youtube']
+  , redirect = 'back'
   , formValidate = form(
-		field('email').trim().required().isEmail()
-	  , field('image').trim()
-	  , field('name').trim().required()
+		field('email').trim()
+	  , field('name').trim()
 	  , field('twitter').trim()
 	  , field('facebook').trim()
 	  , field('flickr').trim()
 	  , field('tumblr').trim()
 	  , field('youtube').trim()
-	  , field('score').trim().isNumeric()
-	  , field('profile_0').trim()
-	  , field('profile_1').trim()
-	  , field('profile_2').trim()
-	  , field('profile_3').trim()
-	  , field('profile_4').trim()
-	  , field('profile_5').trim()
-	  , field('profile_6').trim()
-	  , field('opponent_profile_1').trim()
-	  , field('opponent_profile_2').trim()
-	  , field('opponent_profile_3').trim()
-	  , field('opponent_profile_4').trim()
-	  , field('opponent_profile_5').trim()
-	  , field('opponent_profile_6').trim()
-	  , field('opponent_profile_7').trim()
-	  , field('opponent_profile_8').trim()
-	  , field('opponent_profile_9').trim()
-	  , field('opponent_profile_10').trim()
-	  , field('opponent_profile_11').trim()
-	  , field('opponent_profile_12').trim()
-	  , field('opponent_profile_13').trim()
-	  , field('opponent_profile_14').trim()
-	  , field('opponent_profile_15').trim()
-	  , field('opponent_profile_16').trim()
-	  , field('opponent_profile_17').trim()
-	  , field('opponent_profile_18').trim()
-	  , field('opponent_profile_19').trim()
-	  , field('opponent_profile_20').trim()
-	  , field('opponent_profile_21').trim()
-	  , field('opponent_profile_22').trim()
-	  , field('opponent_profile_23').trim()
-	  , field('opponent_profile_24').trim()
-	  , field('opponent_profile_25').trim()
-	  , field('opponent_profile_26').trim()
-	  , field('opponent_profile_27').trim()
-	  , field('opponent_profile_28').trim()
-	  , field('opponent_profile_29').trim()
-	  , field('opponent_profile_30').trim()
 	);
 
-app.get('/players/add', utilities.checkAdmin, utilities.doForm(as, populate, 'Add New Player', Player, template, varNames, redirect));
-app.post('/players/add', utilities.checkAdmin, formValidate, utilities.doForm(as, populate, 'Add New Player', Player, template, varNames, redirect));
-app.get('/players/edit/:id', utilities.checkAdmin, utilities.doForm(as, populate, 'Edit Player', Player, template, varNames, redirect));
-app.post('/players/edit/:id', utilities.checkAdmin, formValidate, utilities.doForm(as, populate, 'Edit Player', Player, template, varNames, redirect));
+/*
+// Saving for now.
+app.get('/players/add', auth.authorize(2, 10), utilities.doForm(as, populate, 'Add New Player', Player, template, varNames, redirect));
+app.post('/players/add', auth.authorize(2, 10), formValidate, utilities.doForm(as, populate, 'Add New Player', Player, template, varNames, redirect));
+*/
+app.get('/players/edit/:id', auth.authorize(2, 10), utilities.doForm(as, populate, 'Edit Player', Player, template, varNames, redirect));
+app.post('/players/edit/:id', auth.authorize(2, 10), formValidate, utilities.doForm(as, populate, 'Edit Player', Player, template, varNames, redirect));
 
-app.get('/players/generate', utilities.checkAdmin, function(req, res){
+/*
+// Saving for now.
+app.get('/players/generate', auth.authorize(2, 10), function(req, res){
 	req.flash('error', 'Number of players to generate is required.');
 	res.redirect('/players');
 	return;
 });
-app.get('/players/generate/:num', utilities.checkAdmin, function(req, res){
+app.get('/players/generate/:num', auth.authorize(2, 10), function(req, res){
 	// Generate 6 players
 	if(!req.params.num){
 		req.flash('error', 'Number of players to generate is required.');
@@ -110,19 +80,20 @@ app.get('/players/generate/:num', utilities.checkAdmin, function(req, res){
 		});
 	}
 });
-app.get('/players/promote/:id', utilities.checkAdmin, function(req, res){
-	Player.update({_id: req.params.id}, {$set: {isAdmin: true}}, {}, function(){
+*/
+app.get('/players/promote/:id', auth.authorize(2, 10), function(req, res){
+	Player.update({_id: req.params.id}, {$set: {role: 10}}, {}, function(){
 		req.flash('info', 'Player Promoted!');
 		res.redirect('/players');
 	});
 });
-app.get('/players/demote/:id', utilities.checkAdmin, function(req, res){
-	Player.update({_id: req.params.id}, {$set: {isAdmin: false}}, {}, function(){
+app.get('/players/demote/:id', auth.authorize(2, 10), function(req, res){
+	Player.update({_id: req.params.id}, {$set: {role: 0}}, {}, function(){
 		req.flash('info', 'Player Demoted!');
 		res.redirect('/players');
 	});
 });
-app.get('/players/activate/:id', utilities.checkAdmin, function(req, res){
+app.get('/players/activate/:id', auth.authorize(2, 10), function(req, res){
 	Player.findById(req.params.id).exec(function(err, player){
 /* 	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){ */
 		player.active = true;
@@ -134,14 +105,16 @@ app.get('/players/activate/:id', utilities.checkAdmin, function(req, res){
 		});
 	});
 });
-app.get('/players/deactivate/:id', utilities.checkAdmin, function(req, res){
+app.get('/players/deactivate/:id', auth.authorize(2, 10), function(req, res){
 	Player.findById(req.params.id).exec(function(err, player){
+		console.log('err: ', err, player);
 		player.active = false;
-		player.save();
-		player.notifyOfActivation(false, function(){
-			util.log('activated: '+util.inspect(arguments));
-			req.flash('info', 'Player De-activated!');
-			res.redirect('/players');
+		player.save(function(){
+			player.notifyOfActivation(false, function(){
+				util.log('activated: '+util.inspect(arguments));
+				req.flash('info', 'Player De-activated!');
+				res.redirect('/players');
+			});
 		});
 	});
 /*
@@ -219,11 +192,13 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 	return;
 });
 
-app.get('/players/import', utilities.checkAdmin, function(req, res){
+/*
+// Saving for now.
+app.get('/players/import', auth.authorize(2, 10), function(req, res){
 	res.render('players/import', {title: 'Player import'});
 	return;
 });
-app.post('/players/import', utilities.checkAdmin, function(req, res){
+app.post('/players/import', auth.authorize(2, 10), function(req, res){
 	var count = 0
 	  , map = []
 	  , emailColumn = -1;
@@ -277,8 +252,9 @@ app.post('/players/import', utilities.checkAdmin, function(req, res){
 	});
 	
 });
+*/
 
-app.get('/players/export', utilities.checkAdmin, function(req, res, next){
+app.get('/players/export', auth.authorize(2, 10), function(req, res, next){
 	var start = Date.now();
 	util.log('starting the log up! '+start);
 	// Export all game data as a CSV
@@ -348,7 +324,9 @@ app.get('/players/export', utilities.checkAdmin, function(req, res, next){
 	return;
 });
 
-app.get('/players/resetScores/d23bd87', utilities.checkAdmin, function(req, res, next){
+/*
+// Saving for now.
+app.get('/players/resetScores/d23bd87', auth.authorize(2, 10), function(req, res, next){
 	Player.update({defending: true}, { $set: { score: 10000 }}, { multi: true }, function(){
 		util.log('did reset defending players!');
 		util.log(util.inspect(arguments));
@@ -362,3 +340,4 @@ app.get('/players/resetScores/d23bd87', utilities.checkAdmin, function(req, res,
 		});
 	});
 });
+*/

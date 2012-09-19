@@ -3,15 +3,17 @@
  * Module dependencies.
  */
 
-var   http = require('http')
+var	  http = require('http')
 	, express = require('express')
-	, mongooseAuth = require('mongoose-auth')
+//	, mongooseAuth = require('mongoose-auth')
 	, db = require('./db')
 	, vm = require('vm')
 	, fs = require('fs')
+	, mongoose = require('mongoose') 
 	, MongoStore = require('connect-mongo')(express)
 	, util = require('util')
-	, flash = require('connect-flash');
+	, flash = require('connect-flash')
+	, auth = require('./auth');
 
 
 var app = module.exports = express();
@@ -35,32 +37,46 @@ app.configure(function(){
 	app.use(express.cookieParser());
 	app.use(express.session({
 		secret: "keyboard cat"
-	  , store: new MongoStore({
+		, store: new MongoStore({
 			url: process.env.MONGOHQ_URL || 'mongodb://localhost/frenemy'
 		})
 	}));
 
-	// mongoose-auth: Step 2
-	app.use(mongooseAuth.middleware(app));
+//	// mongoose-auth: Step 2
+//	app.use(mongooseAuth.middleware(app));
+	auth.setup(app);
 	
 	app.use(flash());
 //	app.use(app.router);
 
 //	app.use(express.methodOverride());
-	var helpers = require('./helpers');
+	var helpers = require('./helpers')
+	  , Notification = mongoose.model('Notification');
 	app.locals(helpers.staticHelpers);
 	app.use(function(req, res, next){
+		res.locals.flash = req.flash.bind(req)
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};
-		next();
-	});
-	/* app.dynamicHelpers(helpers.dynamicHelpers); */
-	for(var key in helpers.dynamicHelpers){
-		app.use(function(req, res, next){
-			res.locals[key] = helpers.dynamicHelpers[key](req, res);
+		if(!req.user){
+			return next();
+		}
+		Notification.find({player: req.user, read: false}, function(err, notifications){
+			res.locals.notifications = notifications;
 			next();
 		});
+	});
+	/* app.dynamicHelpers(helpers.dynamicHelpers); */
+	var setupHelper = function(key, func){
+		console.log('setting up ', key);
+		app.use(function(req, res, next){
+			res.locals[key] = func.bind(req, res);
+			next();
+		});
+	}
+	
+	for(var key in helpers.dynamicHelpers){
+		setupHelper(key, helpers.dynamicHelpers[key]);
 	}
 });
 
@@ -75,6 +91,8 @@ app.configure('production', function(){
 
 ///*
 // Routes
+auth.route(app);
+
 var dir = __dirname + '/app/controllers';
 // grab a list of our route files
 fs.readdirSync(dir).forEach(function(file){
