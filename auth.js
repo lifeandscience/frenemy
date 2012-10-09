@@ -267,7 +267,7 @@ module.exports = {
 			});
 		});
 	}
-  , authorize: function(requiredState, requiredRole, message){
+  , authorize: function(requiredState, requiredRole, message, skipQuestionCount){
 		if(!requiredState){
 			requiredState = 0;
 		}
@@ -296,7 +296,39 @@ module.exports = {
 				res.redirect('back');
 				return;
 			}
-			next();
+			// We're authorized!
+			// Check if we need to answer questions
+			if(req.user.role >= 10 || skipQuestionCount){
+				// If we're an admin, we don't check for questions
+				next();
+				return;
+			}
+			
+			var ProfileQuestion = mongoose.model('ProfileQuestion')
+			  , ProfileAnswer = mongoose.model('ProfileAnswer');
+			ProfileQuestion.count({published: true}).exec(function(err, numQuestions){
+				if(err){
+					console.log('error retrieving questions: ', arguments);
+					next();
+					return;
+				}
+				ProfileAnswer.count({player: req.user._id}).exec(function(err, numAnswers){
+					if(err){
+						console.log('error retrieving answers: ', arguments);
+						next();
+						return;
+					}
+					if(numQuestions != numAnswers){
+						// There are some un-answered questions!
+						req.flash('error', 'Your profile is incomplete! You\'ve been redirected to <a href="/profile">your profile</a>; please answer all "additional information" questions then try your previous action again.');
+						res.redirect('/profile');
+						return;
+					}
+					// This user has answered all the questions!
+					next();
+					return;
+				});
+			});
 		};
 	}
 };

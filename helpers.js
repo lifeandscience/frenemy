@@ -31,5 +31,5 @@ exports.dynamicHelpers = {
 		console.log(arguments);
 		return app.req.user;
 	}
-  , moment: moment
+/*   , moment: moment */
 };

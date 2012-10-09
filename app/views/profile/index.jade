@@ -1,9 +1,10 @@
 extends ../layout
 
+include ../games/mixins
 include ../notifications
 
 block body
-	#container-inner
+	#container-inner.user-profile
 		u = user(2);
 		- if(!u)
 			h1 Please provide your email address:
@@ -26,6 +27,12 @@ block body
 			h1 Notifications
 			mixin do_notifications()
 			
+			h1 Current Games
+			mixin do_games(games, true, false)
+			
+			h1 Past Games
+			mixin do_games(games, true, true)
+			
 			h1
 				| Experimonths 
 				a.btn(href="/experimonths") Enroll in More!
@@ -34,6 +41,16 @@ block body
 					- each experimonth, i in experimonths
 						li(class='experimonth')
 							| #{moment(experimonth.startDate).utc().format('YYYY-MM-DD')} - #{moment(experimonth.endDate).utc().format('YYYY-MM-DD')}
+			
+			h1 Opt Out
+			p If you'd prefer, you can opt-out of your data being used in the analysis of the results of each Experimonth.
+			form(method="POST", action="/players/opt_out")#opt_out
+				.control-group
+					.controls
+						label.checkbox
+							input(type="checkbox", name="opt_out", checked=u.opt_out)
+							| Opt-Out
+						button.btn.btn-primary(type="submit") Submit
 			
 			h1 Tell us more about you!
 			h2 Basic Info
@@ -84,46 +101,54 @@ block body
 						button.btn.btn-primary(type="submit") Save
 			
 			h3 Additional Info
-			- if(answers && answers.length > 0)
-				ul
-					- each answer, i in answers
-						li(class='question')
-							form(method="POST", action="/profile/questions/answer/#{answer.question._id}")
-								input(type="hidden", name="answerid", value=answer._id)
-								.control-group
-									label.control-label(for="value") Q: #{answer.question.text}
-									- if(answer.question.type == 'open')
+			div#myCarousel.carousel.slide(data-interval="false")
+				.carousel-inner
+					haveDoneAQuestion = questions && questions.length > 0;
+					- if(questions && questions.length > 0)
+						- each question, i in questions
+							.item.question(class=(i == 0 ? 'active' : ''))
+								form(method="POST", action="/profile/questions/answer/#{question._id}")
+									.control-group
+										label.control-label(for="value") Q: #{question.text}
+										- if(question.type == 'open')
+											.controls
+												input(type="text", name="value")
+										- else if(question.type == 'multiple-choice')
+											.controls
+												- for choice, j in question.choices
+													label.radio
+														input(type="radio", name="value", value=choice)
+														| #{choice}
+									.control-group
 										.controls
-											input(type="text", name="value", value=answer.value)
-									- else if(answer.question.type == 'multiple-choice')
+											label.checkbox
+												input(type="checkbox", name="no_answer")
+												| Choose not to answer
+											button.btn.btn-primary(type="submit") Submit
+					- if(answers && answers.length > 0)
+						- each answer, i in answers
+							.item.question(class=((!haveDoneAQuestion && i == 0) ? 'active' : ''))
+								form(method="POST", action="/profile/questions/answer/#{answer.question._id}")
+									input(type="hidden", name="answerid", value=answer._id)
+									.control-group
+										label.control-label(for="value") Q: #{answer.question.text}
+										- if(answer.question.type == 'open')
+											.controls
+												input(type="text", name="value", value=answer.value)
+										- else if(answer.question.type == 'multiple-choice')
+											.controls
+												- for choice, j in answer.question.choices
+													label.radio
+														input(type="radio", name="value", value=choice, checked=(choice == answer.value))
+														| #{choice}
+									.control-group
 										.controls
-											- for choice, j in answer.question.choices
-												label.radio
-													input(type="radio", name="value", value=choice, checked=(choice == answer.value))
-													| #{choice}
-								.control-group
-									.controls
-										button.btn.btn-primary(type="submit") Submit
-			- if(questions && questions.length > 0)
-				ul
-					- each question, i in questions
-						li(class='question')
-							form(method="POST", action="/profile/questions/answer/#{question._id}")
-								.control-group
-									label.control-label(for="value") Q: #{question.text}
-									- if(question.type == 'open')
-										.controls
-											input(type="text", name="value")
-									- else if(question.type == 'multiple-choice')
-										.controls
-											- for choice, j in question.choices
-												label.radio
-													input(type="radio", name="value", value="choice")
-													| #{choice}
-								.control-group
-									.controls
-										button.btn.btn-primary(type="submit") Submit
-								
+											label.checkbox
+												input(type="checkbox", name="no_answer", checked=answer.no_answer)
+												| Choose not to answer
+											button.btn.btn-primary(type="submit") Submit
+				a.carousel-control.left(href="#myCarousel", data-slide="prev") &lsaquo;
+				a.carousel-control.right(href="#myCarousel", data-slide="next") &rsaquo;
 			h6 User
 			pre !{u}
 			h6 Answers

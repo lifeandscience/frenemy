@@ -1072,3 +1072,7 @@ a.top-right-button {
 #container-inner ul.confessions > li > .confession-content > ul > li:first-child {
   border-left: none;
 }
+.user-profile .carousel .item form {
+  width: 500px;
+  margin: 0 auto;
+}

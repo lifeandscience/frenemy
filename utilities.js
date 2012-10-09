@@ -1,6 +1,6 @@
 var async = require('async')
-  , moment = require('moment')
-  , util = require('util');
+  , util = require('util')
+  , sockets = [];
 
 module.exports = {
 	doForm: function(as, populate, title, object, template, varNames, redirect, beforeRender, beforeSave, layout){
@@ -32,7 +32,13 @@ module.exports = {
 				if(doc[0]){
 					item = doc[0];
 				}
-	
+				var finish = function(obj){
+					console.log('obj: ', obj);
+					if(obj){
+						res.render(template, obj);
+					}
+				};
+
 				if(validated){
 					if(!item){
 						item = new object();
@@ -47,10 +53,12 @@ module.exports = {
 					var complete = function(item){
 						item.save(function(err, result){
 							if(err){
-								var obj = {title: title, moment: moment};
+								var obj = {title: title};
 								obj[as] = item;
 								if(beforeRender){
-									obj = beforeRender(req, res, obj);
+									beforeRender(req, res, obj, finish);
+								}else{
+									finish(obj);
 								}
 /*
 								if(layout){
@@ -58,9 +66,6 @@ module.exports = {
 									obj.layout = layout;
 								}
 */
-								if(obj){
-									res.render(template, obj);
-								}
 								return;
 							}
 							res.redirect(redirect);
@@ -78,10 +83,12 @@ module.exports = {
 				if(!item){
 					item = {};
 				}
-				var obj = {title: title, moment: moment};
+				var obj = {title: title};
 				obj[as] = item;
 				if(beforeRender){
-					obj = beforeRender(req, res, obj);
+					beforeRender(req, res, obj, finish);
+				}else{
+					finish(obj);
 				}
 /*
 				if(layout){
@@ -89,9 +96,6 @@ module.exports = {
 					obj.layout = layout;
 				}
 */
-				if(obj){
-					res.render(template, obj);
-				}
 				return;
 			});
 		}
@@ -130,5 +134,17 @@ module.exports = {
 		}
 		req.flash('error', 'You are not authorized to view that resource!');
 		res.redirect('/');
+	}
+  , addSocket: function(socket){
+		sockets.push(socket);
+	}
+  , removeSocket: function(socket){
+		var idx = sockets.indexOf(socket);
+		if(idx != -1){
+			sockets.splice(idx, 1);
+		}
+	}
+  , getSockets: function(){
+		return sockets;
 	}
 }

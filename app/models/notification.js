@@ -3,7 +3,7 @@ var mongoose = require('mongoose')
   , util = require('util');
 
 var NotificationSchema = new Schema({
-	date: {type: Date, default: function(){ return Date.now(); }}
+	date: {type: Date, default: function(){ return new Date(); }}
   , read: {type: Boolean, default: false}
   , text: String
   , player: {type: Schema.ObjectId, ref: 'Player'}

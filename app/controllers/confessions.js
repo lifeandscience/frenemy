@@ -122,12 +122,13 @@ var as = 'confession'
   , formValidate = form(
 		field('text').trim().required()
 	)
-  , beforeRender = function(req, res, item){
+  , beforeRender = function(req, res, item, callback){
 		if(item.confession && req.params && req.params.number){
 			item.confession.text = 'This is in reply to confession #'+req.params.number+': ';
 		}
 		item.action = '/confessional';
-		return item;
+		return callback(item);
+/* 		return item; */
 	}
   , beforeSave = function(req, res, item, complete){
 		// Email to Beck

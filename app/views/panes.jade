@@ -77,7 +77,7 @@ slug = me.getProfileSlug(game.startTime);
 					h3 #{heading}: 
 					h3 !{me.getOpponentProfile(game.startTime, opponent)}
 // TODO: EVERYAUTH
-#leaderboard.pane(class=(everyauth.loggedIn ? 'logged-in' : null))
+#leaderboard.pane(class=(user() ? 'logged-in' : null))
 	.handle
 		a Results
 	.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/points-per-move/all/'+me._id)

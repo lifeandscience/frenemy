@@ -20,7 +20,7 @@ table#results
 			themPointsThisRound = round.getPointsForPlayer(opponent._id)
 			- themPoints += themPointsThisRound
 			tr
-				td.round #{round.number}
+				td.round: a(href="/game/#{game._id}/#{round._id}") #{round.number}
 				td
 					span(class=round.getVoteForPlayer(me._id).value) #{round.getVoteForPlayer(me._id).value}
 					// a(href="/games/#{game._id}/#{round._id}/#{me._id}") #{round.getVoteForPlayer(me._id).value}

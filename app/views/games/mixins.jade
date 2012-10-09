@@ -1,0 +1,33 @@
+mixin do_games(games, filter, completed)
+	table.table.tablesorter
+		thead
+			tr
+				th Started
+				th Completed?
+				th Opponents
+				th Completed Moves
+				th Actions
+		tbody
+			each game, i in games
+				if(!filter || game.completed == completed)
+					tr
+						td #{moment(game.startTime).format('YYYY-MM-DD hh:mm A')}
+						td #{game.completed ? 'yes' : 'no'}
+						td
+							ul
+								each opponent in game.opponents
+									li
+										- if(opponent.name)
+											| #{opponent.name}
+										- else
+											| #{opponent}
+						td #{game.rounds.length} / #{game.numRounds}
+						td
+							a.btn(href="/game/#{game._id}") View
+							|  
+							a.btn(href="/games/edit/#{game._id}") Edit
+							| 
+							a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
+							- if(game.startTime.getDay() == 4)
+								| 
+								a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat

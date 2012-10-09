@@ -81,19 +81,45 @@ app.get('/players/generate/:num', auth.authorize(2, 10), function(req, res){
 	}
 });
 */
+app.post('/players/opt_out', auth.authorize(2, 10), function(req, res){
+	req.user.opt_out = req.param('opt_out') == 'on';
+	console.log('params: ', req.params);
+	req.user.save(function(err){
+		if(err){
+			req.flash('error', 'There was an error while saving your opt-out state.');
+			res.redirect('back');
+			return;
+		}
+		req.flash('info', 'Your preference has been saved.');
+		res.redirect('back');
+		return;
+	});
+});
 app.get('/players/promote/:id', auth.authorize(2, 10), function(req, res){
+	if(!req.params.id){
+		res.send(404);
+		return;
+	}
 	Player.update({_id: req.params.id}, {$set: {role: 10}}, {}, function(){
 		req.flash('info', 'Player Promoted!');
 		res.redirect('/players');
 	});
 });
 app.get('/players/demote/:id', auth.authorize(2, 10), function(req, res){
+	if(!req.params.id){
+		res.send(404);
+		return;
+	}
 	Player.update({_id: req.params.id}, {$set: {role: 0}}, {}, function(){
 		req.flash('info', 'Player Demoted!');
 		res.redirect('/players');
 	});
 });
 app.get('/players/activate/:id', auth.authorize(2, 10), function(req, res){
+	if(!req.params.id){
+		res.send(404);
+		return;
+	}
 	Player.findById(req.params.id).exec(function(err, player){
 /* 	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){ */
 		player.active = true;
@@ -106,6 +132,10 @@ app.get('/players/activate/:id', auth.authorize(2, 10), function(req, res){
 	});
 });
 app.get('/players/deactivate/:id', auth.authorize(2, 10), function(req, res){
+	if(!req.params.id){
+		res.send(404);
+		return;
+	}
 	Player.findById(req.params.id).exec(function(err, player){
 		console.log('err: ', err, player);
 		player.active = false;

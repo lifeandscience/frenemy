@@ -199,4 +199,21 @@ jQuery(function(){
 	});
 	
 	jQuery('.tablesorter').tablesorter();
+	
+	var socket = io.connect('http://localhost');
+	socket.on('news', function (data) {
+		console.log(data);
+		socket.emit('my other event', { my: 'data' });
+	});
+	jQuery(document).trigger('socket-ready', socket);
+	
+	var game = jQuery('[data-game-id]');
+	if(game.length){
+		game = game.data('game-id');
+		console.log('subscribing to ', 'game-'+game);
+		socket.on('game-'+game, function(data){
+			console.log('got game notification for ', game, data);
+			document.location.reload();
+		});
+	}
 });

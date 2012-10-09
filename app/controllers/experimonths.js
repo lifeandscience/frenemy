@@ -5,6 +5,7 @@ var util = require('util')
   , auth = require('./auth')
   , mongoose = require('mongoose')
   , Experimonth = mongoose.model('Experimonth')
+  , ProfileQuestion = mongoose.model('ProfileQuestion')
   , moment = require('moment');
 
 app.get('/experimonths', auth.authorize(2), function(req, res){
@@ -77,6 +78,61 @@ app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
 	});
 });
 
+app.get('/experimonths/unenroll/:id', auth.authorize(2), function(req, res){
+	if(req.user.experimonths.indexOf(req.param('id')) == -1){
+		req.flash('info', 'You are not enrolled in this Experimonth!');
+		res.redirect('back');
+		return;
+	}
+	Experimonth.findById(req.param('id')).exec(function(err, experimonth){
+		if(err || !experimonth){
+			req.flash('error', 'Error finding Experimonth with ID '+req.param('id')+'. '+err);
+			res.redirect('back');
+			return;
+		}
+		if(experimonth.players.indexOf(req.user._id.toString()) != -1){
+			experimonth.players.splice(experimonth.players.indexOf(req.user._id.toString()), 1);
+		}
+/*
+		if(!experimonth.open){
+			req.flash('error', 'This Experimonth is not open for enrollment!');
+			res.redirect('back');
+			return;
+		}
+*/
+/*
+		if(experimonth.players.length >= experimonth.playerLimit){
+			req.flash('error', 'Player limit reached for this Experimonth!');
+			res.redirect('back');
+			return;
+		}
+*/
+		
+
+/* 		experimonth.players.push(req.user._id); */
+		experimonth.save(function(err){
+			if(err){
+				req.flash('error', 'Error saving Experimonth with ID '+req.param('id')+'. '+err);
+				res.redirect('back');
+				return;
+			}
+			if(req.user.experimonths.indexOf(req.param('id')) != -1){
+				req.user.experimonths.splice(req.user.experimonths.indexOf(req.param('id')), 1);
+			}
+			req.user.save(function(err){
+				if(err){
+					req.flash('error', 'Error saving player with ID '+req.user._id+'. '+err);
+					res.redirect('back');
+					return;
+				}
+				req.flash('info', 'You were un-enrolled successfully!');
+				res.redirect('back');
+				return;
+			});
+		});
+	});
+});
+
 /*
 app.get('/experimonths/add', auth.authorize(2), function(req, res){
 	res.render('experimonths/form', {title: 'Add Experimonth', experimonth: {}});
@@ -91,22 +147,30 @@ app.post('/experimonths/add', auth.authorize(2), function(req, res){
 var as = 'experimonth'
   , populate = []
   , template = 'experimonths/form'
-  , varNames = ['startDate', 'endDate', 'playerLimit', 'open']
+  , varNames = ['startDate', 'endDate', 'playerLimit', 'open', 'conditions']
   , redirect = '/experimonths'
   , formValidate = form(
 		field('startDate').trim().required().isDate()
 	  , field('endDate').trim().required().isDate()
 	  , field('playerLimit').trim().isNumeric()
 	  , field('open').trim()
+	  , field('conditions').array().trim()
 	)
-  , beforeRender = function(req, res, item){
+  , beforeRender = function(req, res, item, callback){
 /*
 		if(item.confession && req.params && req.params.number){
 			item.confession.text = 'This is in reply to confession #'+req.params.number+': ';
 		}
 		item.action = '/confessional';
 */
-		return item;
+		ProfileQuestion.find({published: true}).exec(function(err, questions){ 
+			if(err){
+				console.log('error finding questions to use as conditions: ', err);
+				questions = [];
+			}
+			item.questions = questions;
+			return callback(item);
+		})
 	}
   , beforeSave = function(req, res, item, complete){
 /*
@@ -131,8 +195,8 @@ var as = 'experimonth'
 	}
   , layout = 'layout';
 
-app.get('/experimonths/add', utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, null, layout));
-app.post('/experimonths/add', formValidate, utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, beforeSave, layout));
+app.get('/experimonths/add', auth.authorize(2, 10), utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, null, layout));
+app.post('/experimonths/add', auth.authorize(2, 10), formValidate, utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, beforeSave, layout));
 
-app.get('/experimonths/edit/:id', utilities.doForm(as, populate, 'Edit Experimonth', Experimonth, template, varNames, redirect, beforeRender, null, layout));
-app.post('/experimonths/edit/:id', formValidate, utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, beforeSave, layout));
+app.get('/experimonths/edit/:id', auth.authorize(2, 10), utilities.doForm(as, populate, 'Edit Experimonth', Experimonth, template, varNames, redirect, beforeRender, null, layout));
+app.post('/experimonths/edit/:id', auth.authorize(2, 10), formValidate, utilities.doForm(as, populate, 'Add Experimonth', Experimonth, template, varNames, redirect, beforeRender, beforeSave, layout));

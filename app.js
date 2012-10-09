@@ -1,3 +1,4 @@
+process.env.TZ = 'America/New_York';
 
 /**
  * Module dependencies.
@@ -13,10 +14,27 @@ var	  http = require('http')
 	, MongoStore = require('connect-mongo')(express)
 	, util = require('util')
 	, flash = require('connect-flash')
-	, auth = require('./auth');
+	, auth = require('./auth')
+	, moment = require('moment')
+	, utilities = require('./utilities');
 
 
-var app = module.exports = express();
+var app = module.exports = express()
+  , port = process.env.PORT || 3000
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server);
+
+server.listen(port, function(){
+	console.log("Express server listening on port %d in %s mode", port, app.settings.env);
+});
+
+utilities.io = io;
+io.sockets.on('connection', function (socket) {
+	utilities.addSocket(socket);
+	socket.on('disconnect', function(){
+		utilities.removeSocket(socket);
+	});
+});
 
 // Models
 var dir = __dirname + '/app/models';
@@ -55,6 +73,7 @@ app.configure(function(){
 	app.locals(helpers.staticHelpers);
 	app.use(function(req, res, next){
 		res.locals.flash = req.flash.bind(req)
+		res.locals.moment = moment;
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};
@@ -114,8 +133,3 @@ fs.readdirSync(dir).forEach(function(file){
 // mongoose-auth: Step 3
 mongooseAuth.helpExpress(app);
 */
-
-var port = process.env.PORT || 3000;
-(http.createServer(app)).listen(port, function(){
-	console.log("Express server listening on port %d in %s mode", port, app.settings.env);
-});

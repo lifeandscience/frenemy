@@ -6,25 +6,29 @@ var util = require('util')
   , utilities = require('./utilities')
   , mongoose = require('mongoose')
   , Experimonth = mongoose.model('Experimonth')
+  , Game = mongoose.model('Game')
   , Player = mongoose.model('Player')
   , ProfileQuestion = mongoose.model('ProfileQuestion')
   , ProfileAnswer = mongoose.model('ProfileAnswer');
 
-app.get('/profile', auth.authorize(1), function(req, res){
+app.get('/profile', auth.authorize(1, 0, null, true), function(req, res){
 	Experimonth.find({_id: {$in: req.user.experimonths}}).exec(function(err, experimonths){
-		ProfileAnswer.find({player: req.user._id}).populate('question').exec(function(err, answers){
-			var questions = [];
-			for(var i=0; i<answers.length; i++){
-				questions.push(answers[i].question._id);
-			}
-			ProfileQuestion.find({published: true, _id: {$not: {$in: questions}}}).exec(function(err, questions){
-				res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.user), experimonths: experimonths, questions: questions, answers: answers, moment: moment});
+		Game.find({_id: {$in: req.user.games}}).exec(function(err, games){
+			console.log('finding games:', err, games);
+			ProfileAnswer.find({player: req.user._id}).populate('question').exec(function(err, answers){
+				var questions = [];
+				for(var i=0; i<answers.length; i++){
+					questions.push(answers[i].question._id);
+				}
+				ProfileQuestion.find({published: true, _id: {$not: {$in: questions}}}).exec(function(err, questions){
+					res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.user), experimonths: experimonths, questions: questions, answers: answers, games: games});
+				});
 			});
 		});
 	});
 });
 
-app.get('/profile/questions', auth.authorize(2), function(req, res){
+app.get('/profile/questions', auth.authorize(2, 10), function(req, res){
 	// Your profile questions
 	ProfileQuestion.find({}).exec(function(err, questions){
 		res.render('profile/questions', {title: 'Profile Questions', questions: questions});
@@ -43,7 +47,7 @@ var as = 'question'
 	  , field('type').trim().required()
 	  , field('choices_string').trim()
 	)
-  , beforeRender = function(req, res, item){
+  , beforeRender = function(req, res, item, callback){
 /*
 		if(item.confession && req.params && req.params.number){
 			item.confession.text = 'This is in reply to confession #'+req.params.number+': ';
@@ -55,7 +59,7 @@ var as = 'question'
 			res.redirect('back');
 			return;
 		}
-		return item;
+		return callback(item);
 	}
   , beforeSave = function(req, res, item, complete){
 		// Convert choices_string into an array of strings
@@ -166,19 +170,18 @@ app.get('/profile/questions/publish/:id', auth.authorize(2, 10), function(req, r
 	});
 });
 
-app.post('/profile/questions/answer/:id', auth.authorize(2), function(req, res){
+app.post('/profile/questions/answer/:id', auth.authorize(2, 0, null, true), function(req, res){
 	if(!req.param('id')){
 		req.flash('error', 'Missing Profile Question ID.');
 		res.redirect('back');
 		return;
 	}
-	if(!req.param('value')){
-		req.flash('error', 'Missing value.');
+	if(!req.param('value') && !req.param('no_answer')){
+		req.flash('error', 'Please answer the question or check the \'Choose not to answer\' box.');
 		res.redirect('back');
 		return;
 	}
 	if(req.param('answerid')){
-		console.log('here!', req.param('answerid'));
 		ProfileAnswer.findById(req.param('answerid')).exec(function(err, answer){
 			if(err || !answer){
 				req.flash('error', 'Previous answer couldn\'t be retrieved');
@@ -186,6 +189,10 @@ app.post('/profile/questions/answer/:id', auth.authorize(2), function(req, res){
 				return;
 			}
 			answer.value = req.param('value');
+			answer.no_answer = req.param('no_answer') == 'on';
+			if(answer.no_answer){
+				answer.value = null;
+			}
 			answer.save(function(err){
 				if(err){
 					req.flash('error', 'Error saving existing answer!');
@@ -204,6 +211,10 @@ app.post('/profile/questions/answer/:id', auth.authorize(2), function(req, res){
 	answer.player = req.user._id;
 	answer.question = req.param('id');
 	answer.value = req.param('value');
+	answer.no_answer = req.param('no_answer') == 'on';
+	if(answer.no_answer){
+		answer.value = null;
+	}
 	answer.save(function(err){
 		if(err){
 			req.flash('error', 'Error saving new answer!');

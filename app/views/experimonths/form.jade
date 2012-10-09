@@ -30,6 +30,16 @@ block body
 							input#open.span5(type="checkbox", name="open", checked=experimonth.open)
 							|  Open?
 						p.help-block Is this Experimonth presently open for enrollment?
+
+				.control-group
+					label.control-label(for="conditions") Conditions:
+					.controls
+						- if(questions && questions.length)
+							each question, i in questions
+								label.checkbox
+									input.span5(type="checkbox", name="conditions", value=question._id, checked=(experimonth.conditions.indexOf(question._id) != -1))
+									|  #{question.text}
+						p.help-block What conditions should be used for this Experimonth?
 		
 			.form-actions
 				button.btn.btn-primary(type="submit") Submit

@@ -31,7 +31,7 @@ block body
 								- if(experimonth.players.indexOf(u._id.toString()) == -1)
 									a.btn.btn-primary(href="/experimonths/enroll/#{experimonth._id}") Enroll!
 								- else
-									a.btn.btn-primary.disabled Enrolled!
+									a.btn.btn-warning(href="/experimonths/unenroll/#{experimonth._id}") Un-enroll
 		//- if(pages > 1)
 		//	.pagination
 		//		ul

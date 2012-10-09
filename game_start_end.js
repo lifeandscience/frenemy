@@ -21,7 +21,7 @@ if(h != 0 && h != 8 && h != 16){
 var Game = mongoose.model('Game');
 Game.endGames(function(){
 	setTimeout(function(){
-		Game.setupGames(null, function(){
+		Game.startGames(null, function(){
 			process.exit(0);
 		});
 	}, 10000);

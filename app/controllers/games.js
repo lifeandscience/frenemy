@@ -46,12 +46,11 @@ app.get('/games/fully-played', auth.authorize(2, 10), fullyPlayed);
 app.get('/games/fully-played/:page', auth.authorize(2, 10), fullyPlayed);
 
 app.get('/games/start', auth.authorize(2, 10), function(req, res){
-	Game.setupGames(req, function(){
+	Game.startGames(req, function(){
 		req.flash('info', 'Day started successfully!');
 		res.redirect('/games');
 	});
 });
-
 app.get('/games/end', auth.authorize(2, 10), function(req, res){
 	Game.endGames(function(){
 		req.flash('info', 'Day ended successfully!');
@@ -59,81 +58,7 @@ app.get('/games/end', auth.authorize(2, 10), function(req, res){
 	});
 });
 
-app.get('/games/:id/:as', function(req, res){
-	// View a game in it's current state as the player identified as :as
-	if(!req.params.id){
-		req.flash('error', 'Invalid Game ID');
-		res.redirect('/');
-		return;
-	}
-	if(!req.params.as){
-		req.flash('error', 'Missing Player ID');
-		res.redirect('/');
-		return;
-	}
-	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
-		if(err || !game){
-			req.flash('error', 'Game not found!');
-			res.redirect('/');
-			return;
-		}
-		if(game.currentRound && !game.completed){
-			res.redirect('/games/'+game._id+'/'+game.currentRound+'/'+req.params.as);
-			return;
-		}
-
-		var me = null
-		  , opponent = null;
-		if(game.opponents[0]._id.toString() == req.params.as){
-			me = game.opponents[0];
-			opponent = game.opponents[1];
-		}else if(game.opponents[1]._id.toString() == req.params.as){
-			me = game.opponents[1];
-			opponent = game.opponents[0];
-		}else{
-			req.flash('error', 'This is not your game!');
-			res.redirect('/');
-			return;
-		}
-
-		if(game.rounds.length > 0){
-			var count = game.rounds.length
-			  , Round = mongoose.model('Round')
-			  , roundMap = {}
-			  , populateRound = function(index){
-					Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
-						game.rounds[index] = round;
-						if(--count == 0){
-							res.render('games/completed-game', {
-								title: 'Completed Game'
-							  , game: game
-							  , util: util
-							  , me: me
-							  , opponent: opponent
-							});
-//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
-							return;
-						}
-					});
-				};
-			for(var i=0; i<game.rounds.length; i++){
-				populateRound(i);
-			}
-		}else{
-			res.render('games/completed-game', {
-				title: 'Completed Game'
-			  , game: game
-			  , util: util
-			  , me: me
-			  , opponent: opponent
-			});
-//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
-		}
-		return;
-	});
-});
-
-app.get('/games/:id/:round/:as', function(req, res){
+app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 	// View a game in it's current state as the player identified as :as
 	if(!req.params.id){
 		req.flash('error', 'Invalid Game ID');
@@ -145,138 +70,13 @@ app.get('/games/:id/:round/:as', function(req, res){
 		res.redirect('/');
 		return;
 	}
+/*
 	if(!req.params.as){
 		req.flash('error', 'Missing Player ID');
 		res.redirect('/');
 		return;
 	}
-	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
-		if(err || !game){
-			req.flash('error', 'Game not found!');
-			res.redirect('/');
-			return;
-		}
-		var count = game.rounds.length
-		  , Round = mongoose.model('Round')
-		  , roundMap = {}
-		  , checkDone = function(){
-				if(--count == 0){
-				
-					var me = null
-					  , opponent = null;
-					if(game.opponents[0]._id.toString() == req.params.as){
-						me = game.opponents[0];
-						opponent = game.opponents[1];
-					}else if(game.opponents[1]._id.toString() == req.params.as){
-						me = game.opponents[1];
-						opponent = game.opponents[0];
-					}else{
-						req.flash('error', 'This is not your game!');
-						res.redirect('/');
-						return;
-					}
-					
-			/*
-					if(game.completed){
-						res.redirect('/games/'+req.params.id+'/'+req.params.as);
-						return;
-					}
-			*/
-			
-					// Identify this round
-			//		if(!game.currentRound){
-			//			res.redirect('/games/'+game._id+'/'+req.params.as);
-			//			return;
-			//		}
-			
-					var round = null;
-					if(game.currentRound && game.currentRound.toString() == req.params.round){
-						round = game.currentRound;
-					}else{
-						for(var i=0; i<game.rounds.length; i++){
-							if(game.rounds[i]._id.toString() == req.params.round){
-								round = game.rounds[i];
-								break;
-							}
-						}
-					}
-					
-					if(!round){
-						res.render('games/round-expired', {
-							title: 'Game Expired'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						});
-						return;
-					}
-					
-					var Round = mongoose.model('Round');
-					Round.findById(round).populate('votes').exec(function(err, round){
-						// Identify if any votes in this round are for this player
-						var my_vote = null
-						  , their_vote = null;
-						for(var i=0; i<round.votes.length; i++){
-							if(round.votes[i].player.toString() == me._id.toString()){
-								my_vote = round.votes[i];
-								continue;
-							}
-							if(round.votes[i].player.toString() == opponent._id.toString()){
-								their_vote = round.votes[i];
-								continue;
-							}
-						}
-				
-						res.render('games/view', {
-							title: 'In-Progress Game'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						  , currentRound: game.currentRound
-						  , round: round
-						  , my_vote: my_vote
-						  , their_vote: their_vote
-						});
-						return;
-					});
-				}
-			}
-		  , populateRound = function(index){
-				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
-					game.rounds[index] = round;
-					checkDone();
-				});
-			};
-		if(game.rounds.length > 0){
-			for(var i=0; i<game.rounds.length; i++){
-				populateRound(i);
-			}
-		}else{
-			count = 1;
-			checkDone();
-		}
-	});
-});
-
-app.get('/games/:id/:round/:as/complete', function(req, res){
-	// View a game in it's current state as the player identified as :as
-	if(!req.params.id){
-		req.flash('error', 'Invalid Game ID');
-		res.redirect('/');
-		return;
-	}
-	if(!req.params.round){
-		req.flash('error', 'Missing Round ID');
-		res.redirect('/');
-		return;
-	}
-	if(!req.params.as){
-		req.flash('error', 'Missing Player ID');
-		res.redirect('/');
-		return;
-	}
+*/
 	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
@@ -291,10 +91,10 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 			
 					var me = null
 					  , opponent = null;
-					if(game.opponents[0]._id.toString() == req.params.as){
+					if(game.opponents[0]._id.toString() == req.user._id.toString()){
 						me = game.opponents[0];
 						opponent = game.opponents[1];
-					}else if(game.opponents[1]._id.toString() == req.params.as){
+					}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
 						me = game.opponents[1];
 						opponent = game.opponents[0];
 					}else{
@@ -346,7 +146,7 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 					
 						if(!round.votes || round.votes.length < 2){
 							req.flash('error', 'Round not complete!!');
-							res.redirect('/games/'+req.params.id+'/'+req.params.round+'/'+req.params.as);
+							res.redirect('/game/'+req.params.id+'/'+req.params.round/* +'/'+req.params.as */);
 							return;
 						}
 			
@@ -396,7 +196,7 @@ app.get('/games/:id/:round/:as/complete', function(req, res){
 	});
 });
 
-app.get('/games/:id/:round/:as/:value', function(req, res){
+app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 	// View a game in it's current state as the player identified as :as
 	if(!req.params.id){
 		req.flash('error', 'Invalid Game ID');
@@ -408,23 +208,25 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 		res.redirect('/');
 		return;
 	}
+/*
 	if(!req.params.as){
 		req.flash('error', 'Missing Player ID');
 		res.redirect('/');
 		return;
 	}
+*/
 	if(!req.params.value){
 		req.flash('error', 'Missing Value');
-		res.redirect('/games/'+req.params.id+'/'+req.params.round+'/'+req.params.as);
+		res.redirect('/game/'+req.params.id +'/'+req.params.round/* +'/'+req.params.as */);
 		return;
 	}
 	if(req.params.value != 'friend' && req.params.value != 'enemy'){
 		req.flash('error', req.params.value+' is not a valid value!');
-		res.redirect('/games/'+req.params.id+'/'+req.params.round+'/'+req.params.as);
+		res.redirect('/game/'+req.params.id +'/'+req.params.round/* +'/'+req.params.as */);
 		return;
 	}
 
-	Game.findById(req.params.id).exec(function(err, game){
+	Game.findById(req.params.id).populate('currentRound').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -437,10 +239,10 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 				if(--count == 0){
 					var me = null
 					  , opponent = null;
-					if(game.opponents[0].toString() == req.params.as){
+					if(game.opponents[0].toString() == req.user._id.toString()){
 						me = game.opponents[0];
 						opponent = game.opponents[1];
-					}else if(game.opponents[1].toString() == req.params.as){
+					}else if(game.opponents[1].toString() == req.user._id.toString()){
 						me = game.opponents[1];
 						opponent = game.opponents[0];
 					}else{
@@ -449,9 +251,9 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 						return;
 					}
 			
-					if(!game.currentRound || game.currentRound.toString() != req.params.round){
-						req.flash('error', 'You may not vote on this round as it is not the current round!');
-						res.redirect('/games/'+req.params.id+'/'+req.params.round+'/'+req.params.as);
+					if(!game.currentRound){
+						req.flash('error', 'You may not vote on this game as there is no current round!');
+						res.redirect('/game/'+req.params.id/* +'/'+req.params.as */);
 						return;
 					}
 					
@@ -461,13 +263,13 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 							if(currentRound.votes.length == 2){
 								// Already have two votes!
 								req.flash('error', 'You may not vote on this round!');
-								res.redirect('/games/'+game._id+'/'+currentRound._id+'/'+req.params.as);
+								res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
 								return;
-							}else if(currentRound.votes[0].player.toString() == req.params.as){
+							}else if(currentRound.votes[0].player.toString() == req.user._id.toString()){
 								// currentRound.votes.length == 1
 								// And that one vote is this player's
 								req.flash('error', 'You\'ve already voted in this round!');
-								res.redirect('/games/'+game._id+'/'+currentRound._id+'/'+req.params.as);
+								res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
 								return;
 							}
 						}
@@ -475,7 +277,7 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 						// Therefore, this is a valid vote!
 						var Vote = mongoose.model('Vote')
 						  , vote = new Vote();
-						vote.player = req.params.as;
+						vote.player = req.user._id.toString();
 						vote.value = req.params.value;
 						vote.game = game;
 						vote.save(function(err){
@@ -503,12 +305,12 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 											player.lastPlayed = new Date();
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 												});
 											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 												});
 											}
 										});
@@ -520,12 +322,12 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 											}
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 												});
 											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/games/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/games/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
 												});
 											}
 										});
@@ -533,10 +335,10 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 										game.rounds.push(round);
 										game.currentRound = null;
 										game.save(function(err, game){
-											res.redirect('/games/'+game._id+'/'+round._id+'/'+req.params.as);
+											res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
 										});
 									}else{
-										res.redirect('/games/'+game._id+'/'+round._id+'/'+req.params.as);
+										res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
 									}
 								});
 							});
@@ -559,6 +361,215 @@ app.get('/games/:id/:round/:as/:value', function(req, res){
 		}else{
 			count = 1;
 			checkDone();
+		}
+		return;
+	});
+});
+
+app.get('/game/:id/:round', auth.authorize(2), function(req, res){
+	// View a game in it's current state as the player identified as :as
+	if(!req.params.id){
+		req.flash('error', 'Invalid Game ID');
+		res.redirect('/');
+		return;
+	}
+	if(!req.params.round){
+		req.flash('error', 'Missing Round ID');
+		res.redirect('/');
+		return;
+	}
+/*
+	if(!req.params.as){
+		req.flash('error', 'Missing Player ID');
+		res.redirect('/');
+		return;
+	}
+*/
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+		var count = game.rounds.length
+		  , Round = mongoose.model('Round')
+		  , roundMap = {}
+		  , checkDone = function(){
+				if(--count == 0){
+				
+					var me = null
+					  , opponent = null;
+					if(game.opponents[0]._id.toString() == req.user._id.toString()){
+						me = game.opponents[0];
+						opponent = game.opponents[1];
+					}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+						me = game.opponents[1];
+						opponent = game.opponents[0];
+					}else{
+						req.flash('error', 'This is not your game!');
+						res.redirect('/');
+						return;
+					}
+					
+			/*
+					if(game.completed){
+						res.redirect('/games/'+req.params.id+'/'+req.params.as);
+						return;
+					}
+			*/
+			
+					// Identify this round
+			//		if(!game.currentRound){
+			//			res.redirect('/games/'+game._id+'/'+req.params.as);
+			//			return;
+			//		}
+			
+					var round = null;
+					if(game.currentRound && game.currentRound.toString() == req.params.round){
+						round = game.currentRound;
+					}else{
+						for(var i=0; i<game.rounds.length; i++){
+							if(game.rounds[i]._id.toString() == req.params.round){
+								round = game.rounds[i];
+								break;
+							}
+						}
+					}
+					
+					if(!round){
+						res.render('games/round-expired', {
+							title: 'Game Expired'
+						  , game: game
+						  , util: util
+						  , me: me
+						  , opponent: opponent
+						});
+						return;
+					}
+					
+					var Round = mongoose.model('Round');
+					Round.findById(round).populate('votes').exec(function(err, round){
+						if(round.completed || round.votes.length == 2){
+							res.redirect('/game/'+game._id+'/'+round._id+'/complete');
+							return;
+						}
+						// Identify if any votes in this round are for this player
+						var my_vote = null
+						  , their_vote = null;
+						for(var i=0; i<round.votes.length; i++){
+							if(round.votes[i].player.toString() == me._id.toString()){
+								my_vote = round.votes[i];
+								continue;
+							}
+							if(round.votes[i].player.toString() == opponent._id.toString()){
+								their_vote = round.votes[i];
+								continue;
+							}
+						}
+				
+						res.render('games/view', {
+							title: 'In-Progress Game'
+						  , game: game
+						  , util: util
+						  , me: me
+						  , opponent: opponent
+						  , currentRound: game.currentRound
+						  , round: round
+						  , my_vote: my_vote
+						  , their_vote: their_vote
+						});
+						return;
+					});
+				}
+			}
+		  , populateRound = function(index){
+				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
+					game.rounds[index] = round;
+					checkDone();
+				});
+			};
+		if(game.rounds.length > 0){
+			for(var i=0; i<game.rounds.length; i++){
+				populateRound(i);
+			}
+		}else{
+			count = 1;
+			checkDone();
+		}
+	});
+});
+
+app.get('/game/:id', auth.authorize(2), function(req, res){
+	// View a game in it's current state as the player identified as :as
+	if(!req.params.id){
+		req.flash('error', 'Invalid Game ID');
+		res.redirect('/');
+		return;
+	}
+/*
+	if(!req.params.as){
+		req.flash('error', 'Missing Player ID');
+		res.redirect('/');
+		return;
+	}
+*/
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+		if(game.currentRound && !game.completed){
+			res.redirect('/game/'+game._id+'/'+game.currentRound/* +'/'+req.params.as */);
+			return;
+		}
+
+		var me = null
+		  , opponent = null;
+		if(game.opponents[0]._id.toString() == req.user._id.toString()){
+			me = game.opponents[0];
+			opponent = game.opponents[1];
+		}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+			me = game.opponents[1];
+			opponent = game.opponents[0];
+		}else{
+			req.flash('error', 'This is not your game!');
+			res.redirect('/');
+			return;
+		}
+
+		if(game.rounds.length > 0){
+			var count = game.rounds.length
+			  , Round = mongoose.model('Round')
+			  , roundMap = {}
+			  , populateRound = function(index){
+					Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
+						game.rounds[index] = round;
+						if(--count == 0){
+							res.render('games/completed-game', {
+								title: 'Completed Game'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							});
+//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
+							return;
+						}
+					});
+				};
+			for(var i=0; i<game.rounds.length; i++){
+				populateRound(i);
+			}
+		}else{
+			res.render('games/completed-game', {
+				title: 'Completed Game'
+			  , game: game
+			  , util: util
+			  , me: me
+			  , opponent: opponent
+			});
+//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
 		}
 		return;
 	});

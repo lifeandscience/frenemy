@@ -1,28 +1,130 @@
 var mongoose = require('mongoose')
   , Schema = mongoose.Schema
   , util = require('util')
-  , config = require('../../config');
+  , utilities = require('../../utilities')
+  , config = require('../../config')
+  , nrand = function() {
+		var x1, x2, rad;
+	
+		do {
+			x1 = 2 * Math.random() - 1;
+			x2 = 2 * Math.random() - 1;
+			rad = x1 * x1 + x2 * x2;
+		} while(rad >= 1 || rad == 0);
+	 
+		var c = Math.sqrt(-2 * Math.log(rad) / rad);
+	 
+		return x1 * c;
+	};
 
 var GameSchema = new Schema({
 	startTime: {type: Date, default: function(){ return Date.now(); }}
   , numRounds: {
 		type: Number, 
 		default: function(){
-			return Math.floor(Math.random() * 5) + 3;  
+			// Std. Deviation of 1, Mean of 6!
+			return Math.round((1*nrand())+6);
+/* 			return Math.floor(Math.random() * 5) + 3;   */
 		}
 	}
   , experimonth: {type: Schema.ObjectId, ref: 'Experimonth'}
+  , condition: {type: Schema.ObjectId, ref: 'ProfileQuestion'}
+  , same: {type: Boolean, default: function(){
+		return Math.floor(Math.random()*2) == 1;
+	}}
   , completed: {type: Boolean, default: false}
   , opponents: [{type: Schema.ObjectId, ref: 'Player'}]
   , currentRound: {type: Schema.ObjectId, ref: 'Round'}
   , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
 });
 
-GameSchema.statics.setupGames = function(req, cb){
+GameSchema.statics.startGames = function(req, cb){
 	if(typeof req == 'function'){
 		cb = req;
 		req = null;
 	}
+	var Experimonth = mongoose.model('Experimonth')
+	  , Player = mongoose.model('Player')
+	  , now = new Date();
+//	Experimonth.findCurrentlyRunningExperimonths(function(err, experimonths){
+	Experimonth.find({startDate: {$lte: new Date()}, endDate: {$gte: new Date()}}).populate('players').populate('conditions').exec(function(err, experimonths){
+		if(err || !experimonths || experimonths.length == 0){
+			console.log('error finding experimonths OR no experimonths found');
+			return cb();
+		}
+		var i = -1
+		  , pickPlayer = function(fillinPlayer, players){
+				console.log('picking a player from a players array of length '+players.length);
+				if(players.length == 0){
+					console.log('using fill in player: ('+fillinPlayer.email+')');
+					return fillinPlayer;
+				}
+				var index = Math.floor(Math.random() * players.length);
+				return players.splice(index, 1)[0];
+			}
+		  , gotFillInPlayer = function(fillinPlayer, experimonth){
+				// OK, we have either an even number of players 
+				// OR an odd number of players but a willing fillinPlayer
+				
+				// Now, let's randomly pair up players.
+				var playerOne = pickPlayer(fillinPlayer, experimonth.players)
+				  , playerTwo = pickPlayer(fillinPlayer, experimonth.players);
+				
+				// We have players, let's create a game.
+				var game = new Game();
+				game.opponents.push(playerOne);
+				game.opponents.push(playerTwo);
+				game.experimonth = experimonth._id;
+				game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+				game.save(function(err){
+					if(err){
+						console.log('error saving: ', game);
+						return cb();
+					}
+
+					playerOne.games.push(game);
+					playerOne.save();
+					playerTwo.games.push(game);
+					playerTwo.save();
+
+					console.log('saved game successfully! ', game);
+					handleExperimonth();
+				});
+			}
+		  , handleExperimonth = function(){
+				if(++i == experimonths.length){
+					// We're finished!
+					return cb();
+				}
+				var experimonth = experimonths[i]
+				  , fillinPlayer = null;
+				if(experimonth.players.length % 2){
+					// Find an admin player to use
+					for(var j=0; j<experimonth.players.length; j++){
+						if(experimonth.players[j].role >= 10){
+							fillinPlayer = experimonth.players[j];
+							break;
+						}
+					}
+					if(!fillinPlayer){
+						// None of the enrolled players was an admin, so grab an arbitrary admin.
+						Player.find({role: {$gte: 10}}).exec(function(err, admins){
+							if(err || !admins || admins.length == 0){
+								return cb();
+							}
+							var idx = Math.floor(Math.random()*admins.length);
+							gotFillInPlayer(admins[idx], experimonth);
+						});
+						return;
+					}
+				}
+				gotFillInPlayer(fillinPlayer, experimonth);
+			};
+		handleExperimonth();
+	});
+	return;
+	
+	
 	var Player = mongoose.model('Player');
 	Player.find({email: config.defaultNonDefenderEmail}).run(function(err, nonDefendingPlayers){
 		var nonDefendingPlayer = nonDefendingPlayers.pop();
@@ -128,8 +230,10 @@ GameSchema.pre('save', function(next){
 				for(var i=0; i<2; i++){
 					util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
 					count++;
-					Player.findById(game.opponents[i]).run(function(err, opponent){
+					Player.findById(game.opponents[i]).exec(function(err, opponent){
 						if(opponent){
+							opponent.rounds.push(round);
+							opponent.save();
 							opponent.notifyOfNewRound(round, 'new-game', '/games/'+game._id+'/'+round._id+'/'+opponent._id, function(){
 								if(--count == 0){
 									next();
@@ -150,6 +254,11 @@ GameSchema.pre('save', function(next){
 	}else{
 		next();
 	}
+});
+GameSchema.post('save', function(game){
+	console.log('io: ', utilities.io);
+	console.log('emitting: ', 'game-'+game._id);
+	utilities.io.sockets.emit('game-'+game._id, 'saved');
 });
 
 var players = null

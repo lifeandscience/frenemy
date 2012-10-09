@@ -8,6 +8,7 @@ var ExperimonthSchema = new Schema({
   , playerLimit: {type: Number, default: 100}
   , players: [{type: Schema.ObjectId, ref: 'Player'}]
   , open: {type: Boolean, default: false}
+  , conditions: [{type: Schema.ObjectId, ref: 'ProfileQuestion'}]
 });
 
 var Experimonth = mongoose.model('Experimonth', ExperimonthSchema);

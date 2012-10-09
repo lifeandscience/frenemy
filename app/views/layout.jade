@@ -38,8 +38,8 @@ html(lang="en")
 										li: a(href="/games") Active Games
 										li: a(href="/games/fully-played") Fully-Played Games
 										li: a(href="/games/all") All Games
-										//li: a(href="/games/start") Force Start Day
-										//li: a(href="/games/end") Force End Day
+										li: a(href="/games/start") Force Start Day
+										li: a(href="/games/end") Force End Day
 								li.dropdown
 									a.dropdown-toggle(href="#", data-toggle="dropdown")
 										| Players
@@ -123,6 +123,7 @@ html(lang="en")
 			script(src="/js/jquery.cookie.js")
 			script(src="/js/bootbox.min.js")
 			script(src="/js/bootbox.confirm.js")
+			script(src="/socket.io/socket.io.js")
 			script(src="/js/script.js")
 		| <script type="text/javascript">
 		| 
