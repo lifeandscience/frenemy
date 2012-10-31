@@ -27,7 +27,7 @@ block body
 				.control-group
 					.controls
 						label.checkbox(for="open")
-							input#open.span5(type="checkbox", name="open", checked=experimonth.open)
+							input#open(type="checkbox", name="open", checked=experimonth.open)
 							|  Open?
 						p.help-block Is this Experimonth presently open for enrollment?
 
@@ -37,7 +37,7 @@ block body
 						- if(questions && questions.length)
 							each question, i in questions
 								label.checkbox
-									input.span5(type="checkbox", name="conditions", value=question._id, checked=(experimonth.conditions.indexOf(question._id) != -1))
+									input(type="checkbox", name="conditions", value=question._id, checked=(experimonth.conditions && experimonth.conditions.indexOf(question._id) != -1))
 									|  #{question.text}
 						p.help-block What conditions should be used for this Experimonth?
 		

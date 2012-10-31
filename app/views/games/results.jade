@@ -29,6 +29,14 @@ table#results
 					//a(href="/games/#{game._id}/#{round._id}/#{opponent._id}") #{round.getVoteForPlayer(opponent._id).value}
 				td.you #{round.getStringPointsForPlayer(me._id, mePointsThisRound)}
 				td.them #{round.getStringPointsForPlayer(opponent._id, themPointsThisRound)}
+		- if(game.walkaway)
+			u = user()
+			tr.walkaway
+				td(colspan=5)
+					- if(u._id.toString() == game.walkaway)
+						| You walked away!
+					- else
+						| They walked away!
 		- if(game.completed)
 			tr.total
 				td

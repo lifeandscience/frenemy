@@ -4,6 +4,8 @@
 @yellow: #ffcb05;
 @red: #c4161c;
 
+@gray: #333;
+
 @bauhaus: 'Bauhaus W01 Heavy', Arial, sans-serif;
 
 html {
@@ -80,9 +82,11 @@ body.confessional {
 			text-align: center;
 		}
 	}
+/*
 	.modal {
 		color: white;
 	}
+*/
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -332,7 +336,7 @@ h1, h2, h3, h4, h5, h6 {
 
 	.handle {
 		height: 55px;
-		width: 330px;
+		width: 430px;
 	}
 
 	.inner {
@@ -848,10 +852,12 @@ span.enemy {
 }
 
 #scoring {
+/*
 	width: 1070px;
 	margin: 0 auto;
 	clear: both;
 	padding-bottom: 150px;
+*/
 	
 	h4 {
 		color: #808080;
@@ -1111,18 +1117,26 @@ a.top-right-button {
 }
 
 .modal {
-	background-color: rgba(0, 0, 0, 0.7);
-	border: 7px solid white;
+	background-color: rgba(255,255,255,0.9);
+	border: 7px solid @blue;
 	padding: 20px 40px;
 	.border-radius();
+	color: @gray;
 	
+	.modal-header {
+		border-bottom-color: @gray;
+	}
+	
+/*
 	.modal-header {
 		button {
 			color: white;
 		}
 	}
+*/
 }
 
+/*
 #play-by-play-trigger {
 	float: right;
 	margin-top: -3px;
@@ -1131,6 +1145,7 @@ a.top-right-button {
 	width: 720px;
 	margin-left: -400px;
 }
+*/
 .tablesorter {
 	color: black;
 }

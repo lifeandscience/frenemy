@@ -6,7 +6,7 @@
 				tr
 					th.name
 						.th-inner
-							| leader 
+							| leader
 							i.icon-question-sign
 					th.friendliness
 						.th-inner 
@@ -19,6 +19,6 @@
 			tbody
 				each player, i in players
 					tr
-						td.name #{player.name}
+						td.name #{player.name} (#{player.score} / #{player.friendCount} / #{player.numVotes})
 						td.friendliness #{Math.round((player.friendCount / player.numVotes)*10000)/100}%
 						td.score #{Math.round(player.pointsPerVote*100)/100}

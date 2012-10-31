@@ -58,6 +58,88 @@ app.get('/games/end', auth.authorize(2, 10), function(req, res){
 	});
 });
 
+var getConditionAnswers = function(game, myID, cb){
+	var ProfileAnswer = mongoose.model('ProfileAnswer');
+	ProfileAnswer.find({question: game.condition, player: {$in: [game.opponents[0]._id, game.opponents[1]._id]}}).exec(function(err, answers){
+		if(err || !answers){
+			// Someone hasn't answered their questions?!
+			console.log(err, answers);
+			req.flash('error', 'Someone needs to answer all of their profile questions!');
+			res.redirect('/profile');
+			return;
+		}
+		
+		var me = null
+		  , opponent = null;
+		for(var i=0; i<answers.length; i++){
+			console.log('comparing ', answers[i].player.toString(), myID);
+			if(answers[i].player.toString() == myID){
+				console.log('found me!');
+				me = answers[i];
+			}else{
+				console.log('found them!');
+				opponent = answers[i];
+			}
+		}
+		cb(me, opponent);
+		return;
+	});
+}
+
+app.get('/game/:id/walkaway', auth.authorize(2), function(req, res){
+	if(!req.param('id')){
+		req.flash('error', 'Invalid Game ID');
+		res.redirect('back');
+		return;
+	}
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+		if(err || !game){
+			req.flash('error', 'Game not found!');
+			res.redirect('/');
+			return;
+		}
+		var me = null
+		  , opponent = null;
+		if(game.opponents[0]._id.toString() == req.user._id.toString()){
+			me = game.opponents[0];
+			opponent = game.opponents[1];
+		}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+			me = game.opponents[1];
+			opponent = game.opponents[0];
+		}else{
+			req.flash('error', 'This is not your game!');
+			res.redirect('/');
+			return;
+		}
+		
+		game.walkaway = me;
+		game.save(function(err){
+			if(err){
+				req.flash('error', 'Error saving game.');
+				res.redirect('back');
+				return;
+			}
+
+			me.numWalkaways++;
+			me.save(function(err){
+				if(err){
+					console.log('error saving ', me);
+				}
+			});
+			
+			opponent.numWalkedAwayFrom++;
+			opponent.save(function(err){
+				if(err){
+					console.log('error saving ', opponent);
+				}
+			});
+			
+			res.redirect('back');
+			return;
+		});
+	});
+});
+
 app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 	// View a game in it's current state as the player identified as :as
 	if(!req.params.id){
@@ -77,10 +159,14 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+	Game.findById(req.params.id).populate('opponents').populate('condition').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
+			return;
+		}
+		if(game.walkaway){
+			res.redirect('/game/'+req.params.id);
 			return;
 		}
 		var count = game.rounds.length
@@ -88,94 +174,97 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-			
-					var me = null
-					  , opponent = null;
-					if(game.opponents[0]._id.toString() == req.user._id.toString()){
-						me = game.opponents[0];
-						opponent = game.opponents[1];
-					}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
-						me = game.opponents[1];
-						opponent = game.opponents[0];
-					}else{
-						req.flash('error', 'This is not your game!');
-						res.redirect('/');
-						return;
-					}
-					
-			/*
-					if(game.completed){
-						res.redirect('/games/'+req.params.id+'/'+req.params.as);
-						return;
-					}
-			*/
-			
-					// Identify this round
-			//		if(!game.currentRound){
-			//			res.redirect('/games/'+game._id+'/'+req.params.as);
-			//			return;
-			//		}
-			
-					var round = null;
-					util.log('currentRound: '+game.currentRound);
-					util.log('vs current: '+req.params.round);
-					if(game.currentRound && game.currentRound.toString() == req.params.round){
-						round = game.currentRound;
-					}else{
-						for(var i=0; i<game.rounds.length; i++){
-							if(game.rounds[i]._id.toString() == req.params.round){
-								round = game.rounds[i];
-								break;
-							}
-						}
-					}
-					
-					if(!round){
-						res.render('games/round-expired', {
-							title: 'Game Expired'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						});
-						return;
-					}
-					
-					var Round = mongoose.model('Round');
-					Round.findById(round).populate('votes').exec(function(err, round){
-					
-						if(!round.votes || round.votes.length < 2){
-							req.flash('error', 'Round not complete!!');
-							res.redirect('/game/'+req.params.id+'/'+req.params.round/* +'/'+req.params.as */);
+					getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
+						var me = null
+						  , opponent = null;
+						if(game.opponents[0]._id.toString() == req.user._id.toString()){
+							me = game.opponents[0];
+							opponent = game.opponents[1];
+						}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+							me = game.opponents[1];
+							opponent = game.opponents[0];
+						}else{
+							req.flash('error', 'This is not your game!');
+							res.redirect('/');
 							return;
 						}
-			
-						// Identify if any votes in this round are for this player
-						var my_vote = null
-						  , their_vote = null;
-						for(var i=0; i<round.votes.length; i++){
-							if(round.votes[i].player.toString() == me._id.toString()){
-								my_vote = round.votes[i];
-								continue;
-							}
-							if(round.votes[i].player.toString() == opponent._id.toString()){
-								their_vote = round.votes[i];
-								continue;
+						
+				/*
+						if(game.completed){
+							res.redirect('/games/'+req.params.id+'/'+req.params.as);
+							return;
+						}
+				*/
+				
+						// Identify this round
+				//		if(!game.currentRound){
+				//			res.redirect('/games/'+game._id+'/'+req.params.as);
+				//			return;
+				//		}
+				
+						var round = null;
+						util.log('currentRound: '+game.currentRound);
+						util.log('vs current: '+req.params.round);
+						if(game.currentRound && game.currentRound.toString() == req.params.round){
+							round = game.currentRound;
+						}else{
+							for(var i=0; i<game.rounds.length; i++){
+								if(game.rounds[i]._id.toString() == req.params.round){
+									round = game.rounds[i];
+									break;
+								}
 							}
 						}
+						
+						if(!round){
+							res.render('games/round-expired', {
+								title: 'Game Expired'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							});
+							return;
+						}
+						
+						var Round = mongoose.model('Round');
+						Round.findById(round).populate('votes').exec(function(err, round){
+						
+							if(!round.votes || round.votes.length < 2){
+								req.flash('error', 'Round not complete!!');
+								res.redirect('/game/'+req.params.id+'/'+req.params.round/* +'/'+req.params.as */);
+								return;
+							}
 				
-						res.render('games/completed-round', {
-							title: 'In-Progress Game'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						  , currentRound: game.currentRound
-						  , round: round
-						  , my_vote: my_vote
-						  , their_vote: their_vote
+							// Identify if any votes in this round are for this player
+							var my_vote = null
+							  , their_vote = null;
+							for(var i=0; i<round.votes.length; i++){
+								if(round.votes[i].player.toString() == me._id.toString()){
+									my_vote = round.votes[i];
+									continue;
+								}
+								if(round.votes[i].player.toString() == opponent._id.toString()){
+									their_vote = round.votes[i];
+									continue;
+								}
+							}
+					
+							res.render('games/completed-round', {
+								title: 'In-Progress Game'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							  , currentRound: game.currentRound
+							  , round: round
+							  , my_vote: my_vote
+							  , their_vote: their_vote
+							  , my_condition: my_condition
+							  , their_condition: their_condition
+							});
+							return;
 						});
-						return;
 					});
 				}
 			}
@@ -230,6 +319,10 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
+			return;
+		}
+		if(game.walkaway){
+			res.redirect('/game/'+req.params.id);
 			return;
 		}
 		var count = game.rounds.length
@@ -385,10 +478,14 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+	Game.findById(req.params.id).populate('opponents').populate('condition').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
+			return;
+		}
+		if(game.walkaway){
+			res.redirect('/game/'+req.params.id);
 			return;
 		}
 		var count = game.rounds.length
@@ -396,89 +493,92 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-				
-					var me = null
-					  , opponent = null;
-					if(game.opponents[0]._id.toString() == req.user._id.toString()){
-						me = game.opponents[0];
-						opponent = game.opponents[1];
-					}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
-						me = game.opponents[1];
-						opponent = game.opponents[0];
-					}else{
-						req.flash('error', 'This is not your game!');
-						res.redirect('/');
-						return;
-					}
-					
-			/*
-					if(game.completed){
-						res.redirect('/games/'+req.params.id+'/'+req.params.as);
-						return;
-					}
-			*/
-			
-					// Identify this round
-			//		if(!game.currentRound){
-			//			res.redirect('/games/'+game._id+'/'+req.params.as);
-			//			return;
-			//		}
-			
-					var round = null;
-					if(game.currentRound && game.currentRound.toString() == req.params.round){
-						round = game.currentRound;
-					}else{
-						for(var i=0; i<game.rounds.length; i++){
-							if(game.rounds[i]._id.toString() == req.params.round){
-								round = game.rounds[i];
-								break;
-							}
-						}
-					}
-					
-					if(!round){
-						res.render('games/round-expired', {
-							title: 'Game Expired'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						});
-						return;
-					}
-					
-					var Round = mongoose.model('Round');
-					Round.findById(round).populate('votes').exec(function(err, round){
-						if(round.completed || round.votes.length == 2){
-							res.redirect('/game/'+game._id+'/'+round._id+'/complete');
+					getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
+						var me = null
+						  , opponent = null;
+						if(game.opponents[0]._id.toString() == req.user._id.toString()){
+							me = game.opponents[0];
+							opponent = game.opponents[1];
+						}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+							me = game.opponents[1];
+							opponent = game.opponents[0];
+						}else{
+							req.flash('error', 'This is not your game!');
+							res.redirect('/');
 							return;
 						}
-						// Identify if any votes in this round are for this player
-						var my_vote = null
-						  , their_vote = null;
-						for(var i=0; i<round.votes.length; i++){
-							if(round.votes[i].player.toString() == me._id.toString()){
-								my_vote = round.votes[i];
-								continue;
-							}
-							if(round.votes[i].player.toString() == opponent._id.toString()){
-								their_vote = round.votes[i];
-								continue;
+						
+				/*
+						if(game.completed){
+							res.redirect('/games/'+req.params.id+'/'+req.params.as);
+							return;
+						}
+				*/
+				
+						// Identify this round
+				//		if(!game.currentRound){
+				//			res.redirect('/games/'+game._id+'/'+req.params.as);
+				//			return;
+				//		}
+				
+						var round = null;
+						if(game.currentRound && game.currentRound.toString() == req.params.round){
+							round = game.currentRound;
+						}else{
+							for(var i=0; i<game.rounds.length; i++){
+								if(game.rounds[i]._id.toString() == req.params.round){
+									round = game.rounds[i];
+									break;
+								}
 							}
 						}
-				
-						res.render('games/view', {
-							title: 'In-Progress Game'
-						  , game: game
-						  , util: util
-						  , me: me
-						  , opponent: opponent
-						  , currentRound: game.currentRound
-						  , round: round
-						  , my_vote: my_vote
-						  , their_vote: their_vote
+						
+						if(!round){
+							res.render('games/round-expired', {
+								title: 'Game Expired'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							});
+							return;
+						}
+						
+						var Round = mongoose.model('Round');
+						Round.findById(round).populate('votes').exec(function(err, round){
+							if(round.completed || round.votes.length == 2){
+								res.redirect('/game/'+game._id+'/'+round._id+'/complete');
+								return;
+							}
+							// Identify if any votes in this round are for this player
+							var my_vote = null
+							  , their_vote = null;
+							for(var i=0; i<round.votes.length; i++){
+								if(round.votes[i].player.toString() == me._id.toString()){
+									my_vote = round.votes[i];
+									continue;
+								}
+								if(round.votes[i].player.toString() == opponent._id.toString()){
+									their_vote = round.votes[i];
+									continue;
+								}
+							}
+					
+							res.render('games/view', {
+								title: 'In-Progress Game'
+							  , game: game
+							  , util: util
+							  , me: me
+							  , opponent: opponent
+							  , currentRound: game.currentRound
+							  , round: round
+							  , my_vote: my_vote
+							  , their_vote: their_vote
+							  , my_condition: my_condition
+							  , their_condition: their_condition
+							});
+							return;
 						});
-						return;
 					});
 				}
 			}
@@ -513,64 +613,71 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+	Game.findById(req.params.id)/*.populate('walkaway')*/.populate('opponents').populate('condition').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
 			return;
 		}
-		if(game.currentRound && !game.completed){
+		if(!game.walkaway && game.currentRound && !game.completed){
 			res.redirect('/game/'+game._id+'/'+game.currentRound/* +'/'+req.params.as */);
 			return;
 		}
-
-		var me = null
-		  , opponent = null;
-		if(game.opponents[0]._id.toString() == req.user._id.toString()){
-			me = game.opponents[0];
-			opponent = game.opponents[1];
-		}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
-			me = game.opponents[1];
-			opponent = game.opponents[0];
-		}else{
-			req.flash('error', 'This is not your game!');
-			res.redirect('/');
-			return;
-		}
-
-		if(game.rounds.length > 0){
-			var count = game.rounds.length
-			  , Round = mongoose.model('Round')
-			  , roundMap = {}
-			  , populateRound = function(index){
-					Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
-						game.rounds[index] = round;
-						if(--count == 0){
-							res.render('games/completed-game', {
-								title: 'Completed Game'
-							  , game: game
-							  , util: util
-							  , me: me
-							  , opponent: opponent
-							});
-//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
-							return;
-						}
-					});
-				};
-			for(var i=0; i<game.rounds.length; i++){
-				populateRound(i);
+		
+		getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
+			var me = null
+			  , opponent = null;
+			if(game.opponents[0]._id.toString() == req.user._id.toString()){
+				me = game.opponents[0];
+				opponent = game.opponents[1];
+			}else if(game.opponents[1]._id.toString() == req.user._id.toString()){
+				me = game.opponents[1];
+				opponent = game.opponents[0];
+			}else{
+				req.flash('error', 'This is not your game!');
+				res.redirect('/');
+				return;
 			}
-		}else{
-			res.render('games/completed-game', {
-				title: 'Completed Game'
-			  , game: game
-			  , util: util
-			  , me: me
-			  , opponent: opponent
-			});
-//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
-		}
+	
+			if(game.rounds.length > 0){
+				var count = game.rounds.length
+				  , Round = mongoose.model('Round')
+				  , roundMap = {}
+				  , populateRound = function(index){
+						Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
+							game.rounds[index] = round;
+							if(--count == 0){
+								res.render('games/completed-game', {
+									title: 'Completed Game'
+								  , game: game
+								  , util: util
+								  , me: me
+								  , opponent: opponent
+								  , my_condition: my_condition
+								  , their_condition: their_condition
+								});
+	//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
+								return;
+							}
+						});
+					};
+				for(var i=0; i<game.rounds.length; i++){
+					populateRound(i);
+				}
+			}else{
+				res.render('games/completed-game', {
+					title: 'Completed Game'
+				  , game: game
+				  , util: util
+				  , me: me
+				  , opponent: opponent
+				  , my_condition: my_condition
+				  , their_condition: their_condition
+				});
+	//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
+			}
+			return;
+		});
 		return;
 	});
 });

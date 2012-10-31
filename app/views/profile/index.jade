@@ -105,48 +105,17 @@ block body
 				.carousel-inner
 					haveDoneAQuestion = questions && questions.length > 0;
 					- if(questions && questions.length > 0)
+						answer = null
 						- each question, i in questions
-							.item.question(class=(i == 0 ? 'active' : ''))
-								form(method="POST", action="/profile/questions/answer/#{question._id}")
-									.control-group
-										label.control-label(for="value") Q: #{question.text}
-										- if(question.type == 'open')
-											.controls
-												input(type="text", name="value")
-										- else if(question.type == 'multiple-choice')
-											.controls
-												- for choice, j in question.choices
-													label.radio
-														input(type="radio", name="value", value=choice)
-														| #{choice}
-									.control-group
-										.controls
-											label.checkbox
-												input(type="checkbox", name="no_answer")
-												| Choose not to answer
-											button.btn.btn-primary(type="submit") Submit
+							active = (i == 0)
+							include mixins
+							//mixin do_question(question, null, i == 0)
 					- if(answers && answers.length > 0)
 						- each answer, i in answers
-							.item.question(class=((!haveDoneAQuestion && i == 0) ? 'active' : ''))
-								form(method="POST", action="/profile/questions/answer/#{answer.question._id}")
-									input(type="hidden", name="answerid", value=answer._id)
-									.control-group
-										label.control-label(for="value") Q: #{answer.question.text}
-										- if(answer.question.type == 'open')
-											.controls
-												input(type="text", name="value", value=answer.value)
-										- else if(answer.question.type == 'multiple-choice')
-											.controls
-												- for choice, j in answer.question.choices
-													label.radio
-														input(type="radio", name="value", value=choice, checked=(choice == answer.value))
-														| #{choice}
-									.control-group
-										.controls
-											label.checkbox
-												input(type="checkbox", name="no_answer", checked=answer.no_answer)
-												| Choose not to answer
-											button.btn.btn-primary(type="submit") Submit
+							active = (!haveDoneAQuestion && i == 0)
+							question = answer.question
+							include mixins
+							//mixin do_question(answer.question, answer, !haveDoneAQuestion && i == 0)
 				a.carousel-control.left(href="#myCarousel", data-slide="prev") &lsaquo;
 				a.carousel-control.right(href="#myCarousel", data-slide="next") &rsaquo;
 			h6 User

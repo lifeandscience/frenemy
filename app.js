@@ -62,9 +62,9 @@ app.configure(function(){
 
 //	// mongoose-auth: Step 2
 //	app.use(mongooseAuth.middleware(app));
+	app.use(flash());
 	auth.setup(app);
 	
-	app.use(flash());
 //	app.use(app.router);
 
 //	app.use(express.methodOverride());

@@ -9,11 +9,11 @@ exports.dynamicHelpers = {
 	},
 	flashMessages: function(app) {
 		var html = '';
-		['error', 'info'].forEach(function(type) {
+		['error', 'question', 'info', 'success'].forEach(function(type) {
 			var messages = app.req.flash(type);
 			if (messages.length > 0) {
 				messages.forEach(function(message){
-					html += '<div class="alert alert-block alert-'+(type == 'info' ? 'warning' : type)+' fade in"><a class="close" data-dismiss="alert" href="#">×</a>'+message+'</div>';
+					html += '<div class="alert alert-block alert-'+(type == 'info' ? 'warning' : (type == 'question' ? 'error' : type))+' fade in"><a class="close" data-dismiss="alert" href="#">×</a>'+message+'</div>';
 				});
 			}
 		});

@@ -36,6 +36,8 @@ var GameSchema = new Schema({
   , opponents: [{type: Schema.ObjectId, ref: 'Player'}]
   , currentRound: {type: Schema.ObjectId, ref: 'Round'}
   , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
+  
+  , walkaway: {type: Schema.ObjectId, ref: 'Player', default: null}
 });
 
 GameSchema.statics.startGames = function(req, cb){
@@ -52,75 +54,121 @@ GameSchema.statics.startGames = function(req, cb){
 			console.log('error finding experimonths OR no experimonths found');
 			return cb();
 		}
-		var i = -1
-		  , pickPlayer = function(fillinPlayer, players){
-				console.log('picking a player from a players array of length '+players.length);
-				if(players.length == 0){
-					console.log('using fill in player: ('+fillinPlayer.email+')');
-					return fillinPlayer;
+		
+		var matchmaker = function(numQuestions){
+			var i = -1
+			  , pickPlayer = function(fillinPlayer, players){
+					console.log('picking a player from a players array of length '+players.length);
+					if(players.length == 0){
+						console.log('using fill in player: ('+fillinPlayer.email+')');
+						return fillinPlayer;
+					}
+					var index = Math.floor(Math.random() * players.length);
+					return players.splice(index, 1)[0];
 				}
-				var index = Math.floor(Math.random() * players.length);
-				return players.splice(index, 1)[0];
-			}
-		  , gotFillInPlayer = function(fillinPlayer, experimonth){
-				// OK, we have either an even number of players 
-				// OR an odd number of players but a willing fillinPlayer
-				
-				// Now, let's randomly pair up players.
-				var playerOne = pickPlayer(fillinPlayer, experimonth.players)
-				  , playerTwo = pickPlayer(fillinPlayer, experimonth.players);
-				
-				// We have players, let's create a game.
-				var game = new Game();
-				game.opponents.push(playerOne);
-				game.opponents.push(playerTwo);
-				game.experimonth = experimonth._id;
-				game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
-				game.save(function(err){
-					if(err){
-						console.log('error saving: ', game);
+			  , gotFillInPlayer = function(fillinPlayer, experimonth){
+					// OK, we have either an even number of players 
+					// OR an odd number of players but a willing fillinPlayer
+					
+					// Now, let's randomly pair up players.
+					var playerOne = pickPlayer(fillinPlayer, experimonth.players)
+					  , playerTwo = pickPlayer(fillinPlayer, experimonth.players);
+					
+					// We have players, let's create a game.
+					var game = new Game();
+					game.opponents.push(playerOne);
+					game.opponents.push(playerTwo);
+					game.experimonth = experimonth._id;
+					game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+					game.save(function(err){
+						if(err){
+							console.log('error saving: ', game);
+							return cb();
+						}
+	
+						playerOne.games.push(game);
+						playerOne.save();
+						playerTwo.games.push(game);
+						playerTwo.save();
+	
+						console.log('saved game successfully! ', game);
+						handleExperimonth();
+					});
+				}
+			  , handleExperimonth = function(){
+					if(++i == experimonths.length){
+						// We're finished!
 						return cb();
 					}
-
-					playerOne.games.push(game);
-					playerOne.save();
-					playerTwo.games.push(game);
-					playerTwo.save();
-
-					console.log('saved game successfully! ', game);
-					handleExperimonth();
-				});
-			}
-		  , handleExperimonth = function(){
-				if(++i == experimonths.length){
-					// We're finished!
-					return cb();
-				}
-				var experimonth = experimonths[i]
-				  , fillinPlayer = null;
-				if(experimonth.players.length % 2){
-					// Find an admin player to use
-					for(var j=0; j<experimonth.players.length; j++){
-						if(experimonth.players[j].role >= 10){
-							fillinPlayer = experimonth.players[j];
-							break;
-						}
-					}
-					if(!fillinPlayer){
-						// None of the enrolled players was an admin, so grab an arbitrary admin.
-						Player.find({role: {$gte: 10}}).exec(function(err, admins){
-							if(err || !admins || admins.length == 0){
-								return cb();
+					var experimonth = experimonths[i]
+					  , fillinPlayer = null;
+					var checkPlayer = function(j){
+							if(--j == -1){
+								if(experimonth.players.length == 0){
+									// This experimonth has no players, so skip it.
+									handleExperimonth();
+									return;
+								}
+								// Done
+								if(experimonth.players.length % 2){
+									// Find an admin player to use
+									for(var j=0; j<experimonth.players.length; j++){
+										if(experimonth.players[j].role >= 10){
+											fillinPlayer = experimonth.players[j];
+											break;
+										}
+									}
+									if(experimonth.players.length == 1 && fillinPlayer){
+										// We only have one player and they're an admin
+										// Let's skip this experimonth
+										handleExperimonth();
+										return;
+									}
+									if(!fillinPlayer){
+										// None of the enrolled players was an admin, so grab an arbitrary admin.
+										Player.find({role: {$gte: 10}}).exec(function(err, admins){
+											if(err || !admins || admins.length == 0){
+												return cb();
+											}
+											var idx = Math.floor(Math.random()*admins.length);
+											gotFillInPlayer(admins[idx], experimonth);
+										});
+										return;
+									}
+								}
+								gotFillInPlayer(fillinPlayer, experimonth);
+								return;
 							}
-							var idx = Math.floor(Math.random()*admins.length);
-							gotFillInPlayer(admins[idx], experimonth);
-						});
-						return;
-					}
-				}
-				gotFillInPlayer(fillinPlayer, experimonth);
-			};
-		handleExperimonth();
+							ProfileAnswer.count({player: experimonth.players[j]._id}).exec(function(err, numAnswers){
+								if(err){
+									console.log('error retrieving answers: ', arguments);
+									next();
+									return;
+								}
+								if(numQuestions > numAnswers){
+									// Strip the player out of the experimonth.players array!
+									experimonth.players.splice(j);
+									// TODO: Notify the player that they've been skipped from playing because their profile is incomplete
+								}
+								checkPlayer(j);
+							});
+						};
+					checkPlayer(experimonth.players.length);
+				};
+			handleExperimonth();
+		};
+		
+		// Check all the players to determine if they have their profiles complete.
+		var ProfileQuestion = mongoose.model('ProfileQuestion')
+		  , ProfileAnswer = mongoose.model('ProfileAnswer');
+		ProfileQuestion.count({published: true}).exec(function(err, numQuestions){
+			if(err){
+				console.log('error retrieving questions: ', arguments);
+				next();
+				return;
+			}
+			matchmaker(numQuestions);
+		});
 	});
 	return;
 	
@@ -234,7 +282,7 @@ GameSchema.pre('save', function(next){
 						if(opponent){
 							opponent.rounds.push(round);
 							opponent.save();
-							opponent.notifyOfNewRound(round, 'new-game', '/games/'+game._id+'/'+round._id+'/'+opponent._id, function(){
+							opponent.notifyOfNewRound(round, 'new-game', '/game/'+game._id+'/'+round._id, function(){
 								if(--count == 0){
 									next();
 								}

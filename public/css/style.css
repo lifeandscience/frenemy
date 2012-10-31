@@ -27,6 +27,12 @@ body > .container > #container-inner {
 body.confessional {
   background-color: white;
   color: #333;
+  /*
+	.modal {
+		color: white;
+	}
+*/
+
 }
 body.confessional #container-inner {
   width: 940px;
@@ -67,9 +73,6 @@ body.confessional #container-inner h3 {
   margin: 0;
   font-family: Arial, sans-serif;
   text-align: center;
-}
-body.confessional .modal {
-  color: white;
 }
 h1,
 h2,
@@ -279,7 +282,7 @@ h6 {
 }
 #leaderboard .handle {
   height: 55px;
-  width: 330px;
+  width: 430px;
 }
 #leaderboard .inner {
   -webkit-border-radius: 10px 10px 0 0;
@@ -760,10 +763,13 @@ span.enemy {
   background-position: -42px top;
 }
 #scoring {
-  width: 1070px;
-  margin: 0 auto;
-  clear: both;
-  padding-bottom: 150px;
+  /*
+	width: 1070px;
+	margin: 0 auto;
+	clear: both;
+	padding-bottom: 150px;
+*/
+
 }
 #scoring h4 {
   color: #808080;
@@ -1000,26 +1006,37 @@ a.top-right-button {
   border-color: #278fd8;
 }
 .modal {
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 7px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 7px solid #278fd8;
   padding: 20px 40px;
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+  color: #333333;
+  /*
+	.modal-header {
+		button {
+			color: white;
+		}
+	}
+*/
+
 }
-.modal .modal-header button {
-  color: white;
+.modal .modal-header {
+  border-bottom-color: #333333;
 }
+/*
 #play-by-play-trigger {
-  float: right;
-  margin-top: -3px;
+	float: right;
+	margin-top: -3px;
 }
 #play-by-play {
-  width: 720px;
-  margin-left: -400px;
+	width: 720px;
+	margin-left: -400px;
 }
+*/
 .tablesorter {
   color: black;
 }

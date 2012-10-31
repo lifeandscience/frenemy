@@ -19,15 +19,19 @@ mixin do_games(games, filter, completed)
 									li
 										- if(opponent.name)
 											| #{opponent.name}
+										- else if(opponent.email)
+											| #{opponent.email}
 										- else
 											| #{opponent}
 						td #{game.rounds.length} / #{game.numRounds}
 						td
 							a.btn(href="/game/#{game._id}") View
-							|  
-							a.btn(href="/games/edit/#{game._id}") Edit
-							| 
-							a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
+							u = user()
+							- if(u.role >= 10)
+								|  
+								a.btn(href="/games/edit/#{game._id}") Edit
+								| 
+								a.btn.btn-danger(href="/games/delete/#{game._id}") Delete
 							- if(game.startTime.getDay() == 4)
 								| 
 								a.btn.btn-info(href="http://tlk.io/#{game._id}") View Chat

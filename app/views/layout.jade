@@ -27,43 +27,55 @@ html(lang="en")
 						span.icon-bar
 						span.icon-bar
 					a.brand(href="/") Frenemy
-					- if(user())
+					u = user()
+					- if(u)
 						.nav-collapse
-							ul.nav
-								li.dropdown
-									a.dropdown-toggle(href="#", data-toggle="dropdown")
-										| Games
-										b.caret
-									ul.dropdown-menu
-										li: a(href="/games") Active Games
-										li: a(href="/games/fully-played") Fully-Played Games
-										li: a(href="/games/all") All Games
-										li: a(href="/games/start") Force Start Day
-										li: a(href="/games/end") Force End Day
-								li.dropdown
-									a.dropdown-toggle(href="#", data-toggle="dropdown")
-										| Players
-										b.caret
-									ul.dropdown-menu
-										li: a(href="/players") List Players
-										li: a(href="/players/add") Add Player
-										li: a(href="/players/import") Import Players
-								li.dropdown
-									a.dropdown-toggle(href="#", data-toggle="dropdown")
-										| Votes
-										b.caret
-									ul.dropdown-menu
-										li: a(href="/votes/export") Export
-										li: a(href="/votes/export/all") Export All
-										li: a(href="/votes/export/score") Export w/ Score
-							ul.nav
-								li.dropdown
-									a.dropdown-toggle(href="#", data-toggle="dropdown")
-										| Experimonths
-										b.caret
-									ul.dropdown-menu
-										li: a(href="/experimonths") Experimonths
-										li: a(href="/experimonths/add") Add an Experimonth
+							- if(u.role >= 10)
+								ul.nav
+									li.dropdown
+										a.dropdown-toggle(href="#", data-toggle="dropdown")
+											| Games
+											b.caret
+										ul.dropdown-menu
+											li: a(href="/games") Active Games
+											li: a(href="/games/fully-played") Fully-Played Games
+											li: a(href="/games/all") All Games
+											li: a(href="/games/start") Force Start Day
+											li: a(href="/games/end") Force End Day
+									li.dropdown
+										a.dropdown-toggle(href="#", data-toggle="dropdown")
+											| Players
+											b.caret
+										ul.dropdown-menu
+											li: a(href="/players") List Players
+											li: a(href="/players/add") Add Player
+											li: a(href="/players/import") Import Players
+									li.dropdown
+										a.dropdown-toggle(href="#", data-toggle="dropdown")
+											| Votes
+											b.caret
+										ul.dropdown-menu
+											li: a(href="/votes/export") Export
+											li: a(href="/votes/export/all") Export All
+											li: a(href="/votes/export/score") Export w/ Score
+									li.dropdown
+										a.dropdown-toggle(href="#", data-toggle="dropdown")
+											| Experimonths
+											b.caret
+										ul.dropdown-menu
+											li: a(href="/experimonths") Experimonths
+											li: a(href="/experimonths/add") Add an Experimonth
+
+									li.dropdown
+										a.dropdown-toggle(href="#", data-toggle="dropdown")
+											| Profile Questions
+											b.caret
+										ul.dropdown-menu
+											li: a(href="/profile/questions") List Questions
+											li: a(href="/profile/questions/add") Add a Question
+							- else
+								ul.nav
+									li: a(href="/experimonths") Experimonths
 							ul.nav.pull-right
 								li: a(href="/profile") Profile
 								li: a(href="/logout") Logout
@@ -92,12 +104,6 @@ html(lang="en")
 				div.inner pencil
 				| CONFESS
 			block body
-			#faq.fade.modal.hide
-				.modal-header
-					button.close(type="button", data-dismiss="modal") x
-					h3 FAQ
-				.modal-body
-					include faq
 
 		block footer
 			script(src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js")

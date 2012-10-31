@@ -78,12 +78,16 @@ var shouldNextPlayerDefend = true
 	  , youtube: {type: String}
 
 	  , opt_out: {type: Boolean, default: false}
+	  
+	  , numVotes: {type: Number, default: 0}
+	  , friendCount: {type: Number, default: 0}
+	  
+	  , numWalkaways: {type: Number, default: 0}
+	  , numWalkedAwayFrom: {type: Number, default: 0}
 /*
 	  , isAdmin: {type: Boolean, default: false}
 	  , timezone: {type: String, enum: ['Eastern', 'Central', 'Mountain', 'Pacific'], default: 'Eastern'}
 	  
-	  , numVotes: {type: Number, default: 0}
-	  , friendCount: {type: Number, default: 0}
 
 	  , defending: {type: Boolean, default: false}
 	  , defendingNum: {type: Number, default: -1}

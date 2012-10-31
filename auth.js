@@ -7,7 +7,6 @@ var mongoose = require('mongoose')
   , FacebookStrategy = require('passport-facebook').Strategy
   , TwitterStrategy = require('passport-twitter').Strategy;
 
-
 module.exports = {
 	setup: function(app){
 		var Player = mongoose.model('Player')
@@ -88,8 +87,67 @@ module.exports = {
 	
 		app.use(passport.initialize());
 		app.use(passport.session());
+		
+		var checkProfile = function(req, res, next){
+			var ProfileQuestion = mongoose.model('ProfileQuestion')
+			  , ProfileAnswer = mongoose.model('ProfileAnswer');
+			ProfileQuestion.find({published: true}).exec(function(err, questions){
+				if(err){
+					console.log('error retrieving questions: ', arguments);
+					next();
+					return;
+				}
+				ProfileAnswer.find({player: req.user._id}).exec(function(err, answers){
+					if(err){
+						console.log('error retrieving answers: ', arguments);
+						next();
+						return;
+					}
+					console.log('questions: ', questions.length, ' answers: ', answers.length);
+					req.flash('question');
+					if(questions.length > answers.length){
+						console.log('posing a question!');
+						// There are some un-answered questions!
+						// Pick a random question of those that aren't answered
+						var answered = {}
+						  , availableQuestions = [];
+						for(var i=0; i<answers.length; i++){
+							answered[answers[i].question] = true;
+						}
+						for(var i=0; i<questions.length; i++){
+							if(!answered[questions[i]._id]){
+								availableQuestions.push(questions[i]);
+							}
+						}
+						var question = availableQuestions[Math.floor(Math.random()*availableQuestions.length)];
+						app.render('profile/mixins', {question: question, answer: null, active: false}, function(err, html){
+							req.flash('question', '<p>Your profile is incomplete! Please answer the following question:</p>'+html);
+		/* 					res.redirect('/profile'); */
+							next();
+						});
+						return;
+					}
+					console.log('stopped');
+					// This user has answered all the questions!
+					next();
+					return;
+				});
+			});
+			return false;
+		}
+
+		app.use(function(req, res, next){
+			if(req.user){
+				// Check if the user has filled out their profile!
+				checkProfile(req, res, next);
+				return;
+			}
+			next();
+		});
 	}
   , route: function(app){
+		
+
 		var authenticateOptions = {
 				successRedirect: '/profile'
 			  , failureRedirect: '/login'
@@ -98,6 +156,10 @@ module.exports = {
 			}
 		  , Player = mongoose.model('Player');
 		app.get('/login', function(req, res){
+			if(req.user){
+				res.redirect('/profile');
+				return;
+			}
 			res.render('login', {title: 'Login / Register'});
 		});
 		app.get('/logout', function(req, res){
@@ -297,38 +359,22 @@ module.exports = {
 				return;
 			}
 			// We're authorized!
+			// No longer calling checkProfile
+			next();
+			return;
+			
+			
+			
+			
+
 			// Check if we need to answer questions
 			if(req.user.role >= 10 || skipQuestionCount){
 				// If we're an admin, we don't check for questions
 				next();
 				return;
 			}
-			
-			var ProfileQuestion = mongoose.model('ProfileQuestion')
-			  , ProfileAnswer = mongoose.model('ProfileAnswer');
-			ProfileQuestion.count({published: true}).exec(function(err, numQuestions){
-				if(err){
-					console.log('error retrieving questions: ', arguments);
-					next();
-					return;
-				}
-				ProfileAnswer.count({player: req.user._id}).exec(function(err, numAnswers){
-					if(err){
-						console.log('error retrieving answers: ', arguments);
-						next();
-						return;
-					}
-					if(numQuestions != numAnswers){
-						// There are some un-answered questions!
-						req.flash('error', 'Your profile is incomplete! You\'ve been redirected to <a href="/profile">your profile</a>; please answer all "additional information" questions then try your previous action again.');
-						res.redirect('/profile');
-						return;
-					}
-					// This user has answered all the questions!
-					next();
-					return;
-				});
-			});
+			console.log('calling checkProfile');
+			checkProfile(req, res, next);
 		};
 	}
 };

@@ -1,73 +1,88 @@
 !!!
 html(lang="en")
-  head
-    block head
-      meta(charset="utf-8")
-      meta(name="viewport", content="width=1200, minimum-scale=0.2666")
-      title= 'Frenemy: '+title
-      // TODO: EVERYAUTH
-      //- if(everyauth.loggedIn)
-      //  style
-      //    body {
-      //      padding: 60px 0 0 0;
-      //    }
-      link(rel='stylesheet', href='http://fast.fonts.com/cssapi/a33e1fc1-4e82-4932-9b7f-6411183d5b4c.css', type='text/css')
-      link(rel='stylesheet', href="/bootstrap/css/bootstrap.min.css")
-      link(rel='stylesheet', href="/font-awesome/css/font-awesome.css")
-      link(rel='stylesheet', href='/css/jquery-tablesorter-themes/blue/style.css')
-      link(rel='stylesheet', href='/css/style.css')
-      //Le HTML5 shim, for IE6-8 support of HTML5 elements
-      //if lt IE 9
-        script(src='/js/modernizr.js')
-  body.confessional
-    div.container
-      block messages
-        #messages !{flashMessages}
-      a#faq-button.top-right-button
-        div.inner ?
-        | HELP
-      a#confessional-button.top-right-button(href="/confessional")
-        div.inner pencil
-        | CONFESS
-      block body
-      #faq.fade.modal.hide
-        .modal-header
-          button.close(type="button", data-dismiss="modal") x
-          h3 FAQ
-        .modal-body
-          include faq
+	head
+		block head
+			meta(charset="utf-8")
+			meta(name="viewport", content="width=1200, minimum-scale=0.2666")
+			title= 'Frenemy: '+title
+			// TODO: EVERYAUTH
+			//- if(everyauth.loggedIn)
+			//	style
+			//		body {
+			//			padding: 60px 0 0 0;
+			//		}
+			link(rel='stylesheet', href='http://fast.fonts.com/cssapi/a33e1fc1-4e82-4932-9b7f-6411183d5b4c.css', type='text/css')
+			link(rel='stylesheet', href="/bootstrap/less/bootstrap.css")
+			link(rel='stylesheet', href="/font-awesome/css/font-awesome.css")
+			link(rel='stylesheet', href='/css/jquery-tablesorter-themes/blue/style.css')
+			link(rel='stylesheet', href='/css/style.css')
+			//Le HTML5 shim, for IE6-8 support of HTML5 elements
+			//if lt IE 9
+				script(src='/js/modernizr.js')
+	body.confessional
+		div.container
+			block messages
+				#messages !{flashMessages()}
+			a#faq-button.top-right-button
+				div.inner ?
+				| HELP
+			a#confessional-button.top-right-button(href="/confessional")
+				div.inner pencil
+				| CONFESS
+			block body
+			#faq.fade.modal.hide
+				.modal-header
+					button.close(type="button", data-dismiss="modal") x
+					h3 FAQ
+				.modal-body
+					include faq
 
-    block footer
-      script(src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js")
-      script(src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
-      script(src="/js/json2.js")
-      script(src="/bootstrap/js/bootstrap.min.js")
-      script(src="/js/jquery.tablesorter.min.js")
-      script(src="/js/jquery.cookie.js")
-      script(src="/js/script.js")
-    | <script type="text/javascript">
-    | 
-    |   var _gaq = _gaq || [];
-    |   _gaq.push(['_setAccount', 'UA-22197400-2']);
-    |   _gaq.push(['_trackPageview']);
-    | 
-    |   (function() {
-    |     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    |     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    |     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    |   })();
-    | 
-    | </script>
-    | <script type="text/javascript">
-    |   var _gauges = _gauges || [];
-    |   (function() {
-    |     var t   = document.createElement('script');
-    |     t.type  = 'text/javascript';
-    |     t.async = true;
-    |     t.id    = 'gauges-tracker';
-    |     t.setAttribute('data-site-id', '4fc92977613f5d1697000001');
-    |     t.src = '//secure.gaug.es/track.js';
-    |     var s = document.getElementsByTagName('script')[0];
-    |     s.parentNode.insertBefore(t, s);
-    |   })();
-    | </script>
+		block footer
+			script(src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js")
+			script(src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
+			script(src="/js/json2.js")
+			
+			script(src="/bootstrap/js/bootstrap-transition.js")
+			script(src="/bootstrap/js/bootstrap-alert.js")
+			script(src="/bootstrap/js/bootstrap-modal.js")
+			script(src="/bootstrap/js/bootstrap-dropdown.js")
+			script(src="/bootstrap/js/bootstrap-scrollspy.js")
+			script(src="/bootstrap/js/bootstrap-tab.js")
+			script(src="/bootstrap/js/bootstrap-tooltip.js")
+			script(src="/bootstrap/js/bootstrap-popover.js")
+			script(src="/bootstrap/js/bootstrap-button.js")
+			script(src="/bootstrap/js/bootstrap-collapse.js")
+			script(src="/bootstrap/js/bootstrap-carousel.js")
+			script(src="/bootstrap/js/bootstrap-typeahead.js")
+			script(src="/bootstrap/js/bootstrap-affix.js")
+
+			script(src="/js/jquery.tablesorter.min.js")
+			script(src="/js/jquery.cookie.js")
+			script(src="/socket.io/socket.io.js")
+			script(src="/js/script.js")
+		| <script type="text/javascript">
+		| 
+		|	 var _gaq = _gaq || [];
+		|	 _gaq.push(['_setAccount', 'UA-22197400-2']);
+		|	 _gaq.push(['_trackPageview']);
+		| 
+		|	 (function() {
+		|		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		|		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		|		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		|	 })();
+		| 
+		| </script>
+		| <script type="text/javascript">
+		|	 var _gauges = _gauges || [];
+		|	 (function() {
+		|		 var t	 = document.createElement('script');
+		|		 t.type	= 'text/javascript';
+		|		 t.async = true;
+		|		 t.id		= 'gauges-tracker';
+		|		 t.setAttribute('data-site-id', '4fc92977613f5d1697000001');
+		|		 t.src = '//secure.gaug.es/track.js';
+		|		 var s = document.getElementsByTagName('script')[0];
+		|		 s.parentNode.insertBefore(t, s);
+		|	 })();
+		| </script>
