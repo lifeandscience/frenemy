@@ -398,12 +398,12 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 											player.lastPlayed = new Date();
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
 												});
 											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
 												});
 											}
 										});
@@ -415,12 +415,12 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 											}
 											player.save();
 											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
 												});
 											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/'+player._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/'+player._id+'/complete');
+												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
+													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
 												});
 											}
 										});
