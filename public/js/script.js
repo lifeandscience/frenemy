@@ -200,7 +200,8 @@ jQuery(function(){
 	
 	jQuery('.tablesorter').tablesorter();
 	
-	var socket = io.connect('http://localhost');
+	console.log('connecting to: ', _BASEURL);
+	var socket = io.connect(_BASEURL);
 	socket.on('news', function (data) {
 		console.log(data);
 		socket.emit('my other event', { my: 'data' });
