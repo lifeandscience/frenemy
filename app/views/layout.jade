@@ -81,7 +81,7 @@ html(lang="en")
 								li: a(href="/logout") Logout
 							ul.nav.pull-right
 								li.dropdown
-									- if(notifications && notifications.length > 0)
+									- if(locals.notifications && locals.notifications.length > 0)
 										a.dropdown-toggle(href='#', data-toggle='dropdown')
 											span.badge.badge-info !{notifications.length}
 											b.caret
@@ -92,6 +92,8 @@ html(lang="en")
 										a(href='/profile')
 											span.badge.badge-info 0
 					- else
+						if locals.token
+							a.brand.pull-right #{locals.token.access_token.substring(0, 10)+'&hellip;'}
 						ul.nav.pull-right
 							li: a(href="/login") Login
 		.container

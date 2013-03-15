@@ -12,6 +12,8 @@ var util = require('util')
   , ProfileAnswer = mongoose.model('ProfileAnswer');
 
 app.get('/profile', auth.authorize(1, 0, null, true), function(req, res){
+	return res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.user), experimonths: [], questions: [], answers: [], games: []});
+
 	Experimonth.find({_id: {$in: req.user.experimonths}}).exec(function(err, experimonths){
 		Game.find({_id: {$in: req.user.games}}).exec(function(err, games){
 			console.log('finding games:', err, games);

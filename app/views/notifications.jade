@@ -1,7 +1,7 @@
 mixin do_notifications()
-	- if(notifications && notifications.length > 0)
+	- if(locals.notifications && locals.notifications.length > 0)
 		ul
-			- each notification, i in notifications
+			- each notification, i in locals.notifications
 				li(class='notification'+(notification.read ? ' read' : ''))
 					| #{moment(notification.date).format('LLL')} - 
 					| !{notification.text}

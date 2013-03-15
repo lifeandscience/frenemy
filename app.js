@@ -20,7 +20,7 @@ var	  http = require('http')
 
 
 var app = module.exports = express()
-  , port = process.env.PORT || 3000
+  , port = process.env.PORT || 5000
   , server = http.createServer(app)
   , io = require('socket.io').listen(server);
 
@@ -74,6 +74,7 @@ app.configure(function(){
 	app.use(function(req, res, next){
 		res.locals.flash = req.flash.bind(req)
 		res.locals.moment = moment;
+		res.locals.token = req.session.token;
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};

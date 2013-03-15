@@ -27,5 +27,7 @@
     , "passport-facebook": ">= 0.0.1"
     , "passport-twitter": ">= 0.0.1"
     , "socket.io": ">= 0.0.1"
+    , "simple-oauth2": ">= 0.0.1"
+    , "request": ">= 0.0.1"
   }
 }
