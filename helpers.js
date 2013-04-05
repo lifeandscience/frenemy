@@ -31,5 +31,8 @@ exports.dynamicHelpers = {
 		console.log(arguments);
 		return app.req.user;
 	}
+  , authServer: function(){
+		return process.env.AUTH_SERVER || 'http://app.local:8000';
+	}
 /*   , moment: moment */
 };
