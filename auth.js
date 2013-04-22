@@ -166,6 +166,7 @@ module.exports = {
 			delete req.session.token;
 			delete req.session.user;
 			delete req.session.user_expires;
+			delete req.session.player;
 			return res.redirect((process.env.AUTH_SERVER || 'http://app.local:8000') + '/logout');
 		});
 	}
@@ -182,14 +183,14 @@ module.exports = {
 				if(req.session.user.role < requiredRole){
 					// But the user doesn't have an appropriate role
 					req.flash('error', 'You are not authorized to view that page!');
-					res.redirect('back');
+					res.redirect('/');
 					return;
 				}
 				// We're authorized!
 				return next();
 			}
 			req.flash('error', 'Please login to access that page!');
-			return res.redirect('back');
+			return res.redirect('/');
 		};
 	}
 };
