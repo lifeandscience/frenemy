@@ -33,25 +33,6 @@ block body
 			h1 Past Games
 			mixin do_games(games, true, true)
 			
-			h1
-				| Experimonths 
-				a.btn(href="/experimonths") Enroll in More!
-			- if(experimonths && experimonths.length > 0)
-				ul
-					- each experimonth, i in experimonths
-						li(class='experimonth')
-							| #{moment(experimonth.startDate).utc().format('YYYY-MM-DD')} - #{moment(experimonth.endDate).utc().format('YYYY-MM-DD')}
-			
-			h1 Opt Out
-			p If you'd prefer, you can opt-out of your data being used in the analysis of the results of each Experimonth.
-			form(method="POST", action="/players/opt_out")#opt_out
-				.control-group
-					.controls
-						label.checkbox
-							input(type="checkbox", name="opt_out", checked=u.opt_out)
-							| Opt-Out
-						button.btn.btn-primary(type="submit") Submit
-			
 			h1 Tell us more about you!
 			h2 Basic Info
 			form(method="POST", action="/players/edit/#{u._id}")#playerForm

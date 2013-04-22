@@ -45,7 +45,6 @@ var shouldNextPlayerDefend = true
 	  , games: [{type: Schema.ObjectId, ref: 'Game'}]
 	  , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
 	  , votes: [{type: Schema.ObjectId, ref: 'Vote'}]
-	  , experimonths: [{type: Schema.ObjectId, ref: 'Experimonth'}]
 
 	  , score: {type: Number, default: 0}
 	  , lastPlayed: {type: Date}

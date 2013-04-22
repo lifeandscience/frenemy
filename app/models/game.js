@@ -28,8 +28,8 @@ var GameSchema = new Schema({
 /* 			return Math.floor(Math.random() * 5) + 3;   */
 		}
 	}
-  , experimonth: {type: Schema.ObjectId, ref: 'Experimonth'}
-  , condition: {type: Schema.ObjectId, ref: 'ProfileQuestion'}
+  , experimonth: String // An ID from the auth server of an Experimonth
+  , condition: String // An ID from the auth server of a ProfileQuestion (aka, a Condition)
   , same: {type: Boolean, default: function(){
 		return Math.floor(Math.random()*2) == 1;
 	}}
