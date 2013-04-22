@@ -3,7 +3,9 @@ var util = require('util')
 
 app.get('/', function(req, res){
 	// Test oAuth
-	
+	if(req.session.player){
+		res.redirect('/dashboard');
+	}
 	
 	
 	res.render('index', {title: 'Welcome to Frenemy!', util: util});
