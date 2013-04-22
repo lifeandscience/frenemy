@@ -26,7 +26,7 @@ app.get('/experimonths/view/:id', auth.authorize(2), function(req, res){
 });
 
 app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
-	if(req.user.experimonths.indexOf(req.param('id')) != -1){
+	if(req.session.player.experimonths.indexOf(req.param('id')) != -1){
 		req.flash('info', 'You are already enrolled in this Experimonth!');
 		res.redirect('back');
 		return;
@@ -37,7 +37,7 @@ app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
 			res.redirect('back');
 			return;
 		}
-		if(experimonth.players.indexOf(req.user._id.toString()) != -1){
+		if(experimonth.players.indexOf(req.session.player._id.toString()) != -1){
 			req.flash('info', 'You are already *partially* enrolled in this Experimonth!');
 			res.redirect('back');
 			return;
@@ -53,7 +53,7 @@ app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
 			return;
 		}
 
-		experimonth.players.push(req.user._id);
+		experimonth.players.push(req.session.player._id);
 		if(experimonth.players.length == experimonth.playerLimit){
 			experimonth.open = false;
 		}
@@ -63,10 +63,10 @@ app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
 				res.redirect('back');
 				return;
 			}
-			req.user.experimonths.push(experimonth._id);
-			req.user.save(function(err){
+			req.session.player.experimonths.push(experimonth._id);
+			req.session.player.save(function(err){
 				if(err){
-					req.flash('error', 'Error saving player with ID '+req.user._id+'. '+err);
+					req.flash('error', 'Error saving player with ID '+req.session.player._id+'. '+err);
 					res.redirect('back');
 					return;
 				}
@@ -79,7 +79,7 @@ app.get('/experimonths/enroll/:id', auth.authorize(2), function(req, res){
 });
 
 app.get('/experimonths/unenroll/:id', auth.authorize(2), function(req, res){
-	if(req.user.experimonths.indexOf(req.param('id')) == -1){
+	if(req.session.player.experimonths.indexOf(req.param('id')) == -1){
 		req.flash('info', 'You are not enrolled in this Experimonth!');
 		res.redirect('back');
 		return;
@@ -90,8 +90,8 @@ app.get('/experimonths/unenroll/:id', auth.authorize(2), function(req, res){
 			res.redirect('back');
 			return;
 		}
-		if(experimonth.players.indexOf(req.user._id.toString()) != -1){
-			experimonth.players.splice(experimonth.players.indexOf(req.user._id.toString()), 1);
+		if(experimonth.players.indexOf(req.session.player._id.toString()) != -1){
+			experimonth.players.splice(experimonth.players.indexOf(req.session.player._id.toString()), 1);
 		}
 /*
 		if(!experimonth.open){
@@ -109,19 +109,19 @@ app.get('/experimonths/unenroll/:id', auth.authorize(2), function(req, res){
 */
 		
 
-/* 		experimonth.players.push(req.user._id); */
+/* 		experimonth.players.push(req.session.player._id); */
 		experimonth.save(function(err){
 			if(err){
 				req.flash('error', 'Error saving Experimonth with ID '+req.param('id')+'. '+err);
 				res.redirect('back');
 				return;
 			}
-			if(req.user.experimonths.indexOf(req.param('id')) != -1){
-				req.user.experimonths.splice(req.user.experimonths.indexOf(req.param('id')), 1);
+			if(req.session.player.experimonths.indexOf(req.param('id')) != -1){
+				req.session.player.experimonths.splice(req.session.player.experimonths.indexOf(req.param('id')), 1);
 			}
-			req.user.save(function(err){
+			req.session.player.save(function(err){
 				if(err){
-					req.flash('error', 'Error saving player with ID '+req.user._id+'. '+err);
+					req.flash('error', 'Error saving player with ID '+req.session.player._id+'. '+err);
 					res.redirect('back');
 					return;
 				}

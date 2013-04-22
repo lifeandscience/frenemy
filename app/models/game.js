@@ -15,7 +15,8 @@ var mongoose = require('mongoose')
 		var c = Math.sqrt(-2 * Math.log(rad) / rad);
 	 
 		return x1 * c;
-	};
+	}
+  , auth = require('../../auth');
 
 var GameSchema = new Schema({
 	startTime: {type: Date, default: function(){ return Date.now(); }}
@@ -45,6 +46,14 @@ GameSchema.statics.startGames = function(req, cb){
 		cb = req;
 		req = null;
 	}
+	console.log('startGames!');
+	auth.doAuthServerClientRequest('GET', '/experimonths/activeByKind/'+auth.clientID, null, function(err, res, body){
+		console.log('got users? ', err);
+		console.log('body: ', body);
+		return cb();
+	});
+	return;
+	
 	var Experimonth = mongoose.model('Experimonth')
 	  , Player = mongoose.model('Player')
 	  , now = new Date();

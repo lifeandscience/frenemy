@@ -12,18 +12,18 @@ var util = require('util')
   , ProfileAnswer = mongoose.model('ProfileAnswer');
 
 app.get('/profile', auth.authorize(1, 0, null, true), function(req, res){
-	return res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.user), experimonths: [], questions: [], answers: [], games: []});
+	return res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.session.player), experimonths: [], questions: [], answers: [], games: []});
 
-	Experimonth.find({_id: {$in: req.user.experimonths}}).exec(function(err, experimonths){
-		Game.find({_id: {$in: req.user.games}}).exec(function(err, games){
+	Experimonth.find({_id: {$in: req.session.player.experimonths}}).exec(function(err, experimonths){
+		Game.find({_id: {$in: req.session.player.games}}).exec(function(err, games){
 			console.log('finding games:', err, games);
-			ProfileAnswer.find({player: req.user._id}).populate('question').exec(function(err, answers){
+			ProfileAnswer.find({player: req.session.player._id}).populate('question').exec(function(err, answers){
 				var questions = [];
 				for(var i=0; i<answers.length; i++){
 					questions.push(answers[i].question._id);
 				}
 				ProfileQuestion.find({published: true, _id: {$not: {$in: questions}}}).exec(function(err, questions){
-					res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.user), experimonths: experimonths, questions: questions, answers: answers, games: games});
+					res.render('profile', {title: 'Your Profile', theuser: util.inspect(req.session.player), experimonths: experimonths, questions: questions, answers: answers, games: games});
 				});
 			});
 		});
@@ -210,7 +210,7 @@ app.post('/profile/questions/answer/:id', auth.authorize(2, 0, null, true), func
 	}
 
 	var answer = new ProfileAnswer();
-	answer.player = req.user._id;
+	answer.player = req.session.player._id;
 	answer.question = req.param('id');
 	answer.value = req.param('value');
 	answer.no_answer = req.param('no_answer') == 'on';

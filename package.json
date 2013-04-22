@@ -21,13 +21,8 @@
     , "less-middleware": ">= 0.0.1"
     , "connect-flash": ">= 0.0.1"
 
-    , "bcrypt": ">= 0.0.1"
-    , "passport": ">= 0.0.1"
-    , "passport-local": ">= 0.0.1"
-    , "passport-facebook": ">= 0.0.1"
-    , "passport-twitter": ">= 0.0.1"
     , "socket.io": ">= 0.0.1"
-    , "simple-oauth2": ">= 0.0.1"
+    , "simple-oauth2": "git://github.com/lifeandscience/simple-oauth2.git#add_client_credentials_support"
     , "request": ">= 0.0.1"
   }
 }

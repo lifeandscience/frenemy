@@ -127,7 +127,7 @@ module.exports = {
 	}
 
   , checkAdmin: function(req, res, next){
-		if(req.loggedIn && req.user && req.user.role == 10){
+		if(req.loggedIn && req.session.player && req.session.player.role == 10){
 			// Check if they're an admin!
 			next();
 			return;

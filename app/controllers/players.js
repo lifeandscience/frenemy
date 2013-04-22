@@ -82,9 +82,9 @@ app.get('/players/generate/:num', auth.authorize(2, 10), function(req, res){
 });
 */
 app.post('/players/opt_out', auth.authorize(2, 10), function(req, res){
-	req.user.opt_out = req.param('opt_out') == 'on';
+	req.session.player.opt_out = req.param('opt_out') == 'on';
 	console.log('params: ', req.params);
-	req.user.save(function(err){
+	req.session.player.save(function(err){
 		if(err){
 			req.flash('error', 'There was an error while saving your opt-out state.');
 			res.redirect('back');

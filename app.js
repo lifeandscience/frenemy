@@ -78,10 +78,10 @@ app.configure(function(){
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};
-		if(!req.user){
+		if(!req.session.player){
 			return next();
 		}
-		Notification.find({player: req.user, read: false}, function(err, notifications){
+		Notification.find({player: req.session.player, read: false}, function(err, notifications){
 			res.locals.notifications = notifications;
 			next();
 		});

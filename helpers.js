@@ -26,10 +26,6 @@ exports.dynamicHelpers = {
 		if(app.req.session.user && app.req.session.user.state >= minimumState){
 			return app.req.session.user;
 		}
-		return null;
-
-		console.log(arguments);
-		return app.req.user;
 	}
   , authServer: function(){
 		return process.env.AUTH_SERVER || 'http://app.local:8000';
