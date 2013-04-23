@@ -1,5 +1,6 @@
 var mongoose = require('mongoose')
   , Schema = mongoose.Schema
+  , Mixed = mongoose.Schema.Types.Mixed
   , util = require('util')
   , utilities = require('../../utilities')
   , config = require('../../config')
@@ -29,7 +30,7 @@ var GameSchema = new Schema({
 		}
 	}
   , experimonth: String // An ID from the auth server of an Experimonth
-  , condition: String // An ID from the auth server of a ProfileQuestion (aka, a Condition)
+  , condition: Mixed // An ID from the auth server of a ProfileQuestion (aka, a Condition)
   , same: {type: Boolean, default: function(){
 		return Math.floor(Math.random()*2) == 1;
 	}}
@@ -47,210 +48,109 @@ GameSchema.statics.startGames = function(req, cb){
 		req = null;
 	}
 	console.log('startGames!');
-	auth.doAuthServerClientRequest('GET', '/experimonths/activeByKind/'+auth.clientID, null, function(err, res, body){
+	auth.doAuthServerClientRequest('GET', '/api/1/experimonths/activeByKind/'+auth.clientID, null, function(err, experimonths){
 		console.log('got users? ', err);
-		console.log('body: ', body);
-		return cb();
-	});
-	return;
+		console.log('body: ', experimonths);
 	
-	var Experimonth = mongoose.model('Experimonth')
-	  , Player = mongoose.model('Player')
-	  , now = new Date();
-//	Experimonth.findCurrentlyRunningExperimonths(function(err, experimonths){
-	Experimonth.find({startDate: {$lte: new Date()}, endDate: {$gte: new Date()}}).populate('players').populate('conditions').exec(function(err, experimonths){
+		var Player = mongoose.model('Player')
+		  , now = new Date();
+	//	Experimonth.findCurrentlyRunningExperimonths(function(err, experimonths){
+	/* 	Experimonth.find({startDate: {$lte: new Date()}, endDate: {$gte: new Date()}}).populate('players').populate('conditions').exec(function(err, experimonths){ */
 		if(err || !experimonths || experimonths.length == 0){
 			console.log('error finding experimonths OR no experimonths found');
 			return cb();
 		}
-		
-		var matchmaker = function(numQuestions){
-			var i = -1
-			  , pickPlayer = function(fillinPlayer, players){
-					console.log('picking a player from a players array of length '+players.length);
-					if(players.length == 0){
-						console.log('using fill in player: ('+fillinPlayer.email+')');
-						return fillinPlayer;
-					}
-					var index = Math.floor(Math.random() * players.length);
-					return players.splice(index, 1)[0];
-				}
-			  , gotFillInPlayer = function(fillinPlayer, experimonth){
-					// OK, we have either an even number of players 
-					// OR an odd number of players but a willing fillinPlayer
-					
-					// Now, let's randomly pair up players.
-					var playerOne = pickPlayer(fillinPlayer, experimonth.players)
-					  , playerTwo = pickPlayer(fillinPlayer, experimonth.players);
-					
-					// We have players, let's create a game.
-					var game = new Game();
-					game.opponents.push(playerOne);
-					game.opponents.push(playerTwo);
-					game.experimonth = experimonth._id;
-					game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
-					game.save(function(err){
-						if(err){
-							console.log('error saving: ', game);
-							return cb();
-						}
 	
-						playerOne.games.push(game);
-						playerOne.save();
-						playerTwo.games.push(game);
-						playerTwo.save();
-	
-						console.log('saved game successfully! ', game);
-						handleExperimonth();
-					});
+		var i = -1
+		  , pickPlayer = function(fillinPlayer, users, callback){
+				console.log('picking a player from a users array of length '+users.length);
+				var player = null;
+				if(users.length == 0){
+					console.log('using fill in player: ('+fillinPlayer.email+')');
+					player = fillinPlayer;
+				}else{
+					var index = Math.floor(Math.random() * users.length);
+					player = users.splice(index, 1)[0];
 				}
-			  , handleExperimonth = function(){
-					if(++i == experimonths.length){
-						// We're finished!
-						return cb();
+				var remote_user = player._id;
+				Player.find({remote_user: remote_user}).exec(function(err, player){
+					if(player && player.length){
+						player = player[0];
+					}else{
+						// Create a new player! This player has never accessed Frenemy so a Player hasn't been created
+						player = new Player();
+						player.remote_user = remote_user;
+						return player.save(function(err, player){
+							console.log('saving player: ', player);
+							callback(err, player);
+						});
 					}
-					var experimonth = experimonths[i]
-					  , fillinPlayer = null;
-					var checkPlayer = function(j){
-							if(--j == -1){
-								if(experimonth.players.length == 0){
-									// This experimonth has no players, so skip it.
-									handleExperimonth();
-									return;
-								}
-								// Done
-								if(experimonth.players.length % 2){
-									// Find an admin player to use
-									for(var j=0; j<experimonth.players.length; j++){
-										if(experimonth.players[j].role >= 10){
-											fillinPlayer = experimonth.players[j];
-											break;
-										}
-									}
-									if(experimonth.players.length == 1 && fillinPlayer){
-										// We only have one player and they're an admin
-										// Let's skip this experimonth
-										handleExperimonth();
-										return;
-									}
-									if(!fillinPlayer){
-										// None of the enrolled players was an admin, so grab an arbitrary admin.
-										Player.find({role: {$gte: 10}}).exec(function(err, admins){
-											if(err || !admins || admins.length == 0){
-												return cb();
-											}
-											var idx = Math.floor(Math.random()*admins.length);
-											gotFillInPlayer(admins[idx], experimonth);
-										});
-										return;
-									}
-								}
-								gotFillInPlayer(fillinPlayer, experimonth);
-								return;
-							}
-							ProfileAnswer.count({player: experimonth.players[j]._id}).exec(function(err, numAnswers){
-								if(err){
-									console.log('error retrieving answers: ', arguments);
-									next();
-									return;
-								}
-								if(numQuestions > numAnswers){
-									// Strip the player out of the experimonth.players array!
-									experimonth.players.splice(j);
-									// TODO: Notify the player that they've been skipped from playing because their profile is incomplete
-								}
-								checkPlayer(j);
-							});
-						};
-					checkPlayer(experimonth.players.length);
-				};
-			handleExperimonth();
-		};
-		
-		// Check all the players to determine if they have their profiles complete.
-		var ProfileQuestion = mongoose.model('ProfileQuestion')
-		  , ProfileAnswer = mongoose.model('ProfileAnswer');
-		ProfileQuestion.count({published: true}).exec(function(err, numQuestions){
-			if(err){
-				console.log('error retrieving questions: ', arguments);
-				next();
-				return;
+					console.log('player?', player);
+					callback(err, player);
+				});
 			}
-			matchmaker(numQuestions);
-		});
-	});
-	return;
-	
-	
-	var Player = mongoose.model('Player');
-	Player.find({email: config.defaultNonDefenderEmail}).run(function(err, nonDefendingPlayers){
-		var nonDefendingPlayer = nonDefendingPlayers.pop();
-		Player.find({email: config.defaultDefenderEmail}).run(function(err, defendingPlayers){
-			var defendingPlayer = defendingPlayers.pop()
-			  , setupCount = 2
-			  , setupGamesForPlayers = function(fillInPlayer){
-					return function(err, players){
-						util.log('setupGamesForPlayers: '+players.length); //util.inspect(players));
-						for(var i=0; i<players.length; i++){
-							var player = players[i];
-							if( player._id.toString() == defendingPlayer._id.toString() ||
-								player._id.toString() == nonDefendingPlayer._id.toString()){
-								players.splice(i, 1);
-							}
+		  , handleExperimonth = function(){
+				if(++i == experimonths.length){
+					// We're finished!
+					return cb();
+				}
+				var experimonth = experimonths[i];
+				console.log('doing experimonth: ', experimonth);
+				if(experimonth.users.length == 0){
+					// This experimonth has no users, so skip it.
+					handleExperimonth();
+					return;
+				}
+				if(experimonth.users.length == 1 && experimonth.users[0].role >= 10){
+					// We only have one player and they're an admin
+					// Let's skip this experimonth
+					handleExperimonth();
+					return;
+				}
+				
+				// OK, we have either an even number of users 
+				// OR an odd number of users but a willing fillinPlayer
+				
+				// Now, let's randomly pair up players.
+				pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerOne){
+					if(err || !playerOne){
+						console.log('error picking playerOne', err);
+						return handleExperimonth();
+					}
+					console.log('have playerOne!', playerOne);
+					pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerTwo){
+						if(err || !playerTwo){
+							console.log('error picking playerTwo', err);
+							return handleExperimonth();
 						}
-						if(err){
-							util.log('couldn\'t find players?!');
-							if(cb && --setupCount == 0){
-								cb();
+						console.log('have playerTwo!', playerTwo);
+				
+						// We have users, let's create a game.
+						var game = new Game();
+						game.opponents.push(playerOne);
+						game.opponents.push(playerTwo);
+						game.experimonth = experimonth._id;
+						game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+						game.markModified('condition');
+						game.save(function(err){
+							if(err){
+								console.log('error saving: ', game);
+								return cb();
 							}
-						}else if(players.length < 1){
-							if(req){
-								req.flash('error', 'Can\'t start games with less than 2 players');
-							}else{
-								util.log('Can\'t start games with less than 2 players');
-							}
-
-							if(cb && --setupCount == 0){
-								cb();
-							}
-							return;
-						}else{
-							var pickPlayer = function(){
-									util.log('picking a player from a players array of length '+players.length);
-									if(players.length == 0){
-										util.log('using fill in player: ('+fillInPlayer.email+')');
-										return fillInPlayer;
-									}
-									var index = Math.floor(Math.random() * players.length);
-									return players.splice(index, 1)[0];
-								}
-							  , count = 0;
-							while(players.length > 0){
-								// Pick two players
-								var game = new Game();
-								game.opponents.push(pickPlayer());
-								game.opponents.push(pickPlayer());
-								count++;
-								game.save(function(err){
-									if(err){
-										util.log('game not saved!');
-									}
-									if(--count == 0){
-										util.log('setup some of the games! ('+setupCount+')');
-										if(cb && --setupCount == 0){
-											cb();
-										}
-									}
-								});
-							}
-						}
-					};
-				};
-			util.log('attempting to exclude: '+defendingPlayer._id.toString());
-			Player.where('defending', true).where('active', true).where('_id').ne(defendingPlayer._id.toString()).run(setupGamesForPlayers(defendingPlayer));
-			util.log('attempting to exclude: '+nonDefendingPlayer._id.toString());
-			Player.where('defending', false).where('active', true).where('_id').ne(nonDefendingPlayer._id.toString()).run(setupGamesForPlayers(nonDefendingPlayer));
-		});
+		
+							playerOne.games.push(game);
+							playerOne.save();
+							playerTwo.games.push(game);
+							playerTwo.save();
+		
+							console.log('saved game successfully! ', game);
+							handleExperimonth();
+						});
+					});
+				});
+				return;
+			};
+		handleExperimonth();
 	});
 };
 

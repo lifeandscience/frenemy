@@ -10,7 +10,7 @@ var form = require('express-form')
 
 app.get('/confessions', function(req, res){
 	var query = Confession.find({});
-	if(!req.loggedIn || !req.session.player || req.session.player.role < 10){
+	if(!req.loggedIn || !req.session.user || req.session.user.role < 10){
 		query.where('active', true);
 	}
 	query.sort('-number').exec(function(err, confessions){

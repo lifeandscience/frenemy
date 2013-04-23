@@ -59,30 +59,16 @@ app.get('/games/end', auth.authorize(2, 10), function(req, res){
 });
 
 var getConditionAnswers = function(game, myID, cb){
-	var ProfileAnswer = mongoose.model('ProfileAnswer');
-	ProfileAnswer.find({question: game.condition, player: {$in: [game.opponents[0]._id, game.opponents[1]._id]}}).exec(function(err, answers){
-		if(err || !answers){
-			// Someone hasn't answered their questions?!
-			console.log(err, answers);
-			req.flash('error', 'Someone needs to answer all of their profile questions!');
-			res.redirect('/profile');
-			return;
-		}
-		
-		var me = null
-		  , opponent = null;
-		for(var i=0; i<answers.length; i++){
-			console.log('comparing ', answers[i].player.toString(), myID);
-			if(answers[i].player.toString() == myID){
-				console.log('found me!');
-				me = answers[i];
-			}else{
-				console.log('found them!');
-				opponent = answers[i];
-			}
-		}
-		cb(me, opponent);
-		return;
+	var theirID = game.opponents[0].remote_user;
+	if(theirID.toString() == myID.toString()){
+		theirID = game.opponents[1].remote_user;
+	}
+	// Ask the auth server for the user's answers
+	auth.doAuthServerClientRequest('GET', '/api/1/profile/answerForUserAndQuestion/'+myID+'/'+game.condition._id, null, function(err, myAnswer){
+
+		auth.doAuthServerClientRequest('GET', '/api/1/profile/answerForUserAndQuestion/'+theirID+'/'+game.condition._id, null, function(err, theirAnswer){
+			cb(myAnswer, theirAnswer);
+		});
 	});
 }
 
@@ -100,10 +86,10 @@ app.get('/game/:id/walkaway', auth.authorize(2), function(req, res){
 		}
 		var me = null
 		  , opponent = null;
-		if(game.opponents[0]._id.toString() == req.session.player._id.toString()){
+		if(game.opponents[0]._id.toString() == req.player._id.toString()){
 			me = game.opponents[0];
 			opponent = game.opponents[1];
-		}else if(game.opponents[1]._id.toString() == req.session.player._id.toString()){
+		}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
 			me = game.opponents[1];
 			opponent = game.opponents[0];
 		}else{
@@ -159,7 +145,7 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id).populate('opponents').populate('condition').exec(function(err, game){
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -174,13 +160,13 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-					getConditionAnswers(game, req.session.player._id.toString(), function(my_condition, their_condition){
+					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0]._id.toString() == req.session.player._id.toString()){
+						if(game.opponents[0]._id.toString() == req.player._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1]._id.toString() == req.session.player._id.toString()){
+						}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -332,10 +318,10 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 				if(--count == 0){
 					var me = null
 					  , opponent = null;
-					if(game.opponents[0].toString() == req.session.player._id.toString()){
+					if(game.opponents[0].toString() == req.player._id.toString()){
 						me = game.opponents[0];
 						opponent = game.opponents[1];
-					}else if(game.opponents[1].toString() == req.session.player._id.toString()){
+					}else if(game.opponents[1].toString() == req.player._id.toString()){
 						me = game.opponents[1];
 						opponent = game.opponents[0];
 					}else{
@@ -358,7 +344,7 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 								req.flash('error', 'You may not vote on this round!');
 								res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
 								return;
-							}else if(currentRound.votes[0].player.toString() == req.session.player._id.toString()){
+							}else if(currentRound.votes[0].player.toString() == req.player._id.toString()){
 								// currentRound.votes.length == 1
 								// And that one vote is this player's
 								req.flash('error', 'You\'ve already voted in this round!');
@@ -370,7 +356,7 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 						// Therefore, this is a valid vote!
 						var Vote = mongoose.model('Vote')
 						  , vote = new Vote();
-						vote.player = req.session.player._id.toString();
+						vote.player = req.player._id.toString();
 						vote.value = req.params.value;
 						vote.game = game;
 						vote.save(function(err){
@@ -478,7 +464,7 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id).populate('opponents').populate('condition').exec(function(err, game){
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -493,13 +479,13 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-					getConditionAnswers(game, req.session.player._id.toString(), function(my_condition, their_condition){
+					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0]._id.toString() == req.session.player._id.toString()){
+						if(game.opponents[0]._id.toString() == req.player._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1]._id.toString() == req.session.player._id.toString()){
+						}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -613,7 +599,7 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 		return;
 	}
 */
-	Game.findById(req.params.id)/*.populate('walkaway')*/.populate('opponents').populate('condition').exec(function(err, game){
+	Game.findById(req.params.id)/*.populate('walkaway')*/.populate('opponents').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -624,13 +610,13 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 			return;
 		}
 		
-		getConditionAnswers(game, req.session.player._id.toString(), function(my_condition, their_condition){
+		getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 			var me = null
 			  , opponent = null;
-			if(game.opponents[0]._id.toString() == req.session.player._id.toString()){
+			if(game.opponents[0]._id.toString() == req.player._id.toString()){
 				me = game.opponents[0];
 				opponent = game.opponents[1];
-			}else if(game.opponents[1]._id.toString() == req.session.player._id.toString()){
+			}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
 				me = game.opponents[1];
 				opponent = game.opponents[0];
 			}else{

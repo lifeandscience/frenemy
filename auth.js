@@ -17,13 +17,20 @@ var mongoose = require('mongoose')
   , redirect_uri = (process.env.BASEURL || 'http://localhost:5000') + '/oauth/callback'
   , request = require('request');
 
-var client_access_token = null;
+var client_access_token = null
+  , requestCache = {};
 
 module.exports = {
 	clientID: credentials.clientID
 	// This is for doing a request to the auth server by the client (not on behalf of a user)
 	// callback should be: function(err, res, body)
   , doAuthServerClientRequest: function(method, path, params, callback){
+		if(requestCache[path]){
+			if(requestCache[path].expires && requestCache[path].expires > Date.now()){
+				return callback(requestCache[path].err, requestCache[path].body);
+			}
+			delete requestCache[path];
+		}
 		var gotAccessToken = function(){
 			params = params || {};
 			params.access_token = client_access_token;
@@ -33,7 +40,17 @@ module.exports = {
 					client_access_token = null;
 					return doAuthServerClientRequest(method, path, params, callback);
 				}
-				return callback(err, res, body);
+
+			    try      { body = JSON.parse(body); }
+			    catch(e) { /* The OAuth2 server does not return a valid JSON'); */ }
+			    
+			    requestCache[path] = {
+			    	err: err
+			      , body: body
+			      , expires: Date.now() + (1000 * 60 * 5) // 5 Minutes
+			    };
+
+				return callback(err, body);
 			});
 		};
 		if(!client_access_token){
@@ -45,7 +62,30 @@ module.exports = {
 		gotAccessToken();
 	}
   , setup: function(app){
-	
+		var populatePlayer = function(req, res, next){
+			var Player = mongoose.model('Player');
+			Player.find({remote_user: req.session.user._id}).exec(function(err, players){
+				if(err){
+					console.log('error finding player: ', err);
+					return next(err);
+				}
+				if(!players || players.length == 0){
+					// Player doesn't exist, so create one!
+					var player = new Player();
+					player.remote_user = req.session.user._id;
+					return player.save(function(err, player){
+						if(err){
+							console.log('error saving player: ', err);
+							return next(err);
+						}
+						req.player = player;
+						return next();
+					});
+				}
+				req.player = players[0];
+				return next();
+			});
+		};
 		app.use(function(req, res, next){
 			if(req.session.token){
 				if(!req.session.user){
@@ -64,36 +104,12 @@ module.exports = {
 						}
 						req.session.user = body.user;
 						req.session.user_expires = new Date(body.expires);
-						
-						var Player = mongoose.model('Player');
-						Player.find({remote_user: req.session.user._id}).exec(function(err, player){
-							if(err){
-								console.log('error finding player: ', err);
-								return next(err);
-							}
-							if(!player){
-								// Player doesn't exist, so create one!
-								var player = new Player();
-								player.remote_user = req.session.user._id;
-								return player.save(function(err, player){
-									if(err){
-										console.log('error saving player: ', err);
-										return next(err);
-									}
-									req.session.player = player;
-									return next();
-								});
-							}
-							req.session.player = player;
-							return next();
-						});
-						
+						populatePlayer(req, res, next);
 					});
 				}else if(!req.session.user_expires){
 					delete req.session.token;
 					delete req.session.user;
 					delete req.session.user_expires;
-					delete req.session.player;
 					return res.redirect('/login?redirect_uri='+req.url);
 				}else if(Date.compare(req.session.user_expires, new Date) == -1){
 					// We have a user but it's expired
@@ -101,9 +117,9 @@ module.exports = {
 					delete req.session.token;
 					delete req.session.user;
 					delete req.session.user_expires;
-					delete req.session.player;
 					return res.redirect('/login?redirect_uri='+req.url);
 				}
+				return populatePlayer(req, res, next);
 			}
 			return next();
 		});
@@ -166,7 +182,7 @@ module.exports = {
 			delete req.session.token;
 			delete req.session.user;
 			delete req.session.user_expires;
-			delete req.session.player;
+			delete req.player;
 			return res.redirect((process.env.AUTH_SERVER || 'http://app.local:8000') + '/logout');
 		});
 	}
