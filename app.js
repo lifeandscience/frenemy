@@ -1,5 +1,13 @@
 process.env.TZ = 'America/New_York';
 
+// Check expected ENV vars
+['BASEURL', 'PORT', 'MONGOHQ_URL', 'CLIENT_ID', 'CLIENT_SECRET', 'AUTH_SERVER', 'AWS_ACCESS_KEY', 'AWS_SECRET'].forEach(function(envVar, index){
+	if(!process.env[envVar]){
+		console.log(envVar+' environment variable is required!');
+		process.exit();
+	}
+})
+
 /**
  * Module dependencies.
  */
@@ -20,7 +28,7 @@ var	  http = require('http')
 
 
 var app = module.exports = express()
-  , port = process.env.PORT || 5000
+  , port = process.env.PORT
   , server = http.createServer(app)
   , io = require('socket.io').listen(server);
 
@@ -56,7 +64,7 @@ app.configure(function(){
 	app.use(express.session({
 		secret: "keyboard cat"
 		, store: new MongoStore({
-			url: process.env.MONGOHQ_URL || 'mongodb://localhost/frenemy'
+			url: process.env.MONGOHQ_URL
 		})
 	}));
 

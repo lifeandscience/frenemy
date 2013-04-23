@@ -7,14 +7,14 @@ var mongoose = require('mongoose')
   , FacebookStrategy = require('passport-facebook').Strategy
   , TwitterStrategy = require('passport-twitter').Strategy
   , credentials = {
-		clientID: process.env.CLIENT_ID || '514343e91b3e5f2287000001'
-	  , clientSecret: process.env.CLIENT_SECRET || '232212a0e6781b1852c3d43e42246a95'
-	  , site: process.env.AUTH_SERVER || 'http://app.local:8000'
+		clientID: process.env.CLIENT_ID
+	  , clientSecret: process.env.CLIENT_SECRET
+	  , site: process.env.AUTH_SERVER
 	  , authorizationPath: '/oauth/authorize'
 	  , tokenPath: '/oauth/access_token'
 	}
   , OAuth2 = require('simple-oauth2')(credentials)
-  , redirect_uri = (process.env.BASEURL || 'http://localhost:5000') + '/oauth/callback'
+  , redirect_uri = process.env.BASEURL + '/oauth/callback'
   , request = require('request');
 
 var client_access_token = null
@@ -93,7 +93,7 @@ module.exports = {
 					console.log('token but no user!');
 					// Use the token to request the user from the auth server
 					return request({
-						uri: (process.env.AUTH_SERVER || 'http://app.local:8000') + '/profile/get?access_token='+req.session.token.access_token
+						uri: process.env.AUTH_SERVER + '/profile/get?access_token='+req.session.token.access_token
 					  , json: true
 					}, function (error, response, body) {
 						if(error || response.statusCode != 200){

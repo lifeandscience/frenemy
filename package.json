@@ -25,4 +25,7 @@
     , "simple-oauth2": "git://github.com/lifeandscience/simple-oauth2.git#add_client_credentials_support"
     , "request": ">= 0.0.1"
   }
+  , "scripts": {
+    "start": "BASEURL=\"http://localhost:5000\" PORT=5000 MONGOHQ_URL=\"mongodb://localhost/frenemy\" CLIENT_ID=514343e91b3e5f2287000001 CLIENT_SECRET=232212a0e6781b1852c3d43e42246a95 AUTH_SERVER=\"http://app.local:8000\" AWS_ACCESS_KEY=AKIAJGTS6FVN4QPODUUA AWS_SECRET=\"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\" node app.js"
+  }
 }

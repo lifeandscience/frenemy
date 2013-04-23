@@ -94,7 +94,7 @@ ul
 				li
 					a(href="#play-by-play", data-toggle="tab") Play-by-Play
 			.tab-content
-				#score.tab-pane.active(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/points-per-move/all/'+me._id)
+				#score.tab-pane.active(data-src=process.env.BASEURL+'/players/leaderboard/points-per-move/all/'+me._id)
 				#play-by-play.tab-pane
 					include games/results
 

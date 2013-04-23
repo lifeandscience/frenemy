@@ -1,8 +1,8 @@
 var nodemailer = require('nodemailer')
   , util = require('util');
 
-var awsAccessKey = process.env.AWS_ACCESS_KEY || 'AKIAJGTS6FVN4QPODUUA'
-  , awsSecret = process.env.AWS_SECRET || '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';
+var awsAccessKey = process.env.AWS_ACCESS_KEY
+  , awsSecret = process.env.AWS_SECRET;
 
 // create reusable transport method (opens pool of SMTP connections)
 var email = nodemailer.createTransport("SES", {

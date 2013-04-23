@@ -28,7 +28,7 @@ exports.dynamicHelpers = {
 		}
 	}
   , authServer: function(){
-		return process.env.AUTH_SERVER || 'http://app.local:8000';
+		return process.env.AUTH_SERVER;
 	}
 /*   , moment: moment */
 };
