@@ -2,10 +2,6 @@ var mongoose = require('mongoose')
   , fs = require('fs')
   , jade = require('jade')
   , moment = require('moment')
-  , passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy
-  , FacebookStrategy = require('passport-facebook').Strategy
-  , TwitterStrategy = require('passport-twitter').Strategy
   , credentials = {
 		clientID: process.env.CLIENT_ID
 	  , clientSecret: process.env.CLIENT_SECRET
