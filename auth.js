@@ -21,15 +21,18 @@ module.exports = {
 	// This is for doing a request to the auth server by the client (not on behalf of a user)
 	// callback should be: function(err, res, body)
   , doAuthServerClientRequest: function(method, path, params, callback){
-		if(requestCache[path]){
-			if(requestCache[path].expires && requestCache[path].expires > Date.now()){
-				return callback(requestCache[path].err, requestCache[path].body);
+		var cacheString = path+'-'+JSON.stringify(params);
+		if(method == 'GET' && requestCache[cacheString]){
+			if(requestCache[cacheString].expires && requestCache[cacheString].expires > Date.now()){
+				return callback(requestCache[cacheString].err, requestCache[cacheString].body);
 			}
-			delete requestCache[path];
+			delete requestCache[cacheString];
 		}
 		var gotAccessToken = function(){
+			console.log('have access token');
 			params = params || {};
 			params.access_token = client_access_token;
+			console.log('params!', params);
 			OAuth2.ClientCredentials.request(method, path, params, function(err, res, body){
 				if(body && body.error && body.error == 'Access token expired!'){
 					// generate a new access_token
@@ -39,12 +42,14 @@ module.exports = {
 
 			    try      { body = JSON.parse(body); }
 			    catch(e) { /* The OAuth2 server does not return a valid JSON'); */ }
-			    
-			    requestCache[path] = {
-			    	err: err
-			      , body: body
-			      , expires: Date.now() + (1000 * 60 * 5) // 5 Minutes
-			    };
+
+			    if(method == 'GET'){
+				    requestCache[cacheString] = {
+				    	err: err
+				      , body: body
+				      , expires: Date.now() + (1000 * 60 * 5) // 5 Minutes
+				    };
+				}
 
 				return callback(err, body);
 			});

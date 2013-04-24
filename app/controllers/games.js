@@ -120,6 +120,26 @@ app.get('/game/:id/walkaway', auth.authorize(2), function(req, res){
 				}
 			});
 			
+			// Notify the auth server!
+			auth.doAuthServerClientRequest('POST', '/api/1/events', {
+				user: me.remote_user
+			  , experimonth: game.experimonth
+			  , client_id: process.env.CLIENT_ID
+			  , name: 'frenemy:walkaway'
+			  , value: opponent.remote_user
+			}, function(err, body){
+				// TODO: Do something with the result? Or maybe not?
+			});
+			auth.doAuthServerClientRequest('POST', '/api/1/events', {
+				user: opponent.remote_user
+			  , experimonth: game.experimonth
+			  , client_id: process.env.CLIENT_ID
+			  , name: 'frenemy:walkedAwayFrom'
+			  , value: me.remote_user
+			}, function(err, body){
+				// TODO: Do something with the result? Or maybe not?
+			});
+			
 			res.redirect('back');
 			return;
 		});
@@ -365,6 +385,17 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 								util.log('Error saving vote!');
 							}
 							
+							// Notify the auth server!
+							auth.doAuthServerClientRequest('POST', '/api/1/events', {
+								user: req.player.remote_user
+							  , experimonth: game.experimonth
+							  , client_id: process.env.CLIENT_ID
+							  , name: 'frenemy:vote'
+							  , value: req.params.value
+							}, function(err, body){
+								// TODO: Do something with the result? Or maybe not?
+							});
+							
 							currentRound.votes.push(vote);
 							if(currentRound.votes.length == 2){
 								currentRound.completed = true;
@@ -375,7 +406,8 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 										// This round is over!
 										// Should adjust the player's votes!
 										Player.findById(me).exec(function(err, player){
-											player.score += round.getPointsForPlayer(me);
+											var points = round.getPointsForPlayer(me);
+											player.score += points;
 											// Update my lastPlayed date
 											player.numVotes++;
 											if(round.getValueForPlayer(me) == 'friend'){
@@ -383,9 +415,33 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 											}
 											player.lastPlayed = new Date();
 											player.save();
+
+											// Notify the auth server!
+											auth.doAuthServerClientRequest('POST', '/api/1/events', {
+												user: player.remote_user
+											  , experimonth: game.experimonth
+											  , client_id: process.env.CLIENT_ID
+											  , name: 'frenemy:endOfRound'
+											  , value: points
+											}, function(err, body){
+												// TODO: Do something with the result? Or maybe not?
+											});
+
 											if(currentRound.number.toString() == game.numRounds.toString()){
 												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
 													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+												});
+												game.getPointsForPlayer(me, function(err, points){
+													// Notify the auth server!
+													auth.doAuthServerClientRequest('POST', '/api/1/events', {
+														user: player.remote_user
+													  , experimonth: game.experimonth
+													  , client_id: process.env.CLIENT_ID
+													  , name: 'frenemy:endOfGame'
+													  , value: points
+													}, function(err, body){
+														// TODO: Do something with the result? Or maybe not?
+													});
 												});
 											}else {
 												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
@@ -394,15 +450,40 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 											}
 										});
 										Player.findById(opponent).exec(function(err, player){
-											player.score += round.getPointsForPlayer(opponent);
+											var points = round.getPointsForPlayer(opponent);
+											player.score += points;
 											player.numVotes++;
 											if(round.getValueForPlayer(opponent) == 'friend'){
 												player.friendCount++;
 											}
 											player.save();
+											
+											// Notify the auth server!
+											auth.doAuthServerClientRequest('POST', '/api/1/events', {
+												user: player.remote_user
+											  , experimonth: game.experimonth
+											  , client_id: process.env.CLIENT_ID
+											  , name: 'frenemy:endOfRound'
+											  , value: points
+											}, function(err, body){
+												// TODO: Do something with the result? Or maybe not?
+											});
+
 											if(currentRound.number.toString() == game.numRounds.toString()){
 												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
 													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+												});
+												game.getPointsForPlayer(opponent, function(err, points){
+													// Notify the auth server!
+													auth.doAuthServerClientRequest('POST', '/api/1/events', {
+														user: player.remote_user
+													  , experimonth: game.experimonth
+													  , client_id: process.env.CLIENT_ID
+													  , name: 'frenemy:endOfGame'
+													  , value: points
+													}, function(err, body){
+														// TODO: Do something with the result? Or maybe not?
+													});
 												});
 											}else {
 												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
@@ -416,6 +497,7 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 										game.save(function(err, game){
 											res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
 										});
+										
 									}else{
 										res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
 									}

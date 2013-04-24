@@ -164,6 +164,25 @@ GameSchema.statics.endGames = function(cb){
 	});
 };
 
+GameSchema.methods.getPointsForPlayer = function(id, cb){
+	var Round = mongoose.model('Round')
+	  , Vote = mongoose.model('Vote');
+	this.populate('rounds', function(err, game){
+		Vote.populate(game.rounds, {
+			path: 'votes'
+		}, function(err, rounds){
+			var points = 0;
+			if(rounds && rounds.length){
+				rounds.forEach(function(round, index){
+					points += round.getPointsForPlayer(id);
+				});
+			}
+			cb(err, points);
+		});
+	});
+	return;
+};
+
 GameSchema.pre('save', function(next){
 	var game = this;
 	if(game.startTime == -1){
@@ -213,8 +232,6 @@ GameSchema.pre('save', function(next){
 	}
 });
 GameSchema.post('save', function(game){
-	console.log('io: ', utilities.io);
-	console.log('emitting: ', 'game-'+game._id);
 	utilities.io.sockets.emit('game-'+game._id, 'saved');
 });
 
