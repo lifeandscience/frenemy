@@ -86,7 +86,7 @@ html(lang="en")
 			a#faq-button.top-right-button
 				div.inner ?
 				| HELP
-			a#confessional-button.top-right-button(href="/confessional")
+			a#confessional-button.top-right-button(href=authServer()+'/confessional')
 				div.inner pencil
 				| CONFESS
 			block body

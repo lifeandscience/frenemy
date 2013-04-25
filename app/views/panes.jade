@@ -24,9 +24,11 @@ ul
 	li
 		a.btn(href="#faq", role="button", data-toggle="modal") Help
 	li
-		a.btn(href="/profile") Settings
+		a.btn(href=authServer()+"/profile") Settings
 	li
-		a.btn(href="/confessional") Confess
+		a.btn(href="/dashboard") Dashboard
+	li
+		a.btn(href=authServer()+"/confessional") Confess
 	- if('undefined' !== typeof currentRound)
 		li
 			a.btn(href="/game/"+game._id+"/walkaway", data-bootbox-confirm="<p>Are you sure you want to walkaway from this game?</p>") Walkaway
