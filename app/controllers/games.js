@@ -99,6 +99,7 @@ app.get('/game/:id/walkaway', auth.authorize(2), function(req, res){
 		}
 		
 		game.walkaway = me;
+		game.completed = true;
 		game.save(function(err){
 			if(err){
 				req.flash('error', 'Error saving game.');

@@ -47,26 +47,19 @@ GameSchema.statics.startGames = function(req, cb){
 		cb = req;
 		req = null;
 	}
-	console.log('startGames!');
 	auth.doAuthServerClientRequest('GET', '/api/1/experimonths/activeByKind/'+auth.clientID, null, function(err, experimonths){
-		console.log('got users? ', err);
-		console.log('body: ', experimonths);
-	
 		var Player = mongoose.model('Player')
 		  , now = new Date();
 	//	Experimonth.findCurrentlyRunningExperimonths(function(err, experimonths){
 	/* 	Experimonth.find({startDate: {$lte: new Date()}, endDate: {$gte: new Date()}}).populate('players').populate('conditions').exec(function(err, experimonths){ */
 		if(err || !experimonths || experimonths.length == 0){
-			console.log('error finding experimonths OR no experimonths found');
 			return cb();
 		}
 	
 		var i = -1
 		  , pickPlayer = function(fillinPlayer, users, callback){
-				console.log('picking a player from a users array of length '+users.length);
 				var player = null;
 				if(users.length == 0){
-					console.log('using fill in player: ('+fillinPlayer.email+')');
 					player = fillinPlayer;
 				}else{
 					var index = Math.floor(Math.random() * users.length);
@@ -81,11 +74,9 @@ GameSchema.statics.startGames = function(req, cb){
 						player = new Player();
 						player.remote_user = remote_user;
 						return player.save(function(err, player){
-							console.log('saving player: ', player);
 							callback(err, player);
 						});
 					}
-					console.log('player?', player);
 					callback(err, player);
 				});
 			}
@@ -95,7 +86,6 @@ GameSchema.statics.startGames = function(req, cb){
 					return cb();
 				}
 				var experimonth = experimonths[i];
-				console.log('doing experimonth: ', experimonth);
 				if(experimonth.users.length == 0){
 					// This experimonth has no users, so skip it.
 					handleExperimonth();
@@ -114,16 +104,12 @@ GameSchema.statics.startGames = function(req, cb){
 				// Now, let's randomly pair up players.
 				pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerOne){
 					if(err || !playerOne){
-						console.log('error picking playerOne', err);
 						return handleExperimonth();
 					}
-					console.log('have playerOne!', playerOne);
 					pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerTwo){
 						if(err || !playerTwo){
-							console.log('error picking playerTwo', err);
 							return handleExperimonth();
 						}
-						console.log('have playerTwo!', playerTwo);
 				
 						// We have users, let's create a game.
 						var game = new Game();
@@ -134,7 +120,6 @@ GameSchema.statics.startGames = function(req, cb){
 						game.markModified('condition');
 						game.save(function(err){
 							if(err){
-								console.log('error saving: ', game);
 								return cb();
 							}
 		
@@ -143,7 +128,6 @@ GameSchema.statics.startGames = function(req, cb){
 							playerTwo.games.push(game);
 							playerTwo.save();
 		
-							console.log('saved game successfully! ', game);
 							handleExperimonth();
 						});
 					});
@@ -262,18 +246,14 @@ GameSchema.statics.regenerateLeaderboard = function(){
 				if(hasFoundGame){
 					// We found at least one game
 					// Maybe the query needs to be re-run starting at an offset of numGames
-					console.log('iterating on a new query stream!!');
 					createQueryStream(numGames);
 				}else if(regenerateCallbacks && regenerateCallbacks.length){
 					// Done!
 					// Call all of the callbacks
-					console.log('calling callbacks! ' + util.inspect(players));
 					for(var i=0; i<regenerateCallbacks.length; i++){
 						regenerateCallbacks[i](players);
 					}
 				}else{
-					console.log('no callbacks: '+util.inspect(players));
-					
 					var numPlayers = 0
 					  , Player = mongoose.model('Player');
 					for(var id in players){

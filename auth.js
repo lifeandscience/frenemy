@@ -21,7 +21,8 @@ module.exports = {
 	// This is for doing a request to the auth server by the client (not on behalf of a user)
 	// callback should be: function(err, res, body)
   , doAuthServerClientRequest: function(method, path, params, callback){
-		var cacheString = path+'-'+JSON.stringify(params);
+		var cacheString = path+'-'+JSON.stringify(params)
+		  , t = this;
 		if(method == 'GET' && requestCache[cacheString]){
 			if(requestCache[cacheString].expires && requestCache[cacheString].expires > Date.now()){
 				return callback(requestCache[cacheString].err, requestCache[cacheString].body);
@@ -32,16 +33,17 @@ module.exports = {
 			console.log('have access token');
 			params = params || {};
 			params.access_token = client_access_token;
-			console.log('params!', params);
 			OAuth2.ClientCredentials.request(method, path, params, function(err, res, body){
-				if(body && body.error && body.error == 'Access token expired!'){
-					// generate a new access_token
-					client_access_token = null;
-					return doAuthServerClientRequest(method, path, params, callback);
-				}
 
 			    try      { body = JSON.parse(body); }
 			    catch(e) { /* The OAuth2 server does not return a valid JSON'); */ }
+			    
+				if(body && body.error && body.error == 'Access token expired!'){
+					// generate a new access_token
+					console.log('expired?');
+					client_access_token = null;
+					return t.doAuthServerClientRequest(method, path, params, callback);
+				}
 
 			    if(method == 'GET'){
 				    requestCache[cacheString] = {

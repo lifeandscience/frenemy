@@ -2,12 +2,12 @@ var mongoose = require('mongoose')
 //  , mongooseAuth = require('mongoose-auth')
   , Schema = mongoose.Schema
   , config = require('../../config')
-  , email = require('../../email')
   , jade = require('jade')
   , fs = require('fs')
   , moment = require('moment')
   , crypto = require('crypto')
-  , util = require('util');
+  , util = require('util')
+  , auth = require('../../auth');
 
 
 
@@ -57,36 +57,36 @@ var shouldNextPlayerDefend = true
 	})
   , Player = null;
 
-PlayerSchema.method('notify', function(message, callback){
-	if(!message){
+PlayerSchema.method('notify', function(type, format, subject, text, callback){
+	console.log('notifying!');
+	if(!type){
+		type = 'warning';
+	}
+	if(!format || format.length == 0){
+		format = ['web'];
+	}
+	if(!text){
 		return callback(new Error('Can\t notify without a message!'));
 	}
-	var Notification = mongoose.model('Notification')
-	  , n = new Notification();
-	n.text = message;
-	n.player = this;
-	n.save(function(err){
-		if(err){ return callback(new Error('Trouble saving new notification!')); }
-		callback(null);
+	
+	console.log('posting!', {
+		type: type
+	  , format: format
+	  , subject: subject
+	  , text: text
+	  , user: this.remote_user
 	});
-});
-PlayerSchema.static('notifyAll', function(notification, callback){
-	this.find().exec(function(err, players){
-		if(err || !players || players.length == 0){
-			callback(new Error('Error finding players to notify.'));
-			return;
-		}
-		var count = players.length-1
-		  , check = function(){
-				console.log('count', count);
-				if(--count == 0){
-					// Done iterating over players
-					callback(null);
-				}
-			};
-		players.forEach(function(player){
-			player.notify(notification, check);
-		});
+	auth.doAuthServerClientRequest('POST', '/api/1/notifications', {
+		type: type
+	  , format: format
+	  , subject: subject
+	  , text: text
+	  , user: this.remote_user
+	}, function(err, body){
+		// TODO: Do something with the result? Or maybe not?
+		console.log('did notification! err: ', err);
+		console.log('body: ', body);
+		callback(err, body);
 	});
 });
 
@@ -122,6 +122,9 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 			title = 'Your Frenemy Account has been Deactivated!';
 			html = deactivationTemplate({user: player});
 		}
+		
+		// Notify via Auth Server
+		
 		html = layoutTemplate({title: title, body: html, moment: moment});
 		
 		// setup e-mail data with unicode symbols
@@ -143,45 +146,30 @@ PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
 PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	util.log('notifying '+this.name+' of '+type+'! ' + url);
 
-	if(process.env.DO_NOTIFICATIONS){
-		util.log('will DO_NOTIFICATIONS');
-		url = process.env.BASEURL + url;
-		url += '?utm_campaign='+type+'&utm_medium=email&utm_source=all';
-		var html = ''
-		  , title = ''
-		  , player = this;
-		if(type == 'nudge'){
-			title = 'Your Turn in Frenemy!';
-			html = nudgeTemplate({user: player, round: round, url: url});
-		}else if(type == 'new-game'){
-			// Game Start!
-			title = 'New Game of Frenemy!';
-			html = newGameTemplate({user: player, round: round, url: url});
-		}else if(type == 'end-of-round'){ // type == 'new-round'
-			// Just round start!
-			title = 'End of Round of Frenemy!';
-			html = endOfRoundTemplate({user: player, round: round, url: url});
-		}else { // type == 'end-of-game'
-			// Just round start!
-			title = 'End of Game of Frenemy!';
-			html = endOfGameTemplate({user: player, round: round, url: url});
-		}
-		html = layoutTemplate({title: title, body: html, moment: moment});
-		
-		// setup e-mail data with unicode symbols
-		var mailOptions = {
-		    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
-		    to: this.email, // list of receivers
-		    subject: title, // Subject line
-		    generateTextFromHTML: true,
-		    html: html // html body
-		}
-		
-		// send mail with defined transport object
-		email.sendMail(mailOptions, cb);
-	}else if(cb){
-		cb();
+	url = process.env.BASEURL + url;
+	url += '?utm_campaign='+type+'&utm_medium=email&utm_source=all';
+	var html = ''
+	  , title = ''
+	  , player = this;
+	if(type == 'nudge'){
+		title = 'Your Turn in Frenemy!';
+		html = nudgeTemplate({user: player, round: round, url: url});
+	}else if(type == 'new-game'){
+		// Game Start!
+		title = 'New Game of Frenemy!';
+		html = newGameTemplate({user: player, round: round, url: url});
+	}else if(type == 'end-of-round'){ // type == 'new-round'
+		// Just round start!
+		title = 'End of Round of Frenemy!';
+		html = endOfRoundTemplate({user: player, round: round, url: url});
+	}else { // type == 'end-of-game'
+		// Just round start!
+		title = 'End of Game of Frenemy!';
+		html = endOfGameTemplate({user: player, round: round, url: url});
 	}
+	
+	this.notify('info', ['web', 'email'], title, html, cb);
+	return;
 };
 var offset = 0; // -5;
 var day = false; // 4;
