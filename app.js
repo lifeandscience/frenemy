@@ -1,7 +1,7 @@
 process.env.TZ = 'America/New_York';
 
 // Check expected ENV vars
-['BASEURL', 'PORT', 'MONGOHQ_URL', 'CLIENT_ID', 'CLIENT_SECRET', 'AUTH_SERVER', 'AWS_ACCESS_KEY', 'AWS_SECRET'].forEach(function(envVar, index){
+['BASEURL', 'PORT', 'MONGOHQ_URL', 'CLIENT_ID', 'CLIENT_SECRET', 'AUTH_SERVER'].forEach(function(envVar, index){
 	if(!process.env[envVar]){
 		console.log(envVar+' environment variable is required!');
 		process.exit();
