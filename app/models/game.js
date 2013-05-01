@@ -125,8 +125,29 @@ GameSchema.statics.startGames = function(req, cb){
 		
 							playerOne.games.push(game);
 							playerOne.save();
+							// Notify the auth server!
+							auth.doAuthServerClientRequest('POST', '/api/1/events', {
+								user: playerOne.remote_user
+							  , experimonth: game.experimonth
+							  , client_id: process.env.CLIENT_ID
+							  , name: 'frenemy:startGame'
+							  , value: playerTwo.remote_user
+							}, function(err, body){
+								// TODO: Do something with the result? Or maybe not?
+							});
+
 							playerTwo.games.push(game);
 							playerTwo.save();
+							// Notify the auth server!
+							auth.doAuthServerClientRequest('POST', '/api/1/events', {
+								user: playerTwo.remote_user
+							  , experimonth: game.experimonth
+							  , client_id: process.env.CLIENT_ID
+							  , name: 'frenemy:startGame'
+							  , value: playerOne.remote_user
+							}, function(err, body){
+								// TODO: Do something with the result? Or maybe not?
+							});
 		
 							handleExperimonth();
 						});
