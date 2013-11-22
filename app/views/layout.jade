@@ -15,11 +15,12 @@ html(lang="en")
 			link(rel='stylesheet', href='/css3-social-signin-buttons/auth-buttons.css')
 			link(rel='stylesheet', href='/css/jquery-tablesorter-themes/blue/style.css')
 			link(rel='stylesheet', href='/css/style.css')
+			link(rel='stylesheet', href=locals.authServer()+'/css/navbar.css')
 			//Le HTML5 shim, for IE6-8 support of HTML5 elements
 			//if lt IE 9
 				script(src='/js/modernizr.js')
 	body
-		.navbar.navbar-fixed-top
+		//.navbar.navbar-fixed-top
 			.navbar-inner
 				.container
 					a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
@@ -94,7 +95,80 @@ html(lang="en")
 		block footer
 			script
 				var _BASEURL = '!{process.env.BASEURL}';
-			script(src="//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js")
+			script(src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+			script.
+				EM_NAV = [
+					{
+						'name': 'Games',
+						'link': '#',
+						'children': [
+							{
+								'name': 'Active Games',
+								'link': '/games'
+							},
+							{
+								'name': 'Fully-Played Games',
+								'link': '/games/fully-played'
+							},
+							{
+								'name': 'All Games',
+								'link': '/games/all'
+							},
+							{
+								'name': 'Force Start Day',
+								'link': '/games/start'
+							},
+							{
+								'name': 'Force End Day',
+								'link': '/games/end'
+							}
+						]
+					},
+					{
+						'name': 'Players',
+						'link': '#',
+						'children': [
+							{
+								'name': 'List Players',
+								'link': '/players'
+							},
+							{
+								'name': 'Add Player',
+								'link': '/players/add'
+							},
+							{
+								'name': 'Import Players',
+								'link': '/players/import'
+							}
+						]
+					},
+					{
+						'name': 'Votes',
+						'link': '#',
+						'children': [
+							{
+								'name': 'Export',
+								'link': '/votes/export'
+							},
+							{
+								'name': 'Export All',
+								'link': '/votes/export/all'
+							},
+							{
+								'name': 'Export w/ Score',
+								'link': '/votes/export/score'
+							}
+						]
+					}
+				];
+			//	EM_NAV = !{JSON.stringify(locals.nav)};
+			//	REM_RIGHT_NAV = [
+			//		{
+			//			'name': 'Sign In',
+			//			'link': '/signin'
+			//		}
+			//	];
+			script(src=locals.authServer()+'/js/em-navbar.js')
 			script(src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
 			script(src="/js/json2.js")
 			script(src="/js/spin.js")
