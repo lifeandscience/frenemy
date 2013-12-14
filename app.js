@@ -25,7 +25,8 @@ var	  newrelic = require('newrelic')
 	, flash = require('connect-flash')
 	, auth = require('./auth')
 	, moment = require('moment')
-	, utilities = require('./utilities');
+	, utilities = require('./utilities')
+	, url = require('url');
 
 
 var app = module.exports = express()
@@ -79,9 +80,15 @@ app.configure(function(){
 
 //	app.use(express.methodOverride());
 	var helpers = require('./helpers')
-	  , Notification = mongoose.model('Notification');
+	  , Notification = mongoose.model('Notification')
+	  , baseUrl = url.parse(process.env.BASEURL);
 	app.locals(helpers.staticHelpers);
 	app.use(function(req, res, next){
+		// Check BASEURL 
+		if(req.host != baseUrl.hostname){
+			// Request host doesn't match configured host. Redirect?
+			return res.redirect(process.env.BASEURL);
+		}
 		res.locals.flash = req.flash.bind(req)
 		res.locals.moment = moment;
 		res.locals.token = req.session.token;
