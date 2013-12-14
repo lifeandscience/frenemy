@@ -30,6 +30,8 @@ html(lang="en")
 			script(src="/lib/jquery/jquery.min.js")
 			//script(src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
 			script.
+				var _BASEURL = '#{process.env.BASEURL}';
+			script.
 				EM_NAV = !{JSON.stringify(locals.nav)};
 			//	REM_RIGHT_NAV = [
 			//		{
