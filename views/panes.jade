@@ -1,0 +1,121 @@
+#leaderboard.pane
+	.handles 
+		.handle.handle-stats
+			a Stats / Play-by-Play
+		.handle.handle-scoring
+			a 
+				i.fa.fa-lightbulb-o
+	.inner.inner-stats
+		.content
+			ul.nav.nav-tabs
+				li.active
+					a(href="#score", data-toggle="tab") (See Score)
+				li
+					a(href="#play-by-play", data-toggle="tab") (See Play-by-Play)
+			.tab-content
+				#score.tab-pane.active(data-src=process.env.BASEURL+'/players/leaderboard/'+game.experimonth+'/'+me._id)
+				#play-by-play.tab-pane
+					include games/results
+	.inner.inner-scoring
+		h3 Scoring Reminder:
+		.row.gray
+			.col-xs-4.col-xs-offset-4.yellow-col
+				span.fa.fa-smile-o
+			.col-xs-4
+				span.fa.fa-frown-o
+		.row.yellow-row
+			.col-xs-4
+				span.fa.fa-smile-o
+			.col-xs-4.yellow-col
+				span.points 15
+				span.comma ,
+				span.points.gray 15
+			.col-xs-4
+				span.points -5
+				span.comma ,
+				span.points.gray 25
+		.row
+			.col-xs-4
+				span.fa.fa-frown-o
+			.col-xs-4.yellow-col
+				span.points 25
+				span.comma ,
+				span.points.gray -5
+			.col-xs-4
+				span.points 5
+				span.comma ,
+				span.points.gray 5
+
+
+//#me.pane
+//	.handle
+//		a Me
+//		// a.rotateBack
+//		//	i.icon-forward.icon-white
+//	.inner
+//		.content 
+//			h1.you YOU
+//			h2 score: #{me.score}
+//			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getProfile(game.startTime) : ''))
+//				- if(slug == 'voting')
+//					// Do voting
+//					ul
+//						each game, i in me.votingRecord
+//							li.cf
+//								span.date #{game.startTime.getMonth()+1} / #{game.startTime.getDate()}
+//								- if(game.votes.length == 0)
+//									span.no-votes No Votes!
+//								- else
+//									each vote, j in game.votes
+//										// Find this player's 
+//										span(class=vote.value) #{vote.value}
+//					h3 !{me.getProfile(game.startTime)}
+//				- else if(slug == 'color')
+//					// Do Color!
+//					div(class='color '+me.getProfile(game.startTime))
+//				- else if(slug == 'chat' || slug == 'no-info')
+//					h3 !{me.getProfile(game.startTime)}
+//				- if(heading)
+//					h3 #{heading}: 
+//					h3 !{me.getProfile(game.startTime)}
+//#my-opponent.pane
+//	.handle
+//		a My Opponent
+//	.inner
+//		.content
+//			h1.them THEM
+//			h2 score: #{opponent.score}
+//			div(class='profile '+slug+(slug == 'personality' ? ' '+me.getOpponentProfile(game.startTime, opponent) : ''))
+//				- if(slug == 'voting')
+//					// Do voting
+//					ul
+//						each game, i in opponent.votingRecord
+//							li.cf
+//								span.date #{game.startTime.getMonth()+1} / #{game.startTime.getDate()}
+//								- if(game.votes.length == 0)
+//									span.no-votes No Votes!
+//								- else
+//									each vote, j in game.votes
+//										// Find this player's 
+//										span(class=vote.value) #{vote.value}
+//					h3 !{me.getOpponentProfile(game.startTime, opponent)}
+//				- else if(slug == 'color')
+//					// Do Color!
+//					div(class='color '+me.getOpponentProfile(game.startTime, opponent))
+//				- else if(slug == 'chat' || slug == 'no-info')
+//					h3 !{me.getOpponentProfile(game.startTime, opponent)}
+//				- if(heading)
+//					h3 #{heading}: 
+//					h3 !{me.getOpponentProfile(game.startTime, opponent)}
+// TODO: EVERYAUTH
+//#leaderboard.pane(class=(user() ? 'logged-in' : null))
+//	.handle
+//		a Results
+//	.inner(data-src=(process.env.BASEURL || 'http://localhost:5000')+'/players/leaderboard/points-per-move/all/'+me._id)
+	
+//#play-by-play.modal.fade.hide
+//	.modal-header
+//		button.close(type="button", data-dismiss="modal") x
+//		h3.you PLAY-BY-PLAY
+//	.modal-body
+//		include games/results

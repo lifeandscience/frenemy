@@ -1,0 +1,24 @@
+extends ../layout
+
+block vars
+	skipContainer = true
+
+block body
+	.container
+		.row#header
+			.lets
+				h2 Let's play
+			.logo
+				h1
+					- if(game.currentRound)
+						a.next-round(title="Click here to get to the current move of this game!", href="/game/#{game._id}/#{game.currentRound}")
+							img(src="/img/logo.png", alt="FRENEMY")
+					- else
+						a.next-round(title="Click here to see the results of this game!", href="/game/#{game._id}")
+							img(src="/img/logo.png", alt="FRENEMY")
+			.prompt.you
+				h2
+					| END OF GAME
+		include results
+	
+	include ../panes

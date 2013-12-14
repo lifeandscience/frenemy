@@ -93,9 +93,27 @@ jQuery(function(){
 	var leaderboard = jQuery('#leaderboard');
 	leaderboard.css({
 		opacity: 1
-	  , bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
+	  , bottom: -(leaderboard.height() - leaderboard.find('.handles').height() - 5) //(leaderboard.hasClass('logged-in') ? 435 : 500)
 	});
-	jQuery('#leaderboard > .handle > a').click(function(){
+	var whichLeaderBoardVisible = null;
+	jQuery('#leaderboard > .handles > .handle > a').click(function(){
+		var t = jQuery(this)
+		  , p = t.parent()
+		  , pp = p.parent().parent();
+		if(leaderboard.hasClass('visible') && p.hasClass('handle-stats') && whichLeaderBoardVisible == 'scoring'){
+			// Switch to stats
+			whichLeaderBoardVisible = 'stats';
+			pp.find('.inner').hide();
+			pp.find('.inner-stats').show();
+			return false;
+		}else if(leaderboard.hasClass('visible') && p.hasClass('handle-scoring') && whichLeaderBoardVisible == 'stats'){
+			// Switch to scoring
+			whichLeaderBoardVisible = 'scoring';
+			pp.find('.inner').hide();
+			pp.find('.inner-scoring').show();
+			return false;
+		}
+
 		leaderboard.toggleClass('visible');
 		if(leaderboard.hasClass('visible')){
 			leaderboard.css({
@@ -104,20 +122,29 @@ jQuery(function(){
 			});
 		}else{
 			leaderboard.css({
-				bottom: -(leaderboard.hasClass('logged-in') ? 435 : 475)
+				bottom: -(leaderboard.height() - leaderboard.find('.handles').height() - 5) //(leaderboard.hasClass('logged-in') ? 435 : 500)
 			  , 'z-index': 0
 			});
 		}
-		if(_gaq){
-			_gaq.push(['_trackPageview', document.location.pathname+'/leaderboard']);
-		}
-
-		if(leaderboard.hasClass('visible') && jQuery('table', leaderboard).length > 0){
-			var lastSort = jQuery.cookie('leaderboard_sort');
-			if(lastSort){
-				lastSort = JSON.parse(lastSort);
-				jQuery('table', leaderboard).trigger('sorton', lastSort);
+		if(p.hasClass('handle-stats')){
+			if(_gaq){
+				_gaq.push(['_trackPageview', document.location.pathname+'/leaderboard']);
 			}
+	
+			if(leaderboard.hasClass('visible') && jQuery('table', leaderboard).length > 0){
+				var lastSort = jQuery.cookie('leaderboard_sort');
+				if(lastSort){
+					lastSort = JSON.parse(lastSort);
+					jQuery('table', leaderboard).trigger('sorton', lastSort);
+				}
+			}
+			pp.find('.inner').hide();
+			pp.find('.inner-stats').show();
+			whichLeaderBoardVisible = 'stats';
+		}else if(p.hasClass('handle-scoring')){
+			pp.find('.inner').hide();
+			pp.find('.inner-scoring').show();
+			whichLeaderBoardVisible = 'scoring';
 		}
 		return false;
 	});

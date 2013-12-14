@@ -1,0 +1,74 @@
+extends layout
+
+block body
+	.row#header
+		.lets
+			h2 Let's play
+		.logo
+			h1
+				a 
+					img(src="/img/logo.png", alt="FRENEMY")
+		.prompt
+			h2 SIGN UP TODAY!
+		
+	.row#vote.home
+		.sidebar.sidebar-left
+			h2.you Kill 'em with kindness?
+		.vote
+			a(class='friend disabled')
+				.avatar 
+					.inner 
+						img(src="/img/icon_friend_big_gray.png")
+				h3 friend
+		.vote
+			a(class='enemy disabled') 
+				.avatar 
+					.inner
+						img(src="/img/icon_enemy_big_gray.png")
+				h3 enemy
+		.sidebar
+			h2.you.enemy An eye for an eye?
+		a#signup(href="/login") Sign up to play!
+		
+	.row#scoring.cf
+		h4 Scoring Reminder
+		.scoring-option#friend-friend
+			.visuals
+				span.friend
+					img(src="/img/icon_friend_white.png")
+				span.friend
+					img(src="/img/icon_friend_white.png")
+			.text
+				span.points 15
+				span.comma ,
+				span.points 15
+		.scoring-option#friend-enemy
+			.visuals
+				span.friend
+					img(src="/img/icon_friend_white.png")
+				span.enemy
+					img(src="/img/icon_enemy_white.png")
+			.text
+				span.points -5
+				span.comma ,
+				span.points 25
+		.scoring-option#enemy-friend
+			.visuals
+				span.enemy
+					img(src="/img/icon_enemy_white.png")
+				span.friend
+					img(src="/img/icon_friend_white.png")
+			.text
+				span.points 25
+				span.comma ,
+				span.points -5
+		.scoring-option#enemy-enemy
+			.visuals
+				span.enemy
+					img(src="/img/icon_enemy_white.png")
+				span.enemy
+					img(src="/img/icon_enemy_white.png")
+			.text
+				span.points 5
+				span.comma ,
+				span.points 5

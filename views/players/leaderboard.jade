@@ -1,0 +1,28 @@
+.content
+	//.table-header-container
+	.table-container
+		table.table.table-striped.table-condensed
+			thead
+				tr
+					th.name
+					th.friendliness
+						.th-inner Friendly
+					th.score
+						.th-inner Points
+					th.last-move
+						.th-inner Last Move
+			tbody
+				each player, i in players
+					tr
+						td.name #{player.name}
+						td.friendliness 
+							if player.numVotes > 0
+								| #{Math.round((player.friendCount / player.numVotes)*10000)/100}%
+							else
+								| -
+						td.score #{player.score}
+						td.last-move 
+							if 'friend' == player.lastVote
+								img(src="/img/icon_friend_gray.png")
+							else if 'enemy' == player.lastVote
+								img(src="/img/icon_enemy_red.png")

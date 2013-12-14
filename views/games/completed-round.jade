@@ -1,0 +1,80 @@
+extends ../layout
+
+block vars
+	skipContainer = true
+
+block body
+	#game.container
+		.row#header
+			.lets
+				h2 Let's play
+			.logo
+				h1
+					- if(game.currentRound)
+						a.next-round(title="Click here to get to the current move of this game!", href="/game/#{game._id}/#{game.currentRound}")
+							img(src="/img/logo.png", alt="FRENEMY")
+					- else
+						a.next-round(title="Click here to see the results of this game!", href="/game/#{game._id}")
+							img(src="/img/logo.png", alt="FRENEMY")
+			.prompt
+				h2
+					| MOVE ##{round.number}
+					br
+					| RESULTS:
+
+		#vote.row.cf
+			- if(round.completed)
+				// Gotta populate my vote and their vote
+				.vote.col-md-offset-2
+					a(class=my_vote.value+' chosen disabled')
+						.avatar 
+							.inner 
+								if my_vote.value == 'friend'
+									img(src="/img/icon_friend_big_red.png")
+								else
+									img(src="/img/icon_enemy_big_red.png")
+						h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'you chose enemy'}
+						points = round.getPointsForPlayer(player())
+						if (''+points).indexOf('-') == -1
+							points = '+'+points
+						h3.white #{points}
+				.vote
+					a(class=their_vote.value+' chosen disabled')
+						.avatar 
+							.inner 
+								if their_vote.value == 'friend'
+									img(src="/img/icon_friend_big_red.png")
+								else
+									img(src="/img/icon_enemy_big_red.png")
+						h3 #{their_vote && their_vote.value == 'friend' ? 'they chose friend' : 'they chose enemy'}
+						points = round.getPointsForOtherPlayer(player())
+						if (''+points).indexOf('-') == -1
+							points = '+'+points
+						h3.white #{points}
+			- else	
+				.vote.col-md-offset-2
+					a(href="/game/#{game._id}/#{round._id}/friend", class='friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'disabled') : 'active'))
+						.avatar 
+							.inner 
+								if my_vote && my_vote.value == 'friend'
+									img(src="/img/icon_friend_big_red.png")
+								else
+									img(src="/img/icon_friend_big_gray.png")
+						h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}
+				.vote
+					a(href="/game/#{game._id}/#{round._id}/enemy", class='enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active')) 
+						.avatar 
+							.inner
+								if my_vote && my_vote.value == 'enemy'
+									img(src="/img/icon_enemy_big_red.png")
+								else
+									img(src="/img/icon_enemy_big_gray.png")
+						h3 #{my_vote && my_vote.value == 'enemy' ? 'you chose enemy' : 'enemy'}
+		
+			if !game.currentRound
+				a.next-round(href="/game/#{game._id}") click to see the results!
+			else if game.currentRound.toString() != round._id.toString()
+				a.next-round(href="/game/#{game._id}/#{game.currentRound}") click to play round #{game.rounds.length+1}
+	
+		include ../actions
+	include ../panes

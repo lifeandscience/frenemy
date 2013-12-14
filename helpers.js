@@ -27,6 +27,11 @@ exports.dynamicHelpers = {
 			return app.req.session.user;
 		}
 	}
+  , player: function(app){
+		if(app.req.player){
+			return app.req.player;
+		}
+	}
   , authServer: function(){
 		return process.env.AUTH_SERVER;
 	}

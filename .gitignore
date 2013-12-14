@@ -1,3 +1,5 @@
 node_modules
 mongo.*/
+public/lib
 
+newrelic_agent.log

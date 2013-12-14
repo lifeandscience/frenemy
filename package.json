@@ -6,6 +6,9 @@
       "node": "0.8.x"
     , "npm": "1.1.x"
   }
+  , "scripts": {
+    "postinstall": "./node_modules/bower/bin/bower install"
+  }
   , "dependencies": {
       "async": ">= 0.0.1"
     , "aws2js": "< 0.7.0"
@@ -24,8 +27,10 @@
     , "socket.io": ">= 0.0.1"
     , "simple-oauth2": "git://github.com/lifeandscience/simple-oauth2.git#add_client_credentials_support"
     , "request": ">= 0.0.1"
+    , "bower": ">= 0.0.1"
+    , "newrelic": ">= 0.0.1"
   }
   , "scripts": {
-    "start": "BASEURL=\"http://localhost:5000\" PORT=5000 MONGOHQ_URL=\"mongodb://localhost/frenemy\" CLIENT_ID=52716ee9122283a2c9000002 CLIENT_SECRET=040a63fc192480d1468bcdc32410c3e9 AUTH_SERVER=\"http://app.dev:8000\" node app.js"
+    "start": "BASEURL=\"http://localhost:5000\" PORT=5000 MONGOHQ_URL=\"mongodb://localhost/frenemy\" CLIENT_ID=5136519e43e12f0200000009 CLIENT_SECRET=aca65bddce4efb4cc0abba787f8ab5f9 AUTH_SERVER=\"http://app.dev:8000\" DO_NOTIFICATIONS=true node app.js"
   }
 }

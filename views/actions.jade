@@ -1,0 +1,118 @@
+heading = me.getProfileHeading(game.startTime);
+slug = me.getProfileSlug(game.startTime);
+
+//- if(game.startTime.getDay() == 4)
+//	#chat.pane
+//		.inner
+//			p 
+//				| If you're having trouble chatting, try in a different browser like 
+//				a(href="http://www.mozilla.org/en-US/firefox/new/") Firefox
+//				|  or 
+//				a(href="https://www.google.com/intl/en/chrome/browser/") Chrome
+//				| .
+//			.content
+//				#tlkio(data-channel=game._id.toString(), style="width:700px;height:500px;")
+//				script(src="http://tlk.io/embed.js", type="text/javascript")
+//		.handle
+//			a Chat
+
+ul.actions
+	li
+		a.btn.opponent(href="#opponent", role="button", data-toggle="modal")
+			span.fa.fa-users
+			span.text.fa-text Opponent
+	- if(locals.currentRound)
+		li
+			a.btn.walkaway(href="#walkaway", data-toggle="modal")
+				span.glyphicon.glyphicon-log-out
+				span.text Leave
+	li
+		a.btn.help(href="#faq", role="button", data-toggle="modal")
+			span.fa.fa-question-circle
+			span.text.fa-text Help
+	li
+		a.btn.settings(href=authServer()+"/profile")
+			span.fa.fa-cogs
+			span.text.fa-text Settings
+	li
+		a.btn.confess(href=authServer()+"/confess")
+			span.glyphicon.glyphicon-question-sign
+			span.text Confess
+
+
+#opponent.fade.modal
+	.modal-dialog
+		.modal-content
+			.modal-header
+				button.close(type="button", data-dismiss="modal") x
+				h3 Today's Opponent:
+			.modal-body
+				h4 #{game.condition.text}
+				h5 Your Opponent: #{their_condition == null || !their_condition.value ? "N/A" : their_condition.value}
+				p (You answered: #{my_condition == null || !my_condition.value ? "N/A" : my_condition.value})
+
+#walkaway.fade.modal
+	.modal-dialog
+		.modal-content
+			.modal-header
+				button.close(type="button", data-dismiss="modal") x
+				h3 End Today's Game?
+			.modal-body
+				.row
+					.col-xs-6
+						span.glyphicon.glyphicon-log-out
+					.col-xs-6
+						h3.blue
+							a(href="/game/"+game._id+"/leave") -> Yes
+						h3
+							a(href="#", data-dismiss="modal") -> No
+					.col-xs-12
+						p Selecting yes will end today’s game immediately and your opponent will be notified of your decision.
+						p Tomorrow begins a new game.
+
+#scoring.fade.modal
+	.modal-dialog
+		.modal-content
+			.modal-header
+				button.close(type="button", data-dismiss="modal") x
+				h3 Scoring Reminder:
+			.modal-body
+				table
+					tbody
+						tr
+							th.empty
+							th
+								span.friend
+							th
+								span.enemy
+						tr
+							th
+								span.friend
+							td
+								span.points 15
+								span.comma ,
+								span.points 15
+							td
+								span.points -5
+								span.comma ,
+								span.points 25
+						tr
+							th
+								span.enemy
+							td
+								span.points 25
+								span.comma ,
+								span.points 5
+							td
+								span.points 5
+								span.comma ,
+								span.points 5
+					
+#faq.fade.modal
+	.modal-dialog
+		.modal-content
+			.modal-header
+				button.close(type="button", data-dismiss="modal") x
+				h3 FAQ
+			.modal-body
+				include faq

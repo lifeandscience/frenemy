@@ -13,14 +13,14 @@ PASSWORD=vpnZvHpxq3G5pXwHPsjrMqrzSGYpu3X9qYeMtIecqEPUg7KSopf32kZNaXwVUgAshuKEz32
 USERNAME=heroku
 
 case "$2" in
-frenemy)
+mls-frenemy)
 	APPID=app4548898
 	PORT=10008
 	HOST=staff.mongohq.com
 	USERNAME=heroku
 	PASSWORD=mfik1FJC-snr8m-pglRXJjr0dKjIY0lv50-Z0ZR8xntmblftglVyc_o0qxNoA6eIQNV8uuwtM3uErAaN0eIL3w
 	;;
-dev-frenemy)
+mls-testing-frenemy)
 	echo "Dev is the default"
 	;;
 *)
@@ -40,16 +40,16 @@ export)
 import)
 	echo "Importing from $2"
 	DATE=`date "+%Y-%m-%d-%H-%M-%S"`
-	OLD_NAME="dev_e_bluepane_com-$DATE"
-	mongo dev_e_bluepane_com --eval "db.copyDatabase('dev_e_bluepane_com', '$OLD_NAME')"
-	mongo dev_e_bluepane_com --eval "db.dropDatabase()"
-	mongorestore --host localhost -d dev_e_bluepane_com "bin/mongo.$2/$APPID"
+	OLD_NAME="frenemy-$DATE"
+	mongo frenemy --eval "db.copyDatabase('frenemy', '$OLD_NAME')"
+	mongo frenemy --eval "db.dropDatabase()"
+	mongorestore --host localhost -d frenemy "bin/mongo.$2/$APPID"
 	;;
 clear)
 	echo "Clearing database..."
 	DATE=`date "+%Y-%m-%d-%H-%M-%S"`
-	OLD_NAME="dev_e_bluepane_com-$DATE"
-	mongo dev_e_bluepane_com --eval "db.copyDatabase('dev_e_bluepane_com', '$OLD_NAME'); db.dropDatabase();"
+	OLD_NAME="frenemy-$DATE"
+	mongo frenemy --eval "db.copyDatabase('frenemy', '$OLD_NAME'); db.dropDatabase();"
 	echo "Done."
 	;;
 esac

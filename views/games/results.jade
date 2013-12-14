@@ -1,0 +1,64 @@
+mePoints = 0;
+themPoints = 0;
+
+table#results.table.table-condensed
+	thead
+		tr
+			th
+			th.moves(colspan="2") MOVES
+			th.points(colspan="2") POINTS
+		tr
+			th.round Move
+			th.you YOU
+			th.them THEM
+			th.you YOU
+			th.them THEM
+	tbody
+		each round, i in game.rounds
+			mePointsThisRound = round.getPointsForPlayer(me._id)
+			- mePoints += mePointsThisRound
+			themPointsThisRound = round.getPointsForPlayer(opponent._id)
+			- themPoints += themPointsThisRound
+			tr
+				td.round: a(href="/game/#{game._id}/#{round._id}") #{round.number}
+				td
+					if round.getVoteForPlayer(me._id).value == 'friend'
+						img(src="/img/icon_friend_white.png")
+					else
+						img(src="/img/icon_enemy_white.png")
+					// span(class=round.getVoteForPlayer(me._id).value) #{round.getVoteForPlayer(me._id).value}
+					// a(href="/games/#{game._id}/#{round._id}/#{me._id}") #{round.getVoteForPlayer(me._id).value}
+				td 
+					if round.getVoteForPlayer(opponent._id).value == 'friend'
+						img(src="/img/icon_friend_white.png")
+					else
+						img(src="/img/icon_enemy_white.png")
+					// span(class=round.getVoteForPlayer(opponent._id).value) #{round.getVoteForPlayer(opponent._id).value}
+					//a(href="/games/#{game._id}/#{round._id}/#{opponent._id}") #{round.getVoteForPlayer(opponent._id).value}
+				td.you #{round.getStringPointsForPlayer(me._id, mePointsThisRound)}
+				td.them #{round.getStringPointsForPlayer(opponent._id, themPointsThisRound)}
+		- if(game.walkaway)
+			p = player()
+			tr.walkaway
+				td(colspan=5)
+					- if(p && p._id.toString() == game.walkaway)
+						| You walked away!
+					- else
+						| They walked away!
+		- if(game.completed)
+			tr.total
+				td
+				td
+				td
+				td(class='you '+(themPoints == mePoints ? 'tie' : (themPoints > mePoints ? 'loser' : 'winner')))
+					span.value #{mePoints}
+					- if(themPoints == mePoints)
+						span.result TIE
+					- else if(mePoints > themPoints)
+						span.result WINNER
+				td(class='them '+(themPoints == mePoints ? 'tie' : (themPoints < mePoints ? 'loser' : 'winner')))
+					span.value #{themPoints}
+					- if(themPoints == mePoints)
+						span.result TIE
+					- else if(mePoints < themPoints)
+						span.result WINNER

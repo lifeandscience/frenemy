@@ -12,7 +12,8 @@ process.env.TZ = 'America/New_York';
  * Module dependencies.
  */
 
-var	  http = require('http')
+var	  newrelic = require('newrelic')
+	, http = require('http')
 	, express = require('express')
 //	, mongooseAuth = require('mongoose-auth')
 	, db = require('./db')
@@ -32,6 +33,7 @@ var app = module.exports = express()
   , server = http.createServer(app)
   , io = require('socket.io').listen(server);
 
+io.set('log level', 1); // reduce logging
 server.listen(port, function(){
 	console.log("Express server listening on port %d in %s mode", port, app.settings.env);
 });
@@ -45,15 +47,15 @@ io.sockets.on('connection', function (socket) {
 });
 
 // Models
-var dir = __dirname + '/app/models';
+var dir = __dirname + '/models';
 // grab a list of our route files
 fs.readdirSync(dir).forEach(function(file){
-	require('./app/models/'+file);
+	require('./models/'+file);
 });
 
 // Configuration
 app.configure(function(){
-	app.set('views', __dirname + '/app/views');
+	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
 /* 	app.use(express.compiler({ src: __dirname + '/public', enable: ['less']})); */
 	app.use(require('less-middleware')({ src: __dirname + '/public' }));
@@ -89,6 +91,83 @@ app.configure(function(){
 		if(!req.player){
 			return next();
 		}
+		
+		var _BASEURL = process.env.BASEURL;
+		EM_NAV = [
+			{
+				'name': 'Frenemy Home',
+				'link': _BASEURL+'/',
+			},
+			{
+				'name': 'Play!',
+				'link': _BASEURL+'/play',
+			}
+		];
+		if(req.session.user && req.session.user.role >= 10){
+			EM_NAV.push({
+				'name': 'Games',
+				'link': '#',
+				'children': [
+					{
+						'name': 'Active Games',
+						'link': _BASEURL+'/games'
+					},
+					{
+						'name': 'Fully-Played Games',
+						'link': _BASEURL+'/games/fully-played'
+					},
+					{
+						'name': 'All Games',
+						'link': _BASEURL+'/games/all'
+					},
+					{
+						'name': 'Force Start Day',
+						'link': _BASEURL+'/games/start'
+					},
+					{
+						'name': 'Force End Day',
+						'link': _BASEURL+'/games/end'
+					}
+				]
+			});
+			EM_NAV.push({
+				'name': 'Players',
+				'link': '#',
+				'children': [
+					{
+						'name': 'List Players',
+						'link': _BASEURL+'/players'
+					},
+					{
+						'name': 'Add Player',
+						'link': _BASEURL+'/players/add'
+					},
+					{
+						'name': 'Import Players',
+						'link': _BASEURL+'/players/import'
+					}
+				]
+			});
+			EM_NAV.push({
+				'name': 'Votes',
+				'link': '#',
+				'children': [
+					{
+						'name': 'Export',
+						'link': _BASEURL+'/votes/export'
+					},
+					{
+						'name': 'Export All',
+						'link': _BASEURL+'/votes/export/all'
+					},
+					{
+						'name': 'Export w/ Score',
+						'link': _BASEURL+'/votes/export/score'
+					}
+				]
+			});
+		}
+		res.locals.nav = EM_NAV;
 		Notification.find({player: req.player, read: false}, function(err, notifications){
 			res.locals.notifications = notifications;
 			next();
@@ -121,7 +200,7 @@ app.configure('production', function(){
 // Routes
 auth.route(app);
 
-var dir = __dirname + '/app/controllers';
+var dir = __dirname + '/controllers';
 // grab a list of our route files
 fs.readdirSync(dir).forEach(function(file){
 	var str = fs.readFileSync(dir + '/' + file, 'utf8');

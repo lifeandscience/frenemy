@@ -23,12 +23,15 @@ module.exports = {
   , doAuthServerClientRequest: function(method, path, params, callback){
 		var cacheString = path+'-'+JSON.stringify(params)
 		  , t = this;
+		// TODO: Disabling cache for testing!
+/*
 		if(method == 'GET' && requestCache[cacheString]){
 			if(requestCache[cacheString].expires && requestCache[cacheString].expires > Date.now()){
 				return callback(requestCache[cacheString].err, requestCache[cacheString].body);
 			}
 			delete requestCache[cacheString];
 		}
+*/
 		var gotAccessToken = function(){
 			console.log('have access token');
 			params = params || {};
@@ -76,6 +79,7 @@ module.exports = {
 					// Player doesn't exist, so create one!
 					var player = new Player();
 					player.remote_user = req.session.user._id;
+					player.name = req.session.user.name;
 					return player.save(function(err, player){
 						if(err){
 							console.log('error saving player: ', err);
@@ -208,6 +212,14 @@ module.exports = {
 				// We're authorized!
 				return next();
 			}
+			req.session.redirect_uri = req.url;
+			var authorization_uri = OAuth2.AuthCode.authorizeURL({
+				redirect_uri: redirect_uri
+			  , scope: '<scope>'
+			  , state: '<state>'
+			});
+			return res.redirect(authorization_uri);
+			
 			req.flash('error', 'Please login to access that page!');
 			return res.redirect('/');
 		};
