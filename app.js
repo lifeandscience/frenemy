@@ -100,7 +100,7 @@ app.configure(function(){
 		}
 		
 		var _BASEURL = process.env.BASEURL;
-		EM_NAV = [
+		var EM_NAV = [
 			{
 				'name': 'Frenemy Home',
 				'link': _BASEURL+'/',
