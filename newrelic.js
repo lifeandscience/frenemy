@@ -8,7 +8,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name : [(process.env.BASEURL == 'http://frenemy.experimonth.com' ? 'frenemy.experimonth.com' : (process.env.BASEURL == 'http://app.dev:8000' ? 'dev.frenemy.experimonth.com' : 'testing.frenemy.experimonth.com'))],
+  app_name : [(process.env.BASEURL == 'http://frenemy.experimonth.com' ? 'frenemy.experimonth.com' : (process.env.BASEURL == 'http://localhost:5000' ? 'dev.frenemy.experimonth.com' : 'testing.frenemy.experimonth.com'))],
   /**
    * Your New Relic license key.
    */
