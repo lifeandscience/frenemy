@@ -6274,6 +6274,11 @@ td.sidebar {
   margin: 0 10px;
   float: left;
 }
+.vote a > .avatar,
+.vote a h3 {
+  -webkit-transition: 0.25s ease-in-out;
+  transition: 0.25s ease-in-out;
+}
 .vote a > .avatar {
   background-color: white;
   padding: 28px;
@@ -6305,7 +6310,8 @@ td.sidebar {
 }
 .vote a.chosen > .avatar > .inner,
 .vote a.active:hover > .avatar > .inner {
-  background-color: #ffcb05;
+  /* 				background-color: @yellow; */
+
   background-position: left -611px;
 }
 .vote a.chosen h3,
@@ -6344,7 +6350,8 @@ td.sidebar {
   box-shadow: none;
 }
 .vote a.strikethrough .avatar .inner {
-  background-color: black;
+  /* 				background-color: black; */
+
   background-position: left -41px;
 }
 .vote a.enemy.strikethrough .avatar .inner {
@@ -7544,7 +7551,24 @@ ul.actions li {
 ul.actions li a.btn {
   color: #ffba01;
   font-size: 0.8em;
-  padding: 6px;
+  padding: 0 10px;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  -webkit-transition: opacity 0.25s ease-in-out;
+  transition: opacity 0.25s ease-in-out;
+  /*
+			.fa-text {
+				position: relative;
+				top: 3px;
+			}
+*/
+
+}
+ul.actions li a.btn .img {
+  height: 64px;
+}
+ul.actions li a.btn .img img {
+  display: inline-block;
 }
 ul.actions li a.btn .fa,
 ul.actions li a.btn .glyphicon {
@@ -7553,14 +7577,36 @@ ul.actions li a.btn .glyphicon {
 }
 ul.actions li a.btn .text {
   display: block;
-}
-ul.actions li a.btn .fa-text {
-  position: relative;
-  top: 3px;
+  margin-top: 5px;
 }
 ul.actions li a:hover,
 ul.actions li a:active {
-  color: #cd9500;
+  /* 			color: darken(@orangeYellow, 10); */
+
+  opacity: 0.5;
+}
+ul.actions li a.btn.opponent .img {
+  padding: 10px 0 11px 0;
+}
+ul.actions li a.btn.help .img {
+  padding: 0 0 1px 0;
+}
+ul.actions li a.btn.settings .img {
+  padding: 5px 0;
+}
+ul.actions li a.btn.confess .img {
+  padding: 1px 0 2px 0;
+}
+@media all and (max-width: 768px) {
+  ul.actions li a.btn .img {
+    height: 35px;
+  }
+  ul.actions li a.btn .img img {
+    width: 25px;
+  }
+  ul.actions li a.btn.help .img {
+    padding: 5px 0;
+  }
 }
 .modal {
   color: #333333;

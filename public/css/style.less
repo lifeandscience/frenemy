@@ -145,6 +145,10 @@ h1, h2, h3, h4, h5, h6 {
 		margin: 0 10px;
 		float: left;
 
+		> .avatar,
+		h3 {
+			.transition(0.25s ease-in-out);
+		}
 		> .avatar {
 			background-color: white;
 			padding: 28px;
@@ -181,7 +185,7 @@ h1, h2, h3, h4, h5, h6 {
 		> .avatar {
 			background-color: @yellow;
 			> .inner {
-				background-color: @yellow;
+/* 				background-color: @yellow; */
 				background-position: left -611px;
 			}
 		}
@@ -227,7 +231,7 @@ h1, h2, h3, h4, h5, h6 {
 			          box-shadow: none;
 
 			.inner {
-				background-color: black;
+/* 				background-color: black; */
 				background-position: left -41px;
 			}
 		}
@@ -1435,7 +1439,17 @@ ul.actions {
 		a.btn {
 			color: @orangeYellow;
 			font-size: 0.8em;
-			padding: 6px;
+			padding: 0 10px;
+			.opacity(1);
+			.transition(opacity .25s ease-in-out);
+			
+			.img {
+				height: 64px;
+				
+				img {
+					display: inline-block;
+				}
+			}
 
 			.fa,
 			.glyphicon {
@@ -1444,35 +1458,65 @@ ul.actions {
 			}
 			.text {
 				display: block;
+				margin-top: 5px;
 			}
+/*
 			.fa-text {
 				position: relative;
 				top: 3px;
 			}
+*/
 		}
 		a:hover,
 		a:active {
-			color: darken(@orangeYellow, 10);
+/* 			color: darken(@orangeYellow, 10); */
+			opacity: 0.5;
 		}
 		
 		a.btn.opponent {
-			
+			.img {
+				padding: 10px 0 11px 0;
+			}
 		}
 		a.btn.walkaway {
 			
 		}
 		a.btn.help {
-			
+			.img {
+				padding: 0 0 1px 0;
+			}
 		}
 		a.btn.settings {
-			
+			.img {
+				padding: 5px 0;
+			}
 		}
 		a.btn.confess {
-			
+			.img {
+				padding: 1px 0 2px 0;
+			}
 		}
 	}
-	
 }
+@media all and (max-width: 768px) {
+	ul.actions li {
+		a.btn {
+			.img {
+				height: 35px;
+
+				img {
+					width: 25px;
+				}
+			}
+		}
+		a.btn.help {
+			.img {
+				padding: 5px 0;
+			}
+		}
+	}
+}
+
 .modal {
 	color: @gray;
 }

@@ -19,24 +19,34 @@ slug = me.getProfileSlug(game.startTime);
 ul.actions
 	li
 		a.btn.opponent(href="#opponent", role="button", data-toggle="modal")
-			span.fa.fa-users
+			div.img
+				img(src="/img/icon_opponent.png")
+			//span.fa.fa-users
 			span.text.fa-text Opponent
 	- if(locals.currentRound)
 		li
 			a.btn.walkaway(href="#walkaway", data-toggle="modal")
-				span.glyphicon.glyphicon-log-out
+				div.img
+					img(src="/img/icon_leave.png")
+				//span.glyphicon.glyphicon-log-out
 				span.text Leave
 	li
 		a.btn.help(href="#faq", role="button", data-toggle="modal")
-			span.fa.fa-question-circle
+			div.img
+				img(src="/img/icon_help.png")
+			//span.fa.fa-question-circle
 			span.text.fa-text Help
 	li
 		a.btn.settings(href=authServer()+"/profile")
-			span.fa.fa-cogs
+			div.img
+				img(src="/img/icon_settings.png")
+			//span.fa.fa-cogs
 			span.text.fa-text Settings
 	li
 		a.btn.confess(href=authServer()+"/confess")
-			span.glyphicon.glyphicon-question-sign
+			div.img
+				img(src="/img/icon_confess.png")
+			//span.glyphicon.glyphicon-question-sign
 			span.text Confess
 
 
@@ -59,8 +69,9 @@ ul.actions
 				h3 End Today's Game?
 			.modal-body
 				.row
-					.col-xs-6
-						span.glyphicon.glyphicon-log-out
+					.col-xs-6.text-center
+						//span.glyphicon.glyphicon-log-out
+						img(src="/img/icon_leave_big.png")
 					.col-xs-6
 						h3.blue
 							a(href="/game/"+game._id+"/leave") -> Yes
