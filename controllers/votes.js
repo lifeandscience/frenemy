@@ -13,7 +13,7 @@ app.get('/votes/export', auth.authorize(2, 10), function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\tplayer email\tplayer type\tgame ID\tround #\tvote date\tvote time\tplayer\'s vote\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
+	var csv = 'player ID\tplayer email\tgame ID\tround #\tvote date\tvote time\tplayer\'s vote\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -44,7 +44,7 @@ app.get('/votes/export', auth.authorize(2, 10), function(req, res, next){
 			return function(err, vote){
 				// Handle the vote
 				var d = moment(vote.date)
-				  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + (vote.player.defending ? 'defending' : 'accumulating') + '\t' + vote.game + '\t' + round.number + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
+				  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + vote.game + '\t' + round.number + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
 
 				// Determine which of the players was this one in the round
 				addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\t' + vote.player.Birthdate + '\t' + vote.player.Zip + '\t' + vote.player.Gender + '\t' + vote.player.Ethnicity + '\t' + vote.player.Color + '\t' + vote.player.Transport + '\t' + vote.player.Sports + '\t' + vote.player.Personality + '\t' + vote.player.Politics + '\t' + vote.player.Glasses + '\t' + vote.player.Pets + '\t' + vote.player.Birthplace + '\n';
@@ -101,7 +101,7 @@ app.get('/votes/export/all', auth.authorize(2, 10), function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\tplayer email\tplayer type\tgame ID\tvote date\tvote time\tplayer\'s vote\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
+	var csv = 'player ID\tplayer email\tgame ID\tvote date\tvote time\tplayer\'s vote\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -137,7 +137,7 @@ app.get('/votes/export/all', auth.authorize(2, 10), function(req, res, next){
 	  		hasFoundGame = true;
 
 			var d = moment(vote.date)
-			  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + (vote.player.defending ? 'defending' : 'accumulating') + '\t' + vote.game + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
+			  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + vote.game + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
 
 			// Determine which of the players was this one in the round
 			addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\t' + vote.player.Birthdate + '\t' + vote.player.Zip + '\t' + vote.player.Gender + '\t' + vote.player.Ethnicity + '\t' + vote.player.Color + '\t' + vote.player.Transport + '\t' + vote.player.Sports + '\t' + vote.player.Personality + '\t' + vote.player.Politics + '\t' + vote.player.Glasses + '\t' + vote.player.Pets + '\t' + vote.player.Birthplace + '\n';
@@ -181,7 +181,7 @@ app.get('/votes/export/score', auth.authorize(2, 10), function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'player ID\tplayer email\tplayer type\tgame ID\tround #\tvote date\tvote time\tplayer\'s vote\tplayer\'s score\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
+	var csv = 'player ID\tplayer email\tgame ID\tround #\tvote date\tvote time\tplayer\'s vote\tplayer\'s score\tinfo type this round\tplayer\'s info this round\topponent\'s info this round\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -209,7 +209,7 @@ app.get('/votes/export/score', auth.authorize(2, 10), function(req, res, next){
 		}
 	  , printVote = function(round, vote, score){
 			var d = moment(vote.date)
-			  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + (vote.player.defending ? 'defending' : 'accumulating') + '\t' + vote.game + '\t' + round.number + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + score + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
+			  , addToCSV = vote.player._id + '\t' + vote.player.email + '\t' + vote.game + '\t' + round.number + '\t' + d.format('YYYY-MM-DD') + '\t' + d.format('hh:mm A') + '\t' + vote.value + '\t' + score + '\t' + vote.player.getProfileSlug(vote.date) + '\t' + vote.player.getProfileForCSV(vote.date) + '\t';
 
 			// Determine which of the players was this one in the round
 			addToCSV += vote.player.getOpponentProfileForCSV(vote.date) + '\t' + vote.player.Birthdate + '\t' + vote.player.Zip + '\t' + vote.player.Gender + '\t' + vote.player.Ethnicity + '\t' + vote.player.Color + '\t' + vote.player.Transport + '\t' + vote.player.Sports + '\t' + vote.player.Personality + '\t' + vote.player.Politics + '\t' + vote.player.Glasses + '\t' + vote.player.Pets + '\t' + vote.player.Birthplace + '\n';

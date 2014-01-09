@@ -1,22 +1,13 @@
 module.exports = {
-	// Number of points for players who start out high
-	defaultHighPoints: 10000
-
-	// Number of points for players who start out low
-  , defaultLowPoints: 0
-
-  , points: {
+	points: {
 		// 'friend' + 'friend'
-		winningTie: 15
+		winningTie: process.env.pointsForFriendlyTie || 15
 		// 'friend' in 'friend' + 'enemy'
-	  , loss: -5
+	  , loss: process.env.pointsForLoss || -5
 		// 'enemy' in 'friend' + 'enemy'
-	  , win: 25
+	  , win: process.env.pointsForWin || 25
 		// 'enemy' + 'enemy'
-	  , losingTie: 5
+	  , losingTie: process.env.pointsForUnfriendlyTie || 5
 	}
-	
-//  , defaultDefenderEmail: 'beck@becktench.com'
-//  , defaultNonDefenderEmail: 'elizfleming@gmail.com'
   , admins: ['ben.schell@gmail.com']
 };

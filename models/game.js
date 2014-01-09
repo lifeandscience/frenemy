@@ -40,7 +40,7 @@ var GameSchema = new Schema({
   , currentRound: {type: Schema.ObjectId, ref: 'Round'}
   , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
   
-  , walkaway: {type: Schema.ObjectId, ref: 'Player', default: null}
+  , walkaway: String // remote_user
 });
 
 GameSchema.statics.startGames = function(req, cb){
@@ -65,7 +65,7 @@ GameSchema.statics.startGames = function(req, cb){
 */
 	
 		var i = -1
-		  , pickPlayer = function(fillinPlayer, users, callback){
+		  , pickPlayer = function(fillinPlayer, users, experimonthId, experimonthName, callback){
 				var player = null;
 				if(users.length == 0){
 					player = fillinPlayer;
@@ -75,7 +75,7 @@ GameSchema.statics.startGames = function(req, cb){
 				}
 				var remote_user = player._id;
 				var name = player.name;
-				Player.find({remote_user: remote_user}).exec(function(err, player){
+				Player.find({remote_user: remote_user, experimonth: experimonthId}).exec(function(err, player){
 					if(player && player.length){
 						player = player[0];
 						player.name = name;
@@ -87,6 +87,8 @@ GameSchema.statics.startGames = function(req, cb){
 						player = new Player();
 						player.remote_user = remote_user;
 						player.name = name;
+						player.experimonth = experimonthId;
+						player.experimonthName = experimonthName;
 						return player.save(function(err, player){
 							callback(err, player);
 						});
@@ -115,11 +117,11 @@ GameSchema.statics.startGames = function(req, cb){
 				// OR an odd number of users but a willing fillinPlayer
 				
 				// Now, let's randomly pair up players.
-				pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerOne){
+				pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerOne){
 					if(err || !playerOne){
 						return handleExperimonth();
 					}
-					pickPlayer(experimonth.fillInAdmin, experimonth.users, function(err, playerTwo){
+					pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerTwo){
 						if(err || !playerTwo){
 							return handleExperimonth();
 						}
@@ -137,10 +139,12 @@ GameSchema.statics.startGames = function(req, cb){
 								return cb();
 							}
 		
+/*
 							var idx = playerOne.experimonths.indexOf(experimonth._id.toString());
 							if(idx == -1){
 								playerOne.experimonths.push(experimonth._id);
 							}
+*/
 							playerOne.games.push(game);
 							playerOne.save();
 							// Notify the auth server!
@@ -154,10 +158,12 @@ GameSchema.statics.startGames = function(req, cb){
 								// TODO: Do something with the result? Or maybe not?
 							});
 
+/*
 							idx = playerTwo.experimonths.indexOf(experimonth._id.toString());
 							if(idx == -1){
 								playerTwo.experimonths.push(experimonth._id);
 							}
+*/
 							playerTwo.games.push(game);
 							playerTwo.save();
 							// Notify the auth server!

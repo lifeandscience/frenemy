@@ -37,13 +37,13 @@ var path = __dirname + '/../views/players/email/new_game.jade'
   , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
 
 
-var shouldNextPlayerDefend = true
-  , PlayerSchema = new Schema({
+var PlayerSchema = new Schema({
 		active: {type: Boolean, default: true}
 	  , remote_user: String
 	  , name: String
 
-	  , experimonths: [String] // Array of Experimonth IDs this player is a part of
+	  , experimonth: String // An ID from the auth server of an Experimonth
+	  , experimonthName: String // A name from the auth server of an Experimonth
 	  , games: [{type: Schema.ObjectId, ref: 'Game'}]
 	  , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
 	  , votes: [{type: Schema.ObjectId, ref: 'Vote'}]
@@ -91,22 +91,6 @@ PlayerSchema.method('notify', function(type, format, subject, text, callback){
 		console.log('body: ', body);
 		callback(err, body);
 	});
-});
-
-PlayerSchema.pre('save', function(next){
-	if(this.defendingNum == -1){
-		this.defendingNum = 0;
-		this.defending = shouldNextPlayerDefend;
-		shouldNextPlayerDefend = !shouldNextPlayerDefend;
-	}
-	if(this.score == -1){
-		if(this.defending){
-			this.score = config.defaultHighPoints;
-		}else{
-			this.score = config.defaultLowPoints;
-		}
-	}
-	next();
 });
 
 PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){

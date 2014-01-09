@@ -86,10 +86,10 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 		}
 		var me = null
 		  , opponent = null;
-		if(game.opponents[0]._id.toString() == req.player._id.toString()){
+		if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
 			me = game.opponents[0];
 			opponent = game.opponents[1];
-		}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
+		}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
 			me = game.opponents[1];
 			opponent = game.opponents[0];
 		}else{
@@ -98,7 +98,7 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 			return;
 		}
 		
-		game.walkaway = me;
+		game.walkaway = req.session.user._id;
 		game.completed = true;
 		game.save(function(err){
 			if(err){
@@ -184,10 +184,10 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0]._id.toString() == req.player._id.toString()){
+						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
+						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -257,6 +257,16 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 								}
 							}
 					
+							auth.doAuthServerClientRequest('POST', '/api/1/events', {
+								user: me.remote_user
+							  , experimonth: game.experimonth
+							  , client_id: process.env.CLIENT_ID
+							  , name: 'frenemy:viewedCompletedRoundScreen'
+							  , value: opponent.remote_user
+							}, function(err, body){
+								// TODO: Do something with the result? Or maybe not?
+							});
+
 							res.render('games/completed-round', {
 								title: 'In-Progress Game'
 							  , game: game
@@ -322,7 +332,7 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 		return;
 	}
 
-	Game.findById(req.params.id).populate('currentRound').exec(function(err, game){
+	Game.findById(req.params.id).populate('opponents').populate('currentRound').exec(function(err, game){
 		if(err || !game){
 			req.flash('error', 'Game not found!');
 			res.redirect('/');
@@ -332,204 +342,212 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 			res.redirect('/game/'+req.params.id);
 			return;
 		}
-		var count = game.rounds.length
-		  , Round = mongoose.model('Round')
-		  , roundMap = {}
-		  , checkDone = function(){
-				if(--count == 0){
-					var me = null
-					  , opponent = null;
-					if(game.opponents[0].toString() == req.player._id.toString()){
-						me = game.opponents[0];
-						opponent = game.opponents[1];
-					}else if(game.opponents[1].toString() == req.player._id.toString()){
-						me = game.opponents[1];
-						opponent = game.opponents[0];
-					}else{
-						req.flash('error', 'This is not your game!');
-						res.redirect('/');
-						return;
-					}
-			
-					if(!game.currentRound){
-						req.flash('error', 'You may not vote on this game as there is no current round!');
-						res.redirect('/game/'+req.params.id/* +'/'+req.params.as */);
-						return;
-					}
-					
-					var Round = mongoose.model('Round');
-					Round.findById(game.currentRound).populate('votes').exec(function(err, currentRound){
-						if(currentRound.votes && currentRound.votes.length){
-							if(currentRound.votes.length == 2){
-								// Already have two votes!
-								req.flash('error', 'You may not vote on this round!');
-								res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
-								return;
-							}else if(currentRound.votes[0].player.toString() == req.player._id.toString()){
-								// currentRound.votes.length == 1
-								// And that one vote is this player's
-								req.flash('error', 'You\'ve already voted in this round!');
-								res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
-								return;
-							}
+		Player.find({remote_user: req.session.user._id, experimonth: game.experimonth}).exec(function(err, player){
+			if(err || !player){
+				req.flash('error', 'Player not found!');
+				res.redirect('/');
+				return;
+			}
+
+			var count = game.rounds.length
+			  , Round = mongoose.model('Round')
+			  , roundMap = {}
+			  , checkDone = function(){
+					if(--count == 0){
+						var me = null
+						  , opponent = null;
+						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+							me = game.opponents[0];
+							opponent = game.opponents[1];
+						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+							me = game.opponents[1];
+							opponent = game.opponents[0];
+						}else{
+							req.flash('error', 'This is not your game!');
+							res.redirect('/');
+							return;
 						}
-						// Either there are no votes OR there is one vote but it's the other player's
-						// Therefore, this is a valid vote!
-						var Vote = mongoose.model('Vote')
-						  , vote = new Vote();
-						vote.player = req.player._id.toString();
-						vote.value = req.params.value;
-						vote.game = game;
-						vote.save(function(err){
-							// Saved the vote!
-							if(err){
-								util.log('Error saving vote!');
+				
+						if(!game.currentRound){
+							req.flash('error', 'You may not vote on this game as there is no current round!');
+							res.redirect('/game/'+req.params.id/* +'/'+req.params.as */);
+							return;
+						}
+						
+						var Round = mongoose.model('Round');
+						Round.findById(game.currentRound).populate('votes').exec(function(err, currentRound){
+							if(currentRound.votes && currentRound.votes.length){
+								if(currentRound.votes.length == 2){
+									// Already have two votes!
+									req.flash('error', 'You may not vote on this round!');
+									res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
+									return;
+								}else if(currentRound.votes[0].player.toString() == player._id.toString()){
+									// currentRound.votes.length == 1
+									// And that one vote is this player's
+									req.flash('error', 'You\'ve already voted in this round!');
+									res.redirect('/game/'+game._id+'/'+currentRound._id/* +'/'+req.params.as */);
+									return;
+								}
 							}
-
-							Player.findById(me).exec(function(err, player){
-								player.lastVote = req.params.value;
-								player.save();
-							});
-							
-							// Notify the auth server!
-							auth.doAuthServerClientRequest('POST', '/api/1/events', {
-								user: req.player.remote_user
-							  , experimonth: game.experimonth
-							  , client_id: process.env.CLIENT_ID
-							  , name: 'frenemy:vote'
-							  , value: req.params.value
-							}, function(err, body){
-								// TODO: Do something with the result? Or maybe not?
-							});
-							
-							currentRound.votes.push(vote);
-							if(currentRound.votes.length == 2){
-								currentRound.completed = true;
-							}
-							currentRound.save(function(err){
-								Round.findById(currentRound._id).populate('votes').exec(function(err, round){
-									if(round.completed){
-										// This round is over!
-										// Should adjust the player's votes!
-										Player.findById(me).exec(function(err, player){
-											var points = round.getPointsForPlayer(me);
-											player.score += points;
-											// Update my lastPlayed date
-											player.numVotes++;
-											if(round.getValueForPlayer(me) == 'friend'){
-												player.friendCount++;
-											}
-											player.lastPlayed = new Date();
-											player.save();
-
-											// Notify the auth server!
-											auth.doAuthServerClientRequest('POST', '/api/1/events', {
-												user: player.remote_user
-											  , experimonth: game.experimonth
-											  , client_id: process.env.CLIENT_ID
-											  , name: 'frenemy:endOfRound'
-											  , value: points
-											}, function(err, body){
-												// TODO: Do something with the result? Or maybe not?
-											});
-
-											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
-												});
-												game.getPointsForPlayer(me, function(err, points){
-													// Notify the auth server!
-													auth.doAuthServerClientRequest('POST', '/api/1/events', {
-														user: player.remote_user
-													  , experimonth: game.experimonth
-													  , client_id: process.env.CLIENT_ID
-													  , name: 'frenemy:endOfGame'
-													  , value: points
-													}, function(err, body){
-														// TODO: Do something with the result? Or maybe not?
-													});
-												});
-											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
-												});
-											}
-										});
-										Player.findById(opponent).exec(function(err, player){
-											var points = round.getPointsForPlayer(opponent);
-											player.score += points;
-											player.numVotes++;
-											if(round.getValueForPlayer(opponent) == 'friend'){
-												player.friendCount++;
-											}
-											player.save();
-											
-											// Notify the auth server!
-											auth.doAuthServerClientRequest('POST', '/api/1/events', {
-												user: player.remote_user
-											  , experimonth: game.experimonth
-											  , client_id: process.env.CLIENT_ID
-											  , name: 'frenemy:endOfRound'
-											  , value: points
-											}, function(err, body){
-												// TODO: Do something with the result? Or maybe not?
-											});
-
-											if(currentRound.number.toString() == game.numRounds.toString()){
-												player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
-												});
-												game.getPointsForPlayer(opponent, function(err, points){
-													// Notify the auth server!
-													auth.doAuthServerClientRequest('POST', '/api/1/events', {
-														user: player.remote_user
-													  , experimonth: game.experimonth
-													  , client_id: process.env.CLIENT_ID
-													  , name: 'frenemy:endOfGame'
-													  , value: points
-													}, function(err, body){
-														// TODO: Do something with the result? Or maybe not?
-													});
-												});
-											}else {
-												player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
-													util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
-												});
-											}
-										});
-			
-										game.rounds.push(round);
-										game.currentRound = null;
-										game.save(function(err, game){
-											res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
-										});
-										
-									}else{
-										res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
-									}
+							// Either there are no votes OR there is one vote but it's the other player's
+							// Therefore, this is a valid vote!
+							var Vote = mongoose.model('Vote')
+							  , vote = new Vote();
+							vote.player = player._id.toString();
+							vote.value = req.params.value;
+							vote.game = game;
+							vote.save(function(err){
+								// Saved the vote!
+								if(err){
+									util.log('Error saving vote!');
+								}
+	
+								Player.findById(me).exec(function(err, player){
+									player.lastVote = req.params.value;
+									player.save();
 								});
+								
+								// Notify the auth server!
+								auth.doAuthServerClientRequest('POST', '/api/1/events', {
+									user: player.remote_user
+								  , experimonth: game.experimonth
+								  , client_id: process.env.CLIENT_ID
+								  , name: 'frenemy:vote'
+								  , value: req.params.value
+								}, function(err, body){
+									// TODO: Do something with the result? Or maybe not?
+								});
+								
+								currentRound.votes.push(vote);
+								if(currentRound.votes.length == 2){
+									currentRound.completed = true;
+								}
+								currentRound.save(function(err){
+									Round.findById(currentRound._id).populate('votes').exec(function(err, round){
+										if(round.completed){
+											// This round is over!
+											// Should adjust the player's votes!
+											Player.findById(me).exec(function(err, player){
+												var points = round.getPointsForPlayer(me);
+												player.score += points;
+												// Update my lastPlayed date
+												player.numVotes++;
+												if(round.getValueForPlayer(me) == 'friend'){
+													player.friendCount++;
+												}
+												player.lastPlayed = new Date();
+												player.save();
+	
+												// Notify the auth server!
+												auth.doAuthServerClientRequest('POST', '/api/1/events', {
+													user: player.remote_user
+												  , experimonth: game.experimonth
+												  , client_id: process.env.CLIENT_ID
+												  , name: 'frenemy:endOfRound'
+												  , value: points
+												}, function(err, body){
+													// TODO: Do something with the result? Or maybe not?
+												});
+	
+												if(currentRound.number.toString() == game.numRounds.toString()){
+													player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
+														util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+													});
+													game.getPointsForPlayer(me, function(err, points){
+														// Notify the auth server!
+														auth.doAuthServerClientRequest('POST', '/api/1/events', {
+															user: player.remote_user
+														  , experimonth: game.experimonth
+														  , client_id: process.env.CLIENT_ID
+														  , name: 'frenemy:endOfGame'
+														  , value: points
+														}, function(err, body){
+															// TODO: Do something with the result? Or maybe not?
+														});
+													});
+												}else {
+													player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
+														util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+													});
+												}
+											});
+											Player.findById(opponent).exec(function(err, player){
+												var points = round.getPointsForPlayer(opponent);
+												player.score += points;
+												player.numVotes++;
+												if(round.getValueForPlayer(opponent) == 'friend'){
+													player.friendCount++;
+												}
+												player.save();
+												
+												// Notify the auth server!
+												auth.doAuthServerClientRequest('POST', '/api/1/events', {
+													user: player.remote_user
+												  , experimonth: game.experimonth
+												  , client_id: process.env.CLIENT_ID
+												  , name: 'frenemy:endOfRound'
+												  , value: points
+												}, function(err, body){
+													// TODO: Do something with the result? Or maybe not?
+												});
+	
+												if(currentRound.number.toString() == game.numRounds.toString()){
+													player.notifyOfNewRound(round, 'end-of-game', '/game/'+game._id+'/'+round._id+'/complete', function(){
+														util.log('did notify '+player.name+' of end of game! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+													});
+													game.getPointsForPlayer(opponent, function(err, points){
+														// Notify the auth server!
+														auth.doAuthServerClientRequest('POST', '/api/1/events', {
+															user: player.remote_user
+														  , experimonth: game.experimonth
+														  , client_id: process.env.CLIENT_ID
+														  , name: 'frenemy:endOfGame'
+														  , value: points
+														}, function(err, body){
+															// TODO: Do something with the result? Or maybe not?
+														});
+													});
+												}else {
+													player.notifyOfNewRound(round, 'end-of-round', '/game/'+game._id+'/'+round._id+'/complete', function(){
+														util.log('did notify '+player.name+' of end of round! '+'/game/'+game._id+'/'+currentRound._id+'/complete');
+													});
+												}
+											});
+				
+											game.rounds.push(round);
+											game.currentRound = null;
+											game.save(function(err, game){
+												res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
+											});
+											
+										}else{
+											res.redirect('/game/'+game._id+'/'+round._id/* +'/'+req.params.as */);
+										}
+									});
+								});
+								return;
 							});
 							return;
 						});
-						return;
-					});
+					}
 				}
+			  , populateRound = function(index){
+					Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
+						game.rounds[index] = round;
+						checkDone();
+					});
+				};
+			if(game.rounds.length > 0){
+				for(var i=0; i<game.rounds.length; i++){
+					populateRound(i);
+				}
+			}else{
+				count = 1;
+				checkDone();
 			}
-		  , populateRound = function(index){
-				Round.findById(game.rounds[index]).populate('votes').exec(function(err, round){
-					game.rounds[index] = round;
-					checkDone();
-				});
-			};
-		if(game.rounds.length > 0){
-			for(var i=0; i<game.rounds.length; i++){
-				populateRound(i);
-			}
-		}else{
-			count = 1;
-			checkDone();
-		}
-		return;
+			return;
+		});
 	});
 });
 
@@ -570,10 +588,10 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0]._id.toString() == req.player._id.toString()){
+						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
+						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -694,6 +712,12 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 			return;
 		}
 		if(!game.walkaway && game.currentRound && !game.completed){
+			// Get the last round
+			var round = game.rounds[game.rounds.length-1];
+			if(round){
+				res.redirect('/game/'+game._id+'/'+round);
+				return;
+			}
 			res.redirect('/game/'+game._id+'/'+game.currentRound/* +'/'+req.params.as */);
 			return;
 		}
@@ -701,10 +725,10 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 		getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
 			var me = null
 			  , opponent = null;
-			if(game.opponents[0]._id.toString() == req.player._id.toString()){
+			if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
 				me = game.opponents[0];
 				opponent = game.opponents[1];
-			}else if(game.opponents[1]._id.toString() == req.player._id.toString()){
+			}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
 				me = game.opponents[1];
 				opponent = game.opponents[0];
 			}else{

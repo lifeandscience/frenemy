@@ -1,7 +1,6 @@
 extends ../layout
 
 include ../games/mixins
-include ../notifications
 
 block body
 	#container-inner.user-profile
@@ -20,7 +19,7 @@ block body
 			h1 Welcome to your dashboard!
 
 			h1 Notifications
-			mixin do_notifications()
+			//mixin do_notifications()
 			
 			h1 Current Games
 			mixin do_games(player.games, true, false)

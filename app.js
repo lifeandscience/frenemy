@@ -80,7 +80,6 @@ app.configure(function(){
 
 //	app.use(express.methodOverride());
 	var helpers = require('./helpers')
-	  , Notification = mongoose.model('Notification')
 	  , baseUrl = url.parse(process.env.BASEURL);
 	app.locals(helpers.staticHelpers);
 	app.use(function(req, res, next){
@@ -95,9 +94,7 @@ app.configure(function(){
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};
-		if(!req.player){
-			return next();
-		}
+		console.log('req.session: ', req.session);
 		
 		var _BASEURL = process.env.BASEURL;
 		var EM_NAV = [
@@ -110,6 +107,7 @@ app.configure(function(){
 				'link': _BASEURL+'/play',
 			}
 		];
+
 		if(req.session.user && req.session.user.role >= 10){
 			EM_NAV.push({
 				'name': 'Games',
@@ -175,10 +173,7 @@ app.configure(function(){
 			});
 		}
 		res.locals.nav = EM_NAV;
-		Notification.find({player: req.player, read: false}, function(err, notifications){
-			res.locals.notifications = notifications;
-			next();
-		});
+		next();
 	});
 	/* app.dynamicHelpers(helpers.dynamicHelpers); */
 	var setupHelper = function(key, func){

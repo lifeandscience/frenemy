@@ -11,7 +11,7 @@ block body
 			.logo
 				h1
 					- if(game.currentRound)
-						a.next-round(title="Click here to get to the current move of this game!", href="/game/#{game._id}/#{game.currentRound}")
+						a.next-round(title="Click here to get to the current move of this game!", href="/game/#{game._id}")
 							img(src="/img/logo.png", alt="FRENEMY")
 					- else
 						a.next-round(title="Click here to see the results of this game!", href="/game/#{game._id}")

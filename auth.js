@@ -111,7 +111,8 @@ module.exports = {
 						}
 						req.session.user = body.user;
 						req.session.user_expires = new Date(body.expires);
-						populatePlayer(req, res, next);
+						return next();
+/* 						populatePlayer(req, res, next); */
 					});
 				}else if(!req.session.user_expires){
 					delete req.session.token;
@@ -126,7 +127,8 @@ module.exports = {
 					delete req.session.user_expires;
 					return res.redirect('/login?redirect_uri='+req.url);
 				}
-				return populatePlayer(req, res, next);
+				return next();
+/* 				return populatePlayer(req, res, next); */
 			}
 			return next();
 		});

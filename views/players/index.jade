@@ -8,6 +8,7 @@ block body
 			thead
 				tr
 					th Email
+					th Experimonth
 					th Score
 					th Last Played
 					th Actions
@@ -15,6 +16,7 @@ block body
 				each player, i in players
 					tr
 						td #{player.email}
+						td #{player.experimonthName}
 						td #{player.score}
 						td #{moment(player.lastPlayed).format('YYYY-MM-DD hh:mm A')}
 						td

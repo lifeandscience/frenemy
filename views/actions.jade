@@ -22,7 +22,7 @@ ul.actions
 			div.img
 				img(src="/img/icon_opponent.png")
 			//span.fa.fa-users
-			span.text.fa-text Opponent
+			span.text.fa-text Other Player
 	- if(locals.currentRound)
 		li
 			a.btn.walkaway(href="#walkaway", data-toggle="modal")
@@ -57,9 +57,13 @@ ul.actions
 				button.close(type="button", data-dismiss="modal") x
 				h3 Today's Opponent:
 			.modal-body
-				h4 #{game.condition.text}
-				h5 Your Opponent: #{their_condition == null || !their_condition.value ? "N/A" : their_condition.value}
-				p (You answered: #{my_condition == null || !my_condition.value ? "N/A" : my_condition.value})
+				// walkaway condition
+				if false 
+					p Today you have the ability to walkaway from the other player if you want to leave the game early. Just tap on the "leave" option.
+				else
+					h4 #{game.condition.text}
+					h5 Other Player: #{their_condition == null || !their_condition.value ? "N/A" : their_condition.value}
+					p (You answered: #{my_condition == null || !my_condition.value ? "N/A" : my_condition.value})
 
 #walkaway.fade.modal
 	.modal-dialog
@@ -78,7 +82,7 @@ ul.actions
 						h3
 							a(href="#", data-dismiss="modal") -> No
 					.col-xs-12
-						p Selecting yes will end today’s game immediately and your opponent will be notified of your decision.
+						p Selecting yes will end today’s game immediately and the other player will be notified of your decision.
 						p Tomorrow begins a new game.
 
 #scoring.fade.modal

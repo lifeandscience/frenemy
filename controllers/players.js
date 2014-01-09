@@ -15,20 +15,6 @@ app.get('/players', auth.authorize(2, 10), function(req, res){
 	});
 });
 
-/*
-// Saving for now.
-app.get('/players/defending', auth.authorize(2, 10), function(req, res){
-	Player.find({defending:true}).sort('name').exec(function(err, players){
-		res.render('players/index', {title: 'All Players', players: players, moment: moment});
-	});
-});
-app.get('/players/nondefending', auth.authorize(2, 10), function(req, res){
-	Player.find({defending:false}).sort('name').exec(function(err, players){
-		res.render('players/index', {title: 'All Players', players: players, moment: moment});
-	});
-});
-*/
-
 // (as, populate, title, object, template, varNames, redirect, beforeRender, beforeSave)
 var as = 'player'
   , populate = 'votes'
@@ -82,79 +68,6 @@ app.get('/players/generate/:num', auth.authorize(2, 10), function(req, res){
 	}
 });
 */
-app.post('/players/opt_out', auth.authorize(2, 10), function(req, res){
-	req.player.opt_out = req.param('opt_out') == 'on';
-	console.log('params: ', req.params);
-	req.player.save(function(err){
-		if(err){
-			req.flash('error', 'There was an error while saving your opt-out state.');
-			res.redirect('back');
-			return;
-		}
-		req.flash('info', 'Your preference has been saved.');
-		res.redirect('back');
-		return;
-	});
-});
-app.get('/players/promote/:id', auth.authorize(2, 10), function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.update({_id: req.params.id}, {$set: {role: 10}}, {}, function(){
-		req.flash('info', 'Player Promoted!');
-		res.redirect('/players');
-	});
-});
-app.get('/players/demote/:id', auth.authorize(2, 10), function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.update({_id: req.params.id}, {$set: {role: 0}}, {}, function(){
-		req.flash('info', 'Player Demoted!');
-		res.redirect('/players');
-	});
-});
-app.get('/players/activate/:id', auth.authorize(2, 10), function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.findById(req.params.id).exec(function(err, player){
-/* 	Player.update({_id: req.params.id}, {$set: {active: true}}, {}, function(){ */
-		player.active = true;
-		player.save();
-		player.notifyOfActivation(true, function(){
-			util.log('activated: '+util.inspect(arguments));
-			req.flash('info', 'Player Activated!');
-			res.redirect('/players');
-		});
-	});
-});
-app.get('/players/deactivate/:id', auth.authorize(2, 10), function(req, res){
-	if(!req.params.id){
-		res.send(404);
-		return;
-	}
-	Player.findById(req.params.id).exec(function(err, player){
-		console.log('err: ', err, player);
-		player.active = false;
-		player.save(function(){
-			player.notifyOfActivation(false, function(){
-				util.log('activated: '+util.inspect(arguments));
-				req.flash('info', 'Player De-activated!');
-				res.redirect('/players');
-			});
-		});
-	});
-/*
-	Player.update({_id: req.params.id}, {$set: {active: false}}, {}, function(){
-		req.flash('info', 'Player De-activated!');
-		res.redirect('/players');
-	});
-*/
-});
 
 app.get('/players/leaderboard/:experimonth/:id', function(req, res){
 	if(!req.params.id || !req.params.experimonth){
@@ -162,7 +75,7 @@ app.get('/players/leaderboard/:experimonth/:id', function(req, res){
 		return;
 	}
 	Player.findById(req.params.id).exec(function(err, player){
-		Player.find({defending: player.defending, active: true, experimonths: req.params.experimonth}).sort('-score').exec(function(err, players){
+		Player.find({active: true, experimonths: req.params.experimonth}).sort('-score').exec(function(err, players){
 			res.render('players/leaderboard', {players: players, util: util});
 			return;
 		});
@@ -176,7 +89,7 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 	}
 	var Vote = mongoose.model('Vote');
 	Player.findById(req.params.id).exec(function(err, player){
-		Player.find({defending: player.defending, active: true}).sort('-score').exec(function(err, players){
+		Player.find({active: true}).sort('-score').exec(function(err, players){
 			var toHandle = players.length
 			  , checkDone = function(){
 					if(--toHandle == 0){
@@ -192,7 +105,7 @@ app.get('/players/leaderboard/points-per-move/:id', function(req, res){
 						players[index].voteCount = count;
 						players[index].pointsPerVote = 0;
 						if(count > 0){
-							players[index].pointsPerVote = (players[index].defending ? players[index].score-10000 : players[index].score) / count;
+							players[index].pointsPerVote = players[index].score / count;
 						}
 						checkDone();
 					});
@@ -215,7 +128,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 			if(players[i].numVotes == 0){
 				players.splice(i, 1);
 			}else if(players[i].numVotes > 0){
-				players[i].pointsPerVote = (players[i].defending ? players[i].score-10000 : players[i].score) / players[i].numVotes;
+				players[i].pointsPerVote = players[i].score / players[i].numVotes;
 			}
 		}
 		res.render('players/points-per-move-leaderboard', {players: players, util: util});
@@ -293,7 +206,7 @@ app.get('/players/export', auth.authorize(2, 10), function(req, res, next){
 
 /* 	res.contentType('.csv'); */
 
-	var csv = 'name\temail\tID\tplayer type\tplayer score\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
+	var csv = 'name\temail\tID\tplayer score\tBirthdate\tZip\tGender\tEthnicity\tColor\tTransport\tSports\tPersonality\tPolitics\tGlasses\tPets\tBirthplace\n';
 	
 	res.writeHead(200, {
 		'Content-Type': 'text/tsv',
@@ -327,7 +240,7 @@ app.get('/players/export', auth.authorize(2, 10), function(req, res, next){
 
 	  		++numPlayers;
 	  		hasFoundPlayer = true;
-			var addToCSV = player.name + '\t' + player.email + '\t' + player._id + '\t' + (player.defending ? 'defending' : 'accumulating') + '\t' + player.score + '\t' + player.Birthdate + '\t' + player.Zip + '\t' + player.Gender + '\t' + player.Ethnicity + '\t' + player.Color + '\t' + player.Transport + '\t' + player.Sports + '\t' + player.Personality + '\t' + player.Politics + '\t' + player.Glasses + '\t' + player.Pets + '\t' + player.Birthplace + '\n';
+			var addToCSV = player.name + '\t' + player.email + '\t' + player._id + '\t' + player.score + '\t' + player.Birthdate + '\t' + player.Zip + '\t' + player.Gender + '\t' + player.Ethnicity + '\t' + player.Color + '\t' + player.Transport + '\t' + player.Sports + '\t' + player.Personality + '\t' + player.Politics + '\t' + player.Glasses + '\t' + player.Pets + '\t' + player.Birthplace + '\n';
 			// Determine which of the players was this one in the round
 			res.write(addToCSV);
 			checkDone();
