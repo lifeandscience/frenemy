@@ -4,10 +4,10 @@ var mongoose = require('mongoose')
   , util = require('util');
 
 // Models
-var dir = __dirname + '/app/models';
+var dir = __dirname + '/models';
 // grab a list of our route files
 fs.readdirSync(dir).forEach(function(file){
-	require('./app/models/'+file);
+	require('./models/'+file);
 });
 
 var d = new Date()
