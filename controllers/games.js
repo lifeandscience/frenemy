@@ -342,8 +342,9 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 			res.redirect('/game/'+req.params.id);
 			return;
 		}
-		Player.find({remote_user: req.session.user._id, experimonth: game.experimonth}).exec(function(err, player){
+		Player.findOne({remote_user: req.session.user._id, experimonth: game.experimonth}).exec(function(err, player){
 			if(err || !player){
+				console.log('player: ', err, player);
 				req.flash('error', 'Player not found!');
 				res.redirect('/');
 				return;

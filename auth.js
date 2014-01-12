@@ -194,6 +194,12 @@ module.exports = {
 			delete req.player;
 			return res.redirect((process.env.AUTH_SERVER || 'http://app.local:8000') + '/logout');
 		});
+		app.get('/reset-session', function(req, res, next){
+			delete req.session.token;
+			delete req.session.user;
+			delete req.session.user_expires;
+			return res.redirect('/login?redirect_uri=/');
+		});
 	}
   , authorize: function(requiredState, requiredRole, message, skipQuestionCount){
 		if(!requiredState){

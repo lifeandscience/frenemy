@@ -28,7 +28,7 @@
     , "newrelic": ">= 0.0.1"
   }
   , "scripts": {
-    "start": "BASEURL=\"http://localhost:5000\" PORT=5000 MONGOHQ_URL=\"mongodb://localhost/frenemy\" CLIENT_ID=5136519e43e12f0200000009 CLIENT_SECRET=aca65bddce4efb4cc0abba787f8ab5f9 AUTH_SERVER=\"http://app.dev:8000\" DO_NOTIFICATIONS=true node app.js"
+    "start": "BASEURL=\"http://localhost:5000\" PORT=5000 MONGOHQ_URL=\"mongodb://localhost/frenemy\" CLIENT_ID=5136519e43e12f0200000009 CLIENT_SECRET=aca65bddce4efb4cc0abba787f8ab5f9 AUTH_SERVER=\"http://app.dev:8000\" DO_NOTIFICATIONS=false node app.js"
   , "postinstall": "./node_modules/bower/bin/bower install"
   }
 }
