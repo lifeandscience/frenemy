@@ -95,21 +95,24 @@ GameSchema.statics.startGames = function(req, cb){
 					}
 				});
 			}
-		  , handleExperimonth = function(){
-				if(++i == experimonths.length){
+		  , handleExperimonth = function(goNext){
+				if(goNext){
+					i++;
+				}
+				if(i == experimonths.length){
 					// We're finished!
 					return cb();
 				}
 				var experimonth = experimonths[i];
 				if(experimonth.users.length == 0){
 					// This experimonth has no users, so skip it.
-					handleExperimonth();
+					handleExperimonth(true);
 					return;
 				}
 				if(experimonth.users.length == 1 && experimonth.users[0].role >= 10){
 					// We only have one player and they're an admin
 					// Let's skip this experimonth
-					handleExperimonth();
+					handleExperimonth(true);
 					return;
 				}
 				
@@ -119,11 +122,11 @@ GameSchema.statics.startGames = function(req, cb){
 				// Now, let's randomly pair up players.
 				pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerOne){
 					if(err || !playerOne){
-						return handleExperimonth();
+						return handleExperimonth(true);
 					}
 					pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerTwo){
 						if(err || !playerTwo){
-							return handleExperimonth();
+							return handleExperimonth(true);
 						}
 				
 						// We have users, let's create a game.
@@ -183,7 +186,7 @@ GameSchema.statics.startGames = function(req, cb){
 				});
 				return;
 			};
-		handleExperimonth();
+		handleExperimonth(true);
 	});
 };
 
