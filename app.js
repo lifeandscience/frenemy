@@ -68,6 +68,7 @@ app.configure(function(){
 		secret: "keyboard cat"
 		, store: new MongoStore({
 			url: process.env.MONGOHQ_URL
+		  , auto_reconnect: true
 		})
 	}));
 
