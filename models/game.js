@@ -69,6 +69,7 @@ GameSchema.statics.startGames = function(req, cb){
 				var player = null;
 				if(users.length == 0){
 					player = fillinPlayer;
+					console.log('using fillinPlayer: ', fillinPlayer);
 				}else{
 					var index = Math.floor(Math.random() * users.length);
 					player = users.splice(index, 1)[0];
@@ -115,6 +116,23 @@ GameSchema.statics.startGames = function(req, cb){
 					handleExperimonth(true);
 					return;
 				}
+				if(!experimonths[i].fillInAdmin){
+					for(var j=0; j<experimonth.users.length; j++){
+						if(experimonth.users[j].role >= 10){
+							experimonths[i].fillInAdmin = experimonth.users[j];
+							experimonth.fillInAdmin = experimonth.users[j];
+							experimonth.users.splice(j, 1);
+							break;
+						}
+					}
+					if(!experimonths[i].fillInAdmin){
+						console.log('No fill-in player as no admins were enrolled!');
+						handleExperimonth(true);
+						return;
+					}else{
+						console.log('got fill-in player:', experimonths[i].fillInAdmin);
+					}
+				}
 				
 				// OK, we have either an even number of users 
 				// OR an odd number of users but a willing fillinPlayer
@@ -139,6 +157,7 @@ GameSchema.statics.startGames = function(req, cb){
 						game.markModified('condition');
 						game.save(function(err){
 							if(err){
+								console.log('err saving game:', err);
 								return cb();
 							}
 		
