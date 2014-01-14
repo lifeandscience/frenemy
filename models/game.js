@@ -265,7 +265,9 @@ GameSchema.pre('save', function(next){
 	}
 });
 GameSchema.post('save', function(game){
-	utilities.io.sockets.emit('game-'+game._id, 'saved');
+	if(utilities && utilities.io && utilities.io.sockets){
+		utilities.io.sockets.emit('game-'+game._id, 'saved');
+	}
 });
 
 var players = null
