@@ -34,7 +34,7 @@ block body
 								else
 									img(src="/img/icon_enemy_big_red.png")
 						h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'you chose enemy'}
-						points = round.getPointsForPlayer(player())
+						points = round.getPointsForPlayer(me._id)
 						if (''+points).indexOf('-') == -1
 							points = '+'+points
 						h3.white #{points}
@@ -47,7 +47,7 @@ block body
 								else
 									img(src="/img/icon_enemy_big_red.png")
 						h3 #{their_vote && their_vote.value == 'friend' ? 'they chose friend' : 'they chose enemy'}
-						points = round.getPointsForOtherPlayer(player())
+						points = round.getPointsForOtherPlayer(opponent._id)
 						if (''+points).indexOf('-') == -1
 							points = '+'+points
 						h3.white #{points}

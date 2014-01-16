@@ -28,15 +28,6 @@ exports.dynamicHelpers = {
 			return app.req.session.user;
 		}
 	}
-  , player: function(res, game){
-		if(res.req.player){
-			return res.req.player;
-		}
-		if(res.req.session.user){
-			return res.req.session.user._id;
-		}
-		return null;
-	}
   , authServer: function(){
 		return process.env.AUTH_SERVER;
 	}
