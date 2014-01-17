@@ -10,33 +10,6 @@ var mongoose = require('mongoose')
   , auth = require('../auth');
 
 
-
-var path = __dirname + '/../views/players/email/new_game.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , newGameTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/end_of_round.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , endOfRoundTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/end_of_game.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , endOfGameTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/nudge.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , nudgeTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/activation.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , activationTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/deactivation.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , deactivationTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/confirm_email.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , confirmEmailTemplate = jade.compile(str, { filename: path, pretty: true })
-  , path = __dirname + '/../views/players/email/layout.jade'
-  , str = fs.readFileSync(path, 'utf8')
-  , layoutTemplate = jade.compile(str, { filename: path, pretty: true });
-
-
 var PlayerSchema = new Schema({
 		active: {type: Boolean, default: true}
 	  , remote_user: String
@@ -93,43 +66,6 @@ PlayerSchema.method('notify', function(type, format, subject, text, callback){
 	});
 });
 
-PlayerSchema.methods.notifyOfActivation = function(isActivation, cb){
-	util.log('notifying '+this.email+' of deactivation');
-
-	if(process.env.DO_NOTIFICATIONS){
-		util.log('will DO_NOTIFICATIONS');
-		var html = ''
-		  , title = ''
-		  , player = this;
-		if(isActivation){
-			title = 'Your Frenemy Account has been Activated!';
-			html = activationTemplate({user: player});
-		}else { // deactivation
-			// Just round start!
-			title = 'Your Frenemy Account has been Deactivated!';
-			html = deactivationTemplate({user: player});
-		}
-		
-		// Notify via Auth Server
-		
-		html = layoutTemplate({title: title, body: html, moment: moment});
-		
-		// setup e-mail data with unicode symbols
-		var mailOptions = {
-		    from: "Experimonth: Frenemy <experimonth@lifeandscience.org>", // sender address
-		    to: this.email, // list of receivers
-		    subject: title, // Subject line
-		    generateTextFromHTML: true,
-		    html: html // html body
-		}
-		
-		// send mail with defined transport object
-		email.sendMail(mailOptions, cb);
-	}else if(cb){
-		cb();
-	}
-};
-
 PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	util.log('notifying '+this.name+' of '+type+'! ' + url);
 
@@ -139,20 +75,20 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 	  , title = ''
 	  , player = this;
 	if(type == 'nudge'){
-		title = 'Your Turn in Frenemy!';
-		html = nudgeTemplate({user: player, round: round, url: url});
+		title = 'Your Turn in Frenemy';
+		html = 'The other player has made a move. Click the address below to see what they picked and make your next move. \n\n'+url;
 	}else if(type == 'new-game'){
 		// Game Start!
-		title = 'New Game of Frenemy!';
-		html = newGameTemplate({user: player, round: round, url: url});
+		title = 'Go Meet Your New Frenemy';
+		html = 'Your daily game of Experimonth: Frenemy has begun. Find out about the other player and make your first move by visiting the address below:\n\n'+url+'Today\'s game will last between 4-7 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
 	}else if(type == 'end-of-round'){ // type == 'new-round'
 		// Just round start!
-		title = 'End of Round of Frenemy!';
-		html = endOfRoundTemplate({user: player, round: round, url: url});
+		title = 'Your Turn in Frenemy';
+		html = 'You and the other player have made your moves. Click the address below to see the results and decide what you\'ll do next.\n\n'+url;
 	}else { // type == 'end-of-game'
 		// Just round start!
-		title = 'End of Game of Frenemy!';
-		html = endOfGameTemplate({user: player, round: round, url: url});
+		title = 'Frenemy Game Over';
+		html = 'Today\'s game of Frenemy is over. See the final play here and start thinking about your strategy for tomorrow, when you\'ll be paired with someone new.\n\n'+url;
 	}
 	
 	this.notify('info', ['web', 'email'], title, html, cb);
