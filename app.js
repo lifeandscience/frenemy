@@ -95,7 +95,6 @@ app.configure(function(){
 		res.local = function(key, val){
 			res.locals[key] = val;
 		};
-		console.log('req.session: ', req.session);
 		
 		var _BASEURL = process.env.BASEURL;
 		var EM_NAV = [

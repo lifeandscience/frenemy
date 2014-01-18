@@ -79,7 +79,7 @@ module.exports = {
 					// Player doesn't exist, so create one!
 					var player = new Player();
 					player.remote_user = req.session.user._id;
-					player.name = req.session.user.name;
+					player.name = req.session.user.email;
 					return player.save(function(err, player){
 						if(err){
 							console.log('error saving player: ', err);
