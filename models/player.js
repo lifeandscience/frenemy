@@ -30,6 +30,11 @@ var PlayerSchema = new Schema({
 	  
 	  , numWalkaways: {type: Number, default: 0}
 	  , numWalkedAwayFrom: {type: Number, default: 0}
+	  
+	  , reputations: [{
+			value: String
+		  , date: {type: Date, default: function(){ return Date.now() }}
+		}]
 	})
   , Player = null;
 

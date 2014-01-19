@@ -238,10 +238,30 @@ jQuery(function(){
 	var game = jQuery('[data-game-id]');
 	if(game.length){
 		game = game.data('game-id');
-		console.log('subscribing to ', 'game-'+game);
 		socket.on('game-'+game, function(data){
-			console.log('got game notification for ', game, data);
 			document.location.reload();
 		});
 	}
+
+	
+	jQuery('.vote a[data-reputation-request="true"]').click(function(){
+		var t = jQuery(this)
+		  , url = t.attr('href');
+		jQuery('#reputation-request').modal('toggle').find('.modal-body a.btn').unbind('click').click(function(){
+			// Submit this URL, then send the user to url
+			var a = jQuery(this);
+			jQuery.ajax({
+				dataType: "json",
+				url: a.attr('href'),
+				success: function(){
+					document.location = url;
+				},
+				error: function(){
+					alert('error submitting reputation, try again');
+				}
+			});
+			return false;
+		});
+		return false;
+	});
 });

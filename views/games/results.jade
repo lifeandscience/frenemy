@@ -40,7 +40,7 @@ table#results.table.table-condensed
 		- if(game.walkaway)
 			tr.walkaway
 				td(colspan=5)
-					- if(me && me._id.toString() == game.walkaway)
+					- if(me && me.remote_user.toString() == game.walkaway)
 						| You walked away!
 					- else
 						| They walked away!

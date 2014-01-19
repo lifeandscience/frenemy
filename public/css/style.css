@@ -7611,3 +7611,18 @@ ul.actions li a.btn.confess .img {
 .modal {
   color: #333333;
 }
+.btn-blue {
+  display: block;
+  text-align: center;
+  background-color: #278fd8;
+  color: white;
+  width: 300px;
+  padding: 30px 90px;
+  margin: 10px auto;
+  font-size: 30px;
+  text-transform: uppercase;
+}
+p.gray {
+  color: #333333;
+  text-align: center;
+}

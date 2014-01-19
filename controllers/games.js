@@ -59,6 +59,9 @@ app.get('/games/end', auth.authorize(2, 10), function(req, res){
 });
 
 var getConditionAnswers = function(game, myID, cb){
+	if(!game.condition){
+		return cb(null, null);
+	}
 	var theirID = game.opponents[0].remote_user;
 	if(theirID.toString() == myID.toString()){
 		theirID = game.opponents[1].remote_user;
@@ -776,6 +779,28 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 			return;
 		});
 		return;
+	});
+});
+app.get('/reputation/:player/:value', auth.authorize(2), function(req, res){
+	if(!req.params.player){
+		res.json({error: 'No Player ID Given'});
+		return;
+	}
+	if(!req.params.value){
+		res.json({error: 'No Value Given'});
+		return;
+	}
+	Player.find({_id: req.params.player}).exec(function(err, players){
+		if(err || !players || players.length == 0){
+			res.json({error: 'Player not found.'});
+			return;
+		}
+		var player = players[0];
+		player.reputations.push({value: req.params.value});
+		player.save(function(err){
+			res.json({error: err});
+			return;
+		});
 	});
 });
 

@@ -4,6 +4,7 @@ var mongoose = require('mongoose')
   , util = require('util')
   , utilities = require('../utilities')
   , config = require('../config')
+  , configMode = require('../config-mode')
   , nrand = function() {
 		var x1, x2, rad;
 	
@@ -17,7 +18,9 @@ var mongoose = require('mongoose')
 	 
 		return x1 * c;
 	}
-  , auth = require('../auth');
+  , auth = require('../auth')
+  , moment = require('moment')
+  , _ = require('underscore');
 
 var GameSchema = new Schema({
 	startTime: {type: Date, default: function(){ return Date.now(); }}
@@ -41,6 +44,12 @@ var GameSchema = new Schema({
   , rounds: [{type: Schema.ObjectId, ref: 'Round'}]
   
   , walkaway: String // remote_user
+  , mode: {type: String, default: 'neutral'}
+  , modeObj: {
+		from: String
+	  , id: String
+	  , slug: String
+	}
 });
 
 GameSchema.statics.startGames = function(req, cb){
@@ -56,6 +65,32 @@ GameSchema.statics.startGames = function(req, cb){
 		if(err || !experimonths || experimonths.length == 0){
 			return cb();
 		}
+		
+		var mode = 'neutral'
+		  , modeFrom = null
+		  , modeId = null
+		  , modeSlug = null
+		var today = moment().format('YYYY-MM-DD');
+		if(configMode[today]){
+			if(_.isString(configMode[today])){
+				mode = configMode[today];
+			}else if(_.isObject(configMode[today])){
+				if(configMode[today].mode){
+					mode = configMode[today].mode;
+				}
+				var args = '';
+				if(configMode[today].from){
+					modeFrom = configMode[today].from;
+				}
+				if(configMode[today].id){
+					modeId = configMode[today].id;
+				}
+				if(configMode[today].slug){
+					modeSlug = configMode[today].slug;
+				}
+			}
+		}
+		
 		
 		// First, ensure we have players 
 		
@@ -75,7 +110,7 @@ GameSchema.statics.startGames = function(req, cb){
 					player = users.splice(index, 1)[0];
 				}
 				var remote_user = player._id;
-				var name = player.name;
+				var name = player.email;
 				Player.find({remote_user: remote_user, experimonth: experimonthId}).exec(function(err, player){
 					if(player && player.length){
 						player = player[0];
@@ -149,11 +184,46 @@ GameSchema.statics.startGames = function(req, cb){
 				
 						// We have users, let's create a game.
 						var game = new Game();
+
+						game.mode = mode;
+						game.modeObj.from = modeFrom;
+						game.modeObj.id = modeId;
+						game.modeObj.slug = modeSlug;
+
 						game.opponents.push(playerOne);
 						game.opponents.push(playerTwo);
 						game.experimonth = experimonth._id;
 						game.experimonthName = experimonth.name;
-						game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+						game.condition = null;
+						if(mode == 'condition-random'){
+							game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+						}else if(mode == 'condition'){
+							if(modeId != null){
+								// Find the given condition by ID
+								for(var i=0; i<experimonth.conditions.length; i++){
+									if(experimonth.conditions[i]._id.toString() == modeId){
+										game.condition = experimonth.conditions[i];
+										break;
+									}
+								}
+								if(game.condition == null){
+									console.log('couldn\t find indicated condition. No condition with ID: ', modeSlug);
+								}
+							}else if(modeSlug != null){
+								// Find the given condition by slug
+								for(var i=0; i<experimonth.conditions.length; i++){
+									if(experimonth.conditions[i].slug == modeSlug){
+										game.condition = experimonth.conditions[i];
+										break;
+									}
+								}
+								if(game.condition == null){
+									console.log('couldn\t find indicated condition. No condition with slug: ', modeSlug);
+								}
+							}else{
+								console.log('tried using declared condition, but neither ID nor slug was provided.');
+							}
+						}
 						game.markModified('condition');
 						game.save(function(err){
 							if(err){
@@ -240,9 +310,6 @@ GameSchema.methods.getPointsForPlayer = function(id, cb){
 
 GameSchema.pre('save', function(next){
 	var game = this;
-	if(game.startTime == -1){
-		game.startTime = new Date();
-	}
 	// TODO: replace roundsPerGame
 	if(!game.currentRound && game.rounds.length < game.numRounds){
 		// Create a round

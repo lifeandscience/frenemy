@@ -17,13 +17,14 @@ slug = me.getProfileSlug(game.startTime);
 //			a Chat
 
 ul.actions
-	li
-		a.btn.opponent(href="#opponent", role="button", data-toggle="modal")
-			div.img
-				img(src="/img/icon_opponent.png")
-			//span.fa.fa-users
-			span.text.fa-text Other Player
-	- if(locals.currentRound)
+	if game.condition || game.mode == 'reputation-display'
+		li
+			a.btn.opponent(href="#opponent", role="button", data-toggle="modal")
+				div.img
+					img(src="/img/icon_opponent.png")
+				//span.fa.fa-users
+				span.text.fa-text Other Player
+	if locals.currentRound && game.mode == 'walkaway'
 		li
 			a.btn.walkaway(href="#walkaway", data-toggle="modal")
 				div.img
@@ -50,40 +51,49 @@ ul.actions
 			span.text Confess
 
 
-#opponent.fade.modal
-	.modal-dialog
-		.modal-content
-			.modal-header
-				button.close(type="button", data-dismiss="modal") x
-				h3 The Other Player:
-			.modal-body
-				// walkaway condition
-				if false 
-					p Today you have the ability to walkaway from the other player if you want to leave the game early. Just tap on the "leave" option.
-				else
-					h4 #{game.condition.text}
-					h5 Other Player: #{their_condition == null || !their_condition.value ? "N/A" : their_condition.value}
-					p (You answered: #{my_condition == null || !my_condition.value ? "N/A" : my_condition.value})
+if game.condition || game.mode == 'reputation-display'
+	#opponent.fade.modal
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal") x
+					h3 The Other Player:
+					if game.mode == 'reputation-display'
+						reputation = null
+						today = new Date()
+						- for(var i=0; i<opponent.reputations.length; i++)
+							- if(opponent.reputations[i].date.getYear() == today.getYear() && opponent.reputations[i].date.getMonth() == today.getMonth() && opponent.reputations[i].date.getDate() == today.getDate())
+								- reputation = opponent.reputations[i]
+						h4 Reputation: #{reputation ? reputation.value : 'Unknown'}
+				.modal-body
+					// walkaway condition
+					if game.mode == 'walkaway'
+						p Today you have the ability to walkaway from the other player if you want to leave the game early. Just tap on the "leave" option.
+					else if game.condition
+						h4 #{game.condition.text}
+						h5 Other Player: #{their_condition == null || !their_condition.value ? "N/A" : their_condition.value}
+						p (You answered: #{my_condition == null || !my_condition.value ? "N/A" : my_condition.value})
 
-#walkaway.fade.modal
-	.modal-dialog
-		.modal-content
-			.modal-header
-				button.close(type="button", data-dismiss="modal") x
-				h3 End Today's Game?
-			.modal-body
-				.row
-					.col-xs-6.text-center
-						//span.glyphicon.glyphicon-log-out
-						img(src="/img/icon_leave_big.png")
-					.col-xs-6
-						h3.blue
-							a(href="/game/"+game._id+"/leave") -> Yes
-						h3
-							a(href="#", data-dismiss="modal") -> No
-					.col-xs-12
-						p Selecting yes will end today’s game immediately and the other player will be notified of your decision.
-						p Tomorrow begins a new game.
+if locals.currentRound && game.mode == 'walkaway'
+	#walkaway.fade.modal
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal") x
+					h3 End Today's Game?
+				.modal-body
+					.row
+						.col-xs-6.text-center
+							//span.glyphicon.glyphicon-log-out
+							img(src="/img/icon_leave_big.png")
+						.col-xs-6
+							h3.blue
+								a(href="/game/"+game._id+"/leave") -> Yes
+							h3
+								a(href="#", data-dismiss="modal") -> No
+						.col-xs-12
+							p Selecting yes will end today’s game immediately and the other player will be notified of your decision.
+							p Tomorrow begins a new game.
 
 #scoring.fade.modal
 	.modal-dialog
@@ -131,3 +141,15 @@ ul.actions
 				h3 FAQ
 			.modal-body
 				include faq
+
+if (game.mode == 'reputation-request' || game.mode == 'reputation-request-plus-scoreboard') && round.number == game.numRounds
+	#reputation-request.fade.modal
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal") x
+					h3 Assign reputation for the other player:
+				.modal-body
+					a.btn.btn-blue(href="/reputation/"+opponent._id+"/good") Good
+					a.btn.btn-blue(href="/reputation/"+opponent._id+"/bad") Bad
+					p.gray This will be showed on their profile all day tomorrow as they play Frenemy.

@@ -1301,6 +1301,10 @@
           }
         }
       }
+    },
+    "underscore": {
+      "version": "1.5.2",
+      "from": "underscore@>= 0.0.1"
     }
   }
 }

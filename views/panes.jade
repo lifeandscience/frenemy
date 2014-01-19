@@ -1,21 +1,34 @@
 #leaderboard.pane
 	.handles 
-		.handle.handle-stats
-			a Stats / Play-by-Play
-		.handle.handle-scoring
-			a 
-				i.fa.fa-lightbulb-o
-	.inner.inner-stats
-		.content
-			ul.nav.nav-tabs
-				li.active
-					a(href="#score", data-toggle="tab") (See Score)
-				li
-					a(href="#play-by-play", data-toggle="tab") (See Play-by-Play)
-			.tab-content
-				#score.tab-pane.active(data-src=process.env.BASEURL+'/players/leaderboard/'+game.experimonth+'/'+me._id)
+		if game.mode == 'play-by-play'
+			.handle.handle-stats
+				a Play-by-Play
+			.handle.handle-scoring
+				a 
+					i.fa.fa-lightbulb-o
+		else if game.mode == 'stats' || (game.mode == 'reputation-request-plus-scoreboard' && game.completed)
+			// TODO: This mode string is wrong
+			.handle.handle-stats
+				a Scoreboard
+			.handle.handle-scoring
+				a 
+					i.fa.fa-lightbulb-o
+		else
+			.handle.handle-scoring
+				a 
+					| Scoring Reminder 
+					i.fa.fa-lightbulb-o
+		
+	if game.mode == 'play-by-play'
+		.inner.inner-stats
+			.content
 				#play-by-play.tab-pane
 					include games/results
+	if game.mode == 'stats' || (game.mode == 'reputation-request-plus-scoreboard' && game.completed)
+		// TODO: This mode string is wrong
+		.inner.inner-stats
+			.content
+				#score.tab-pane.active(data-src=process.env.BASEURL+'/players/leaderboard/'+game.experimonth+'/'+me._id)
 	.inner.inner-scoring
 		h3 Scoring Reminder:
 		.row.gray

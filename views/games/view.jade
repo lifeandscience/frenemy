@@ -24,13 +24,13 @@ block body
 
 		#vote.row.cf
 			.vote.col-md-offset-2
-				a(href="/game/#{game._id}/#{round._id}/friend", class='friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'strikethrough disabled') : 'active'))
+				a(href="/game/#{game._id}/#{round._id}/friend", class='friend '+(my_vote ? (my_vote.value == 'friend' ? 'chosen disabled' : 'strikethrough disabled') : 'active'), data-reputation-request=((game.mode == 'reputation-request' || game.mode == 'reputation-request-plus-scoreboard') && round.number == game.numRounds ? 'true' : 'false'))
 					.avatar 
 						.inner 
 							img(src="/img/icon_friend_big_gray.png")
 					h3 #{my_vote && my_vote.value == 'friend' ? 'you chose friend' : 'friend'}
 			.vote
-				a(href="/game/#{game._id}/#{round._id}/enemy", class='enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active')) 
+				a(href="/game/#{game._id}/#{round._id}/enemy", class='enemy '+(my_vote ? (my_vote.value == 'enemy' ? 'chosen disabled' : 'strikethrough disabled') : 'active'), data-reputation-request=((game.mode == 'reputation-request' || game.mode == 'reputation-request-plus-scoreboard') && round.number == game.numRounds ? 'true' : 'false')) 
 					.avatar 
 						.inner
 							img(src="/img/icon_enemy_big_gray.png")
