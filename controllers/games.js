@@ -150,6 +150,49 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 	});
 });
 
+app.get('/game/:id/mood', auth.authorize(2), function(req, res){
+	if(!req.params.id){
+		res.json(400, {'error': 'Invalid Game ID'});
+		return;
+	}
+
+	Game.findById(req.params.id).populate('opponents').exec(function(err, game){
+		if(err || !game){
+			res.json(400, {'error': 'Game not found!'});
+			return;
+		}
+		var me = null
+		  , opponent = null;
+		if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+			me = game.opponents[0];
+			opponent = game.opponents[1];
+		}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+			me = game.opponents[1];
+			opponent = game.opponents[0];
+		}else{
+			res.json(400, {'error': 'This is not your game!'});
+			return;
+		}
+		auth.doAuthServerClientRequest('POST', '/api/1/events', {
+			user: req.session.user._id
+		  , experimonth: game.experimonth
+		  , client_id: process.env.CLIENT_ID
+		  , name: 'frenemy:moodAtGameStart'
+		  , value: JSON.stringify({
+				stressed: req.query.stressed,
+				bad: req.query.bad,
+				happy: req.query.happy,
+				relaxed: req.query.relaxed,
+				tired: req.query.tired,
+				good: req.query.good
+			})
+		}, function(err, body){
+			// TODO: Do something with the result? Or maybe not?
+			res.json({'message': 'Success!'});
+		});
+	});
+});
+
 app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 	// View a game in it's current state as the player identified as :as
 	if(!req.params.id){
@@ -783,22 +826,22 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 });
 app.get('/reputation/:player/:value', auth.authorize(2), function(req, res){
 	if(!req.params.player){
-		res.json({error: 'No Player ID Given'});
+		res.json(400, {error: 'No Player ID Given'});
 		return;
 	}
 	if(!req.params.value){
-		res.json({error: 'No Value Given'});
+		res.json(400, {error: 'No Value Given'});
 		return;
 	}
 	Player.find({_id: req.params.player}).exec(function(err, players){
 		if(err || !players || players.length == 0){
-			res.json({error: 'Player not found.'});
+			res.json(400, {error: 'Player not found.'});
 			return;
 		}
 		var player = players[0];
 		player.reputations.push({value: req.params.value});
 		player.save(function(err){
-			res.json({error: err});
+			res.json(err ? 400 : 200, {error: err});
 			return;
 		});
 	});

@@ -264,4 +264,27 @@ jQuery(function(){
 		});
 		return false;
 	});
+	jQuery('#mood-request').modal('toggle').on('shown.bs.modal', function(){
+		jQuery('#stressed-slider').slider();
+		jQuery('#bad-slider').slider();
+		jQuery('#happy-slider').slider();
+		jQuery('#relaxed-slider').slider();
+		jQuery('#tired-slider').slider();
+		jQuery('#good-slider').slider();
+	});
+	jQuery('#mood-request form').on('submit', function(){
+		var t = jQuery(this);
+		jQuery.ajax({
+			dataType: 'json',
+			url: t.attr('action'),
+			data: t.serialize(),
+			success: function(){
+				jQuery('#mood-request').modal('toggle');
+			},
+			error: function(){
+					alert('error submitting mood, try again');
+			}
+		});
+		return false;
+	});
 });

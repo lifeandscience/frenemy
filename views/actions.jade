@@ -142,6 +142,47 @@ if locals.currentRound && game.mode == 'walkaway'
 			.modal-body
 				include faq
 
+if round.number == 1 
+	#mood-request.fade.modal(data-backdrop="static", data-keyboard="false")
+		.modal-dialog
+			.modal-content
+				.modal-header
+					//button.close(type="button", data-dismiss="modal") x
+					h3 What's your mood?
+				.modal-body
+					form(action="/game/"+game._id+"/mood")
+						.row
+							.not.col-xs-2.col-xs-offset-3 Not At All
+							.very.col-xs-2.col-xs-offset-5.text-right Very
+						.row
+							.col-xs-3 Stressed
+							.col-xs-9
+								input#stressed-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="stressed")
+						.row
+							.col-xs-3 Bad
+							.col-xs-9
+								input#bad-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="bad")
+						.row
+							.col-xs-3 Happy
+							.col-xs-9
+								input#happy-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="happy")
+						.row
+							.col-xs-3 Relaxed
+							.col-xs-9
+								input#relaxed-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="relaxed")
+						.row
+							.col-xs-3 Tired
+							.col-xs-9
+								input#tired-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="tired")
+						.row
+							.col-xs-3 Good
+							.col-xs-9
+								input#good-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="good")
+								
+						input.btn.btn-blue(type="submit") Submit
+						p.gray (Please answer before playing the game.)
+
+
 if (game.mode == 'reputation-request' || game.mode == 'reputation-request-plus-scoreboard') && round.number == game.numRounds
 	#reputation-request.fade.modal
 		.modal-dialog

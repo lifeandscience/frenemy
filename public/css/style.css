@@ -7626,3 +7626,21 @@ p.gray {
   color: #333333;
   text-align: center;
 }
+#mood-request .row {
+  margin-bottom: 10px;
+}
+#mood-request .not,
+#mood-request .very {
+  text-transform: uppercase;
+  color: #278fd8;
+  font-weight: bold;
+  font-size: 0.7em;
+}
+#mood-request .col-xs-3 {
+  font-size: 1.2em;
+  text-align: right;
+  color: #333333;
+}
+#mood-request .slider-horizontal {
+  width: 100% !important;
+}
