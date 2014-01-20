@@ -151,9 +151,9 @@ jQuery(function(){
 	
 	jQuery('div[data-src]').each(function(index, item){
 		var container = jQuery(item)
-		  , url = container.data('src')
-		  , spinner = new Spinner().spin();
-		container.append(spinner.el);
+		  , url = container.data('src');
+/* 		  , spinner = new Spinner().spin(); */
+/* 		container.append(spinner.el); */
 		container.load(url, function(){
 			jQuery('th.name .th-inner', container).tooltip({
 				title: 'To appear in the results list, players must play, on average, at least three times a day.'
