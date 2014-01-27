@@ -198,7 +198,7 @@ module.exports = {
 			delete req.session.token;
 			delete req.session.user;
 			delete req.session.user_expires;
-			return res.redirect('/login?redirect_uri=/');
+			return res.redirect('/login?redirect_uri=/play');
 		});
 	}
   , authorize: function(requiredState, requiredRole, message, skipQuestionCount){

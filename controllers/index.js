@@ -3,10 +3,9 @@ var util = require('util')
   , auth = require('./auth');
 
 app.get('/', function(req, res){
-	console.log('user: ', req.session.user);
 	if(req.session.user){
 		if(req.session.user.role >= 10){
-			return res.redirect('/play');
+			return res.redirect('/games');
 		}
 		if(req.session.user.experimonths){
 			for(var i=0; i<req.session.user.experimonths.length; i++){
