@@ -8,7 +8,6 @@ mixin do_games(games, filter, completed)
 				th Completed Moves
 				th Actions
 		tbody
-			- console.log(games);
 			each game, i in games
 				if(!filter || game.completed == completed)
 					tr

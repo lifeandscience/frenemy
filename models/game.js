@@ -332,7 +332,7 @@ GameSchema.pre('save', function(next){
 						if(opponent){
 							opponent.rounds.push(round);
 							opponent.save();
-							opponent.notifyOfNewRound(round, 'new-game', '/game/'+game._id+'/'+round._id, function(){
+							opponent.notifyOfNewRound(round, 'new-game', '/game/'+game._id+'/'+round._id, game, function(){
 								if(--count == 0){
 									next();
 								}

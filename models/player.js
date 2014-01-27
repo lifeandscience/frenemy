@@ -71,7 +71,11 @@ PlayerSchema.method('notify', function(type, format, subject, text, callback){
 	});
 });
 
-PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
+PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
+	if(!cb){
+		cb = game;
+		game = null;
+	}
 	util.log('notifying '+this.name+' of '+type+'! ' + url);
 
 	url = process.env.BASEURL + url;
@@ -84,8 +88,41 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, cb){
 		html = 'The other player has made a move. Click the address below to see what they picked and make your next move. \n\n'+url;
 	}else if(type == 'new-game'){
 		// Game Start!
-		title = 'Go Meet Your New Frenemy';
-		html = 'Your daily game of Experimonth: Frenemy has begun. Find out about the other player and make your first move by visiting the address below:\n\n'+url+'\n\nToday\'s game will last between 4-7 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
+		title = 'Frenemy New Game';
+		html = 'Your daily game of Experimonth: Frenemy has begun. ';
+		if(game && game.mode){
+			switch(game.mode){
+				case 'neutral':
+					html += 'In today\'s game, the other player will remain completely anonymous. You don\'t get to know anything about them except for what moves they make during the game. ';
+					break;
+				case 'walkaway':
+					html += 'In today\'s game, you can stop the game early if you want by selecting the "Leave" icon. ';
+					break;
+				case 'play-by-play':
+					html += 'In today\'s game, you will be able to see play-by-play of moves in the game to remind you both what you played earlier in the day. ';
+					break;
+				case 'condition-random':
+					html += 'In today\'s game, you will learn one piece of information about the other player. Select "Other Player" to see what that piece of information is. ';
+					break;
+				case 'condition':
+					html += 'In today\'s game, you will learn one piece of information about the other player. Select "Other Player" to see what that piece of information is. ';
+					break;
+				case 'reputation-request':
+					html += 'In today\'s game, you will get to leave a "good" or "bad" reputation for the other player after the last move. This will show to their partner tomorrow. ';
+					break;
+				case 'reputation-display':
+					html += 'In today\'s game, you will get to see what reputation the other player\'s partner gave them in yesterday\'s game. ';
+					break;
+				case 'cooperation-display':
+					html += 'In today\'s game, you will get to see a graph of how cooperative everyone\'s been so far. ';
+					break;
+				case 'reputation-request-plus-scoreboard':
+					html += 'In today\'s game, you will get to leave a "good" or "bad" reputation for the other player after the last move. This will show on the scoreboard and will never go away. ';
+					break;
+			}
+		}
+		console.log('round: ', round);
+		html += '\n\n'+url+'\n\nToday\'s game will last between 4-7 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
 	}else if(type == 'end-of-round'){ // type == 'new-round'
 		// Just round start!
 		title = 'Your Turn in Frenemy';
