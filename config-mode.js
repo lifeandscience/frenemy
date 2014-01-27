@@ -23,25 +23,25 @@
 module.exports = {
 	'52e16ff5da19f40200000066': {
 		'2014-01-27': 'walkaway',
-		'2014-01-28': 'cooperation-display',
-		'2014-01-29': 'reputation-request',
-		'2014-01-30': 'reputation-display',
+		'2014-01-28': 'reputation-request',
+		'2014-01-29': 'reputation-display',
+		'2014-01-30': 'cooperation-display',
 		'2014-01-31': 'reputation-request-plus-scoreboard'
 	},
 	'52e16fbada19f40200000065': {
 		'2014-01-27': 'condition-random',
 		'2014-01-28': {
 			'mode': 'condition',
-			'slug': '*'
+			'id': '52a73159058f8d0200000005'
 		},
 		'2014-01-29': 'play-by-play',
 		'2014-01-30': {
 			'mode': 'condition',
-			'slug': '*'
+			'id': '52a72f64058f8d0200000002'
 		},
 		'2014-01-31': {
 			'mode': 'condition',
-			'slug': '*'
+			'id': '52a73c24058f8d0200000006'
 		}
 	},
 	'*': {
