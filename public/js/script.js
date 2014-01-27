@@ -264,6 +264,9 @@ jQuery(function(){
 		});
 		return false;
 	});
+	if(jQuery('#mood-request').length == 0){
+		jQuery('#cooperation-display').modal('toggle');
+	}
 	jQuery('#mood-request').modal('toggle').on('shown.bs.modal', function(){
 		jQuery('#stressed-slider').slider();
 		jQuery('#bad-slider').slider();
@@ -280,6 +283,7 @@ jQuery(function(){
 			data: t.serialize(),
 			success: function(){
 				jQuery('#mood-request').modal('toggle');
+				jQuery('#cooperation-display').modal('toggle');
 			},
 			error: function(){
 					alert('error submitting mood, try again');
@@ -287,4 +291,42 @@ jQuery(function(){
 		});
 		return false;
 	});
+	if(jQuery('#cooperation-display').length > 0){
+		jQuery('#cooperation-display').on('shown.bs.modal', function(){
+			jQuery(this).find('div[data-cooperation-src]').each(function(index, item){
+				var container = jQuery(item)
+				  , url = container.data('cooperation-src');
+				jQuery.getJSON(url, function(data){
+					container.empty();
+					var days = data.days;
+					new Ico.LineGraph(
+						"cooperation-display-container",                               // DOM element where the graph will be rendered
+						[                                                // The 2 series
+							data.values // Drawn first
+						],
+						{                                                // Graph components' options
+							min: 0,
+							max: 100,
+							colors: ['#228899'],               // Series' colors
+							curve_amount: 10,                              // Slightly curve series' lines path using Cubic B&eacute;zier
+							mouseover_attributes: { stroke: 'green' },     // When hovering over values
+							font_size: 16,                                 // for both labels and value labels and other elements
+							labels: { values: days, angle: 0 },         // Set labels at a 30 degres angle
+							x_padding_right: 40,                           // Make more room on the right to properly display labels
+							units: '%',                                    // $ units to display values
+							units_position: 1,                             // Render $ before values
+							value_labels: {                                // Controls value labels
+								marker_size: 4                               // Value labels markers set to 4 pixels instead of 5
+							},
+							background: { color: '#FFF', corners: 5 },     // Set entire div background color and corner size 
+							meanline: false,                                // Display mean value of all series
+							grid: true,                                    // Display a grid from labels and value labels
+							mouse_pointer: true,                           // Display a cross mouse pointer in graph area
+							status_bar : true,                             // Display status bar to show values on mouse over
+						}
+					)
+				});
+			});
+		});
+	}
 });

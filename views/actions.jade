@@ -194,3 +194,13 @@ if (game.mode == 'reputation-request' || game.mode == 'reputation-request-plus-s
 					a.btn.btn-blue(href="/reputation/"+opponent._id+"/good") Good
 					a.btn.btn-blue(href="/reputation/"+opponent._id+"/bad") Bad
 					p.gray This will be showed on their profile all day tomorrow as they play Frenemy.
+					
+if locals.currentRound && game.mode == 'cooperation-display'
+	#cooperation-display.fade.modal
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal") x
+					h3 Cooperation Over Time
+				#cooperation-display-container.modal-body(data-cooperation-src=process.env.BASEURL+'/players/cooperation/'+game.experimonth)
+					h4 Cooperation Graph is Loading

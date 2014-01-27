@@ -3,10 +3,12 @@ var form = require('express-form')
   , utilities = require('./utilities')
   , mongoose = require('mongoose')
   , Player = mongoose.model('Player')
+  , Vote = mongoose.model('Vote')
   , csv = require('csv')
   , moment = require('moment')
   , util = require('util')
-  , auth = require('./auth');
+  , auth = require('./auth')
+  , async = require('async');
 
 app.get('/players', auth.authorize(2, 10), function(req, res){
 	Player.find({}).sort('name').exec(function(err, players){
@@ -68,7 +70,68 @@ app.get('/players/generate/:num', auth.authorize(2, 10), function(req, res){
 	}
 });
 */
-
+app.get('/players/cooperation/:experimonth', function(req, res){
+	if(!req.params.experimonth){
+		res.send(500);
+		return;
+	}
+	var date = moment().hours(0).minutes(0).seconds(0).milliseconds(0)
+	  , missedDays = 5
+	  , friendliness = {}
+	  , dates = [];
+	Player.find({experimonth: req.params.experimonth}).exec(function(err, players){
+		if(err || !players || players.length == 0){
+			// No players found for this experimonth
+			
+		}
+		var playerIds = [];
+		for(var i=0; i<players.length; i++){
+			playerIds.push(players[i]._id.toString());
+		}
+		date.add('days', 1);
+		async.forever(function(callback){
+			date.subtract('days', 1);
+			Vote.find({'date': {'$gte': new Date(date.year(), date.month(), date.date()), "$lt": new Date(date.year(), date.month(), date.date()+1)}, player: {'$in': playerIds}}).exec(function(err, votes){
+				if(err || !votes || votes.length == 0){
+					// Allow for a few empty days before we bail
+					missedDays--;
+					if(missedDays <= 0){
+						callback(true);
+					}else{
+						callback();
+					}
+					return;
+				}
+				// We have votes!
+				var friendly = 0;
+				for(var i=0; i<votes.length; i++){
+					if(votes[i].value == 'friend'){
+						friendly++;
+					}
+				}
+				var key = date.format('YYYYMMDD');
+				dates.push(key);
+				friendliness[key] = {
+					date: date.clone()
+				  , friendly: friendly
+				  , total: votes.length
+				};
+				callback();
+			});
+		}, function(err){
+			dates.sort();
+			var output = {
+				days: []
+			  , values: []
+			};
+			for(var i=0; i<dates.length; i++){
+				output.days.push(friendliness[dates[i]].date.format('M/D'));
+				output.values.push(Math.round((friendliness[dates[i]].friendly / friendliness[dates[i]].total)*100));
+			}
+			res.json(output);
+		});
+	});
+});
 app.get('/players/leaderboard/:experimonth/:id', function(req, res){
 	if(!req.params.id || !req.params.experimonth){
 		res.send(404);

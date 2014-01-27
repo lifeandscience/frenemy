@@ -7644,3 +7644,8 @@ p.gray {
 #mood-request .slider-horizontal {
   width: 100% !important;
 }
+#cooperation-display-container {
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
