@@ -23,7 +23,7 @@ app.get('/play', auth.authorize(1, 0, null, true), function(req, res){
 				async.filter(games, function(item, callback){
 					callback(!item.completed);
 				}, function(completedGames){
-					if(completedGames.length == 0){
+					if(completedGames.length == 0 && games.length > 0){
 						async.sortBy(games, function(game, callback){
 							callback(null, game.startTime);
 						}, function(err, games){
