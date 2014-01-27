@@ -75,6 +75,20 @@ app.get('/players/leaderboard/:experimonth/:id', function(req, res){
 		return;
 	}
 	Player.findById(req.params.id).exec(function(err, player){
+		Player.find({active: true, experimonth: req.params.experimonth}).sort('-score').exec(function(err, players){
+			res.render('players/leaderboard', {me: player, players: players, util: util});
+			return;
+		});
+	});
+});
+
+/*
+app.get('/players/leaderboard/:experimonth/:id', function(req, res){
+	if(!req.params.id || !req.params.experimonth){
+		res.send(404);
+		return;
+	}
+	Player.findById(req.params.id).exec(function(err, player){
 		Player.find({active: true, experimonths: req.params.experimonth}).sort('-score').exec(function(err, players){
 			res.render('players/leaderboard', {players: players, util: util});
 			return;
@@ -135,6 +149,7 @@ app.get('/players/leaderboard/points-per-move/all/:id', function(req, res){
 	});
 	return;
 });
+//*/
 
 /*
 // Saving for now.

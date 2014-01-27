@@ -1,5 +1,4 @@
 .content
-	//.table-header-container
 	.table-container
 		table.table.table-striped.table-condensed
 			thead
@@ -9,20 +8,29 @@
 						.th-inner Friendly
 					th.score
 						.th-inner Points
-					th.last-move
-						.th-inner Last Move
+					th.reputation
+						.th-inner Reputation
+					//th.last-move
+					//	.th-inner Last Move
 			tbody
 				each player, i in players
 					tr
-						td.name #{player.name}
+						td.name 
+							if player._id.toString() == me._id.toString()
+								| Your Score
+							else
+								| #{player._id.toString().substr(0, 4)+player._id.toString().substr(-3)}
 						td.friendliness 
 							if player.numVotes > 0
 								| #{Math.round((player.friendCount / player.numVotes)*10000)/100}%
 							else
 								| -
 						td.score #{player.score}
-						td.last-move 
-							if 'friend' == player.lastVote
-								img(src="/img/icon_friend_gray.png")
-							else if 'enemy' == player.lastVote
-								img(src="/img/icon_enemy_red.png")
+						td.reputation
+							if player.reputations
+								| #{player.reputations[player.reputations.length-1].value}
+						//td.last-move 
+						//	if 'friend' == player.lastVote
+						//		img(src="/img/icon_friend_gray.png")
+						//	else if 'enemy' == player.lastVote
+						//		img(src="/img/icon_enemy_red.png")
