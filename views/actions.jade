@@ -142,7 +142,7 @@ if locals.currentRound && game.mode == 'walkaway'
 			.modal-body
 				include faq
 
-if round.number == 1 
+if round.number == 1 && !my_vote
 	#mood-request.fade.modal(data-backdrop="static", data-keyboard="false")
 		.modal-dialog
 			.modal-content
