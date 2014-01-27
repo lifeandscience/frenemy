@@ -66,31 +66,6 @@ GameSchema.statics.startGames = function(req, cb){
 			return cb();
 		}
 		
-		var mode = 'neutral'
-		  , modeFrom = null
-		  , modeId = null
-		  , modeSlug = null
-		var today = moment().format('YYYY-MM-DD');
-		if(configMode[today]){
-			if(_.isString(configMode[today])){
-				mode = configMode[today];
-			}else if(_.isObject(configMode[today])){
-				if(configMode[today].mode){
-					mode = configMode[today].mode;
-				}
-				var args = '';
-				if(configMode[today].from){
-					modeFrom = configMode[today].from;
-				}
-				if(configMode[today].id){
-					modeId = configMode[today].id;
-				}
-				if(configMode[today].slug){
-					modeSlug = configMode[today].slug;
-				}
-			}
-		}
-		
 		
 		// First, ensure we have players 
 		
@@ -166,6 +141,36 @@ GameSchema.statics.startGames = function(req, cb){
 						return;
 					}else{
 						console.log('got fill-in player:', experimonths[i].fillInAdmin);
+					}
+				}
+		
+				var mode = 'neutral'
+				  , modeFrom = null
+				  , modeId = null
+				  , modeSlug = null
+				var today = moment().format('YYYY-MM-DD');
+
+				var key = experimonths[i]._id.toString();
+				if(!configMode[key]){
+					key = '*';
+				}
+				if(configMode[key] && configMode[key][today]){
+					if(_.isString(configMode[key][today])){
+						mode = configMode[key][today];
+					}else if(_.isObject(configMode[key][today])){
+						if(configMode[key][today].mode){
+							mode = configMode[key][today].mode;
+						}
+						var args = '';
+						if(configMode[key][today].from){
+							modeFrom = configMode[key][today].from;
+						}
+						if(configMode[key][today].id){
+							modeId = configMode[key][today].id;
+						}
+						if(configMode[key][today].slug){
+							modeSlug = configMode[key][today].slug;
+						}
 					}
 				}
 				

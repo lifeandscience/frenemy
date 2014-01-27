@@ -21,79 +21,104 @@
 */
 
 module.exports = {
-	'2014-02-01': 'neutral',
-	'2014-02-02': {
-		'mode': 'condition',
-		'slug': 'condition-color'
+	'52e16ff5da19f40200000066': {
+		'2014-01-27': 'walkaway',
+		'2014-01-28': 'cooperation-display',
+		'2014-01-29': 'reputation-request',
+		'2014-01-30': 'reputation-display',
+		'2014-01-31': 'reputation-request-plus-scoreboard'
 	},
-	'2014-02-04': {
-		'mode': 'condition',
-		'slug': 'condition-political'
+	'52e16fbada19f40200000065': {
+		'2014-01-27': 'condition-random',
+		'2014-01-28': {
+			'mode': 'condition',
+			'slug': '*'
+		},
+		'2014-01-29': 'play-by-play',
+		'2014-01-30': {
+			'mode': 'condition',
+			'slug': '*'
+		},
+		'2014-01-31': {
+			'mode': 'condition',
+			'slug': '*'
+		}
 	},
-	'2014-02-05': {
-		'mode': 'walkaway'
-	},
-	'2014-02-07': {
-		'mode': 'play-by-play'
-	},
-	'2014-02-08': {
-		'mode': 'condition',
-		'slug': 'condition-emoticon'
-	},
-	'2014-02-09': {
-		'mode': 'condition',
-		'slug': 'condition-political'
-	},
-	'2014-02-10': {
-		'mode': 'condition',
-		'slug': 'condition-color'
-	},
-	'2014-02-11': {
-		'mode': 'play-by-play'
-	},
-	'2014-02-12': {
-		'mode': 'reputation-request'
-	},
-	'2014-02-13': {
-		'mode': 'reputation-display',
-		'from': '2014-02-12'
-	},
-	'2014-02-14': {
-		'mode': 'reputation-request'
-	},
-	'2014-02-15': {
-		'mode': 'reputation-display',
-		'from': '2014-02-14'
-	},
-	'2014-02-17': {
-		'mode': 'walkaway'
-	},
-	'2014-02-18': {
-		'mode': 'play-by-play'
-	},
-	'2014-02-19': {
-		'mode': 'condition',
-		'slug': 'condition-emoticon'
-	},
-	'2014-02-20': {
-		'mode': 'condition',
-		'slug': 'condition-color'
-	},
-	'2014-02-22': {
-		'mode': 'condition',
-		'slug': 'condition-emoticon'
-	},
-	'2014-02-23': {
-		'mode': 'play-by-play'
-	},
-	'2014-02-24': {
-		'mode': 'condition',
-		'slug': 'condition-political'
-	},
-	'2014-02-25': {
-		'mode': 'cooperation-display'
-	},
-	'2014-02-28': {
-		'mode': 'reputation-request-plus-scoreboard'
+	'*': {
+		'2014-02-01': 'neutral',
+		'2014-02-02': {
+			'mode': 'condition',
+			'slug': 'condition-color'
+		},
+		'2014-02-04': {
+			'mode': 'condition',
+			'slug': 'condition-political'
+		},
+		'2014-02-05': {
+			'mode': 'walkaway'
+		},
+		'2014-02-07': {
+			'mode': 'play-by-play'
+		},
+		'2014-02-08': {
+			'mode': 'condition',
+			'slug': 'condition-emoticon'
+		},
+		'2014-02-09': {
+			'mode': 'condition',
+			'slug': 'condition-political'
+		},
+		'2014-02-10': {
+			'mode': 'condition',
+			'slug': 'condition-color'
+		},
+		'2014-02-11': {
+			'mode': 'play-by-play'
+		},
+		'2014-02-12': {
+			'mode': 'reputation-request'
+		},
+		'2014-02-13': {
+			'mode': 'reputation-display',
+			'from': '2014-02-12'
+		},
+		'2014-02-14': {
+			'mode': 'reputation-request'
+		},
+		'2014-02-15': {
+			'mode': 'reputation-display',
+			'from': '2014-02-14'
+		},
+		'2014-02-17': {
+			'mode': 'walkaway'
+		},
+		'2014-02-18': {
+			'mode': 'play-by-play'
+		},
+		'2014-02-19': {
+			'mode': 'condition',
+			'slug': 'condition-emoticon'
+		},
+		'2014-02-20': {
+			'mode': 'condition',
+			'slug': 'condition-color'
+		},
+		'2014-02-22': {
+			'mode': 'condition',
+			'slug': 'condition-emoticon'
+		},
+		'2014-02-23': {
+			'mode': 'play-by-play'
+		},
+		'2014-02-24': {
+			'mode': 'condition',
+			'slug': 'condition-political'
+		},
+		'2014-02-25': {
+			'mode': 'cooperation-display'
+		},
+		'2014-02-28': {
+			'mode': 'reputation-request-plus-scoreboard'
+		}
 	}
-}
+};
