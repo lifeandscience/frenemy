@@ -683,6 +683,12 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 						
 						var Round = mongoose.model('Round');
 						Round.findById(round).populate('votes').exec(function(err, round){
+							if(!round || err){
+								console.log('error fetching round: ', err);
+								req.flash('error', 'An error occurred: <pre>'+JSON.stringify(err)+'</pre>');
+								res.redirect('/');
+								return;
+							}
 							if(round.completed || round.votes.length == 2){
 								res.redirect('/game/'+game._id+'/'+round._id+'/complete');
 								return;
