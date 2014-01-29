@@ -39,7 +39,6 @@ var PlayerSchema = new Schema({
   , Player = null;
 
 PlayerSchema.method('notify', function(type, format, subject, text, callback){
-	console.log('notifying!');
 	if(!type){
 		type = 'warning';
 	}
@@ -49,14 +48,6 @@ PlayerSchema.method('notify', function(type, format, subject, text, callback){
 	if(!text){
 		return callback(new Error('Can\t notify without a message!'));
 	}
-	
-	console.log('posting!', {
-		type: type
-	  , format: format
-	  , subject: subject
-	  , text: text
-	  , user: this.remote_user
-	});
 	auth.doAuthServerClientRequest('POST', '/api/1/notifications', {
 		type: type
 	  , format: format
@@ -65,8 +56,6 @@ PlayerSchema.method('notify', function(type, format, subject, text, callback){
 	  , user: this.remote_user
 	}, function(err, body){
 		// TODO: Do something with the result? Or maybe not?
-		console.log('did notification! err: ', err);
-		console.log('body: ', body);
 		callback(err, body);
 	});
 });
@@ -76,8 +65,6 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
 		cb = game;
 		game = null;
 	}
-	util.log('notifying '+this.name+' of '+type+'! ' + url);
-
 	url = process.env.BASEURL + url;
 	url += '?utm_campaign='+type+'&utm_medium=email&utm_source=all';
 	var html = ''
@@ -121,7 +108,6 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
 					break;
 			}
 		}
-		console.log('round: ', round);
 		html += '\n\n'+url+'\n\nToday\'s game will last between 4-8 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
 	}else if(type == 'end-of-round'){ // type == 'new-round'
 		// Just round start!

@@ -286,7 +286,7 @@ jQuery(function(){
 				jQuery('#cooperation-display').modal('toggle');
 			},
 			error: function(){
-					alert('error submitting mood, try again');
+				alert('error submitting mood, try again');
 			}
 		});
 		return false;

@@ -69,17 +69,15 @@ GameSchema.statics.startGames = function(req, cb){
 		
 		// First, ensure we have players 
 		
-/*
-		console.log('experimonths: ', experimonths);
-		return cb();
-*/
+/* 		console.log('experimonths: ', experimonths); */
+/* 		return cb(); */
 	
 		var i = -1
 		  , pickPlayer = function(fillinPlayer, users, experimonthId, experimonthName, callback){
 				var player = null;
 				if(users.length == 0){
 					player = fillinPlayer;
-					console.log('using fillinPlayer: ', fillinPlayer);
+/* 					console.log('using fillinPlayer: ', fillinPlayer.email); */
 				}else{
 					var index = Math.floor(Math.random() * users.length);
 					player = users.splice(index, 1)[0];
@@ -116,17 +114,22 @@ GameSchema.statics.startGames = function(req, cb){
 				}
 				var experimonth = experimonths[i];
 				if(experimonth.users.length == 0){
+/* 					console.log('no users left, continuing to next experimonth'); */
 					// This experimonth has no users, so skip it.
 					handleExperimonth(true);
 					return;
 				}
 				if(experimonth.users.length == 1 && experimonth.users[0].role >= 10){
+/* 					console.log('only one user left and they\'re an admin!'); */
 					// We only have one player and they're an admin
 					// Let's skip this experimonth
 					handleExperimonth(true);
 					return;
 				}
 				if(!experimonths[i].fillInAdmin){
+/* 					console.log('starting on ', experimonths[i].name); */
+/* 					console.log('users for this EM:', experimonths[i].users.length); */
+/* 					console.log('trying to find a fill-in!'); */
 					for(var j=0; j<experimonth.users.length; j++){
 						if(experimonth.users[j].role >= 10){
 							experimonths[i].fillInAdmin = experimonth.users[j];
@@ -140,7 +143,7 @@ GameSchema.statics.startGames = function(req, cb){
 						handleExperimonth(true);
 						return;
 					}else{
-						console.log('got fill-in player:', experimonths[i].fillInAdmin);
+						console.log('got fill-in player:', experimonths[i].fillInAdmin.email);
 					}
 				}
 		
@@ -180,12 +183,16 @@ GameSchema.statics.startGames = function(req, cb){
 				// Now, let's randomly pair up players.
 				pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerOne){
 					if(err || !playerOne){
+/* 						console.log('couldn\'t pick playerOne'); */
 						return handleExperimonth(true);
 					}
 					pickPlayer(experimonth.fillInAdmin, experimonth.users, experimonth._id, experimonth.name, function(err, playerTwo){
 						if(err || !playerTwo){
+/* 							console.log('couldn\'t pick playerTwo'); */
 							return handleExperimonth(true);
 						}
+						
+/* 						console.log('pairing', playerOne.name, playerTwo.name); */
 				
 						// We have users, let's create a game.
 						var game = new Game();
@@ -331,7 +338,6 @@ GameSchema.pre('save', function(next){
 				var Player = mongoose.model('Player')
 				  , count = 0;
 				for(var i=0; i<2; i++){
-					util.log('opponent #'+i+': '+util.inspect(game.opponents[i]));
 					count++;
 					Player.findById(game.opponents[i]).exec(function(err, opponent){
 						if(opponent){

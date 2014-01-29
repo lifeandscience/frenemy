@@ -33,7 +33,6 @@ module.exports = {
 		}
 */
 		var gotAccessToken = function(){
-			console.log('have access token');
 			params = params || {};
 			params.access_token = client_access_token;
 			OAuth2.ClientCredentials.request(method, path, params, function(err, res, body){
