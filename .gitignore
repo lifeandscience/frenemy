@@ -3,3 +3,7 @@ mongo.*/
 public/lib
 
 newrelic_agent.log
+
+.bower-cache
+.bower-registry
+.bower-tmp
