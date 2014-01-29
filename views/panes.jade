@@ -40,24 +40,24 @@
 			.col-xs-4
 				span.fa.fa-smile-o
 			.col-xs-4.yellow-col
-				span.points 15
+				span.points #{config.points.winningTie}
 				span.comma ,
-				span.points.gray 15
+				span.points.gray #{config.points.winningTie}
 			.col-xs-4
-				span.points -5
+				span.points #{config.points.loss}
 				span.comma ,
-				span.points.gray 25
+				span.points.gray #{config.points.win}
 		.row
 			.col-xs-4
 				span.fa.fa-frown-o
 			.col-xs-4.yellow-col
-				span.points 25
+				span.points #{config.points.win}
 				span.comma ,
-				span.points.gray -5
+				span.points.gray #{config.points.loss}
 			.col-xs-4
-				span.points 5
+				span.points #{config.points.losingTie}
 				span.comma ,
-				span.points.gray 5
+				span.points.gray #{config.points.losingTie}
 
 
 //#me.pane

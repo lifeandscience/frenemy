@@ -276,6 +276,7 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 							  , util: util
 							  , me: me
 							  , opponent: opponent
+							  , config: config
 							});
 							return;
 						}
@@ -325,6 +326,7 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 							  , their_vote: their_vote
 							  , my_condition: my_condition
 							  , their_condition: their_condition
+							  , config: config
 							});
 							return;
 						});
@@ -677,6 +679,7 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 							  , util: util
 							  , me: me
 							  , opponent: opponent
+							  , config: config
 							});
 							return;
 						}
@@ -719,6 +722,7 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 							  , their_vote: their_vote
 							  , my_condition: my_condition
 							  , their_condition: their_condition
+							  , config: config
 							});
 							return;
 						});
@@ -804,6 +808,7 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 								  , opponent: opponent
 								  , my_condition: my_condition
 								  , their_condition: their_condition
+								  , config: config
 								});
 	//							res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
 								return;
@@ -822,6 +827,7 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 				  , opponent: opponent
 				  , my_condition: my_condition
 				  , their_condition: their_condition
+				  , config: config
 				});
 	//			res.render('games/completed', {title: 'Completed Game', game: game, util: util, config: config});
 			}
