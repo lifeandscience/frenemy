@@ -122,7 +122,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
 			}
 		}
 		console.log('round: ', round);
-		html += '\n\n'+url+'\n\nToday\'s game will last between 4-7 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
+		html += '\n\n'+url+'\n\nToday\'s game will last between 4-8 rounds. This is selected at random each day, so neither you or the other player knows when the last round will be.\n\nThis game will expire at 12 o\'clock midnight, Eastern.\n\nAs a reminder, you must play 80% of the games this month to be eligible for the prize drawing at the end. Your score, which will be revealed in the final game, will determine how many entries you get in the drawing.';
 	}else if(type == 'end-of-round'){ // type == 'new-round'
 		// Just round start!
 		title = 'Your Turn in Frenemy';
