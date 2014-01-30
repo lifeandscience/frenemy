@@ -269,11 +269,8 @@ jQuery(function(){
 	}
 	jQuery('#mood-request').modal('toggle').on('shown.bs.modal', function(){
 		jQuery('#stressed-slider').slider();
-		jQuery('#bad-slider').slider();
 		jQuery('#happy-slider').slider();
-		jQuery('#relaxed-slider').slider();
 		jQuery('#tired-slider').slider();
-		jQuery('#good-slider').slider();
 	});
 	jQuery('#mood-request form').on('submit', function(){
 		var t = jQuery(this);
@@ -283,13 +280,15 @@ jQuery(function(){
 			data: t.serialize(),
 			success: function(){
 				jQuery('#mood-request').modal('toggle');
-				jQuery('#cooperation-display').modal('toggle');
 			},
 			error: function(){
 				alert('error submitting mood, try again');
 			}
 		});
 		return false;
+	});
+	jQuery('#mood-request').on('hidden.bs.modal', function(){
+		jQuery('#cooperation-display').modal('toggle');
 	});
 	if(jQuery('#cooperation-display').length > 0){
 		jQuery('#cooperation-display').on('shown.bs.modal', function(){

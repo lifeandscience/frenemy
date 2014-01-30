@@ -25,6 +25,10 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+button.close {
+	color: @blue;
+	.opacity(1);
+}
 
 /*
 @media \0screen {
@@ -1522,13 +1526,8 @@ ul.actions {
 }
 
 .btn-blue {
-	display: block;
-	text-align: center;
 	background-color: @blue;
 	color: white;
-	width: 300px;
-	padding: 30px 90px;
-	margin: 10px auto;
 	font-size: 30px;
 	text-transform: uppercase;
 }
@@ -1546,13 +1545,29 @@ p.gray {
 		font-weight: bold;
 		font-size: 0.7em;
 	}
-	.col-xs-3 {
+	.col-xs-4 {
 		font-size: 1.2em;
 		text-align: right;
 		color: @gray;
+		text-transform: uppercase;
+		font-family: @bauhaus;
 	}
 	.slider-horizontal {
 		width: 100% !important;
+	}
+	.slider.slider-horizontal .slider-handle {
+		width: 30px;
+		height: 30px;
+		margin-left: -15px;
+		margin-top: -10px;
+	}
+}
+@media all and (max-width: 480px) {
+	#mood-request {
+		.col-xs-4 {
+			font-size: 0.8em;
+			margin-top: 8px;
+		}
 	}
 }
 
