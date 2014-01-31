@@ -31,12 +31,24 @@ var PlayerSchema = new Schema({
 	  , numWalkaways: {type: Number, default: 0}
 	  , numWalkedAwayFrom: {type: Number, default: 0}
 	  
+	  , number: {type: Number, default: -1}
+	  
 	  , reputations: [{
 			value: String
 		  , date: {type: Date, default: function(){ return Date.now() }}
 		}]
 	})
   , Player = null;
+  
+PlayerSchema.pre('save', function(next){
+	if(this.number != -1){
+		return next();
+	}
+	Player.count().exec(function(err, count){
+		this.number = count+1;
+		return next();
+	});
+});
 
 PlayerSchema.method('notify', function(type, format, subject, text, callback){
 	if(!type){
@@ -254,4 +266,16 @@ PlayerSchema.pre('init', function(next, t){
 });
 
 Player = mongoose.model('Player', PlayerSchema);
+
+Player.find({number: null}).exec(function(err, players){
+	if(players && players.length > 0){
+		var setPlayer = function(player, index){
+			player.number = index;
+			player.save();
+		};
+		for(var i=0; i<players.length; i++){
+			setPlayer(players[i], i+1);
+		}
+	}
+});
 exports = Player;

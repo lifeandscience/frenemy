@@ -19,7 +19,7 @@
 							if player._id.toString() == me._id.toString()
 								| Your Score
 							else
-								| #{player._id.toString().substr(0, 4)+player._id.toString().substr(-3)}
+								| #{player.number}
 						td.friendliness 
 							if player.numVotes > 0
 								| #{Math.round((player.friendCount / player.numVotes)*10000)/100}%
