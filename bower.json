@@ -23,6 +23,7 @@
     "jquery.tablesorter": "~2.14.4",
     "jquery.cookie": "~1.4.0",
     "seiyria-bootstrap-slider": "~1.9.5",
-    "raphael": "~2.1.2"
+    "raphael": "~2.1.2",
+    "modernizr": "~2.7.1"
   }
 }
