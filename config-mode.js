@@ -62,7 +62,7 @@ module.exports = {
 		},
 		'2014-02-08': {
 			'mode': 'condition',
-			'slug': 'condition-emoticon'
+			'slug': 'condition-transportation'
 		},
 		'2014-02-09': {
 			'mode': 'condition',
@@ -97,7 +97,7 @@ module.exports = {
 		},
 		'2014-02-19': {
 			'mode': 'condition',
-			'slug': 'condition-emoticon'
+			'slug': 'condition-transportation'
 		},
 		'2014-02-20': {
 			'mode': 'condition',
@@ -105,7 +105,7 @@ module.exports = {
 		},
 		'2014-02-22': {
 			'mode': 'condition',
-			'slug': 'condition-emoticon'
+			'slug': 'condition-transportation'
 		},
 		'2014-02-23': {
 			'mode': 'play-by-play'
