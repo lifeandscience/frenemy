@@ -326,7 +326,8 @@ h1, h2, h3, h4, h5, h6 {
 			background-color: @blue;
 	
 			color: white;
-			font-size: 20px;
+			font-family: @bauhaus;
+			font-size: 24px;
 			line-height: 1.2em;
 			text-align: center;
 			
@@ -334,11 +335,16 @@ h1, h2, h3, h4, h5, h6 {
 			text-transform: lowercase;
 			
 			a {
+				padding: 10px 0;
 				display: block;
 	//			padding-right: 20px;
 				color: white;
 				text-decoration: none;
 				cursor: pointer;
+				
+				img {
+					margin-top: -5px;
+				}
 			}
 		}
 
@@ -350,7 +356,7 @@ h1, h2, h3, h4, h5, h6 {
 			background-color: @lightGray;
 	
 			a {
-				color: @gray;
+				color: #565656;
 			}
 		}
 	}

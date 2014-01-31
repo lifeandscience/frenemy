@@ -6450,7 +6450,8 @@ td.sidebar {
   padding: 0 10px;
   background-color: #278fd8;
   color: white;
-  font-size: 20px;
+  font-family: 'Bauhaus W01 Heavy', Arial, sans-serif;
+  font-size: 24px;
   line-height: 1.2em;
   text-align: center;
   -webkit-border-radius: 10px 10px 0 0;
@@ -6461,10 +6462,14 @@ td.sidebar {
   text-transform: lowercase;
 }
 .pane .handles .handle a {
+  padding: 10px 0;
   display: block;
   color: white;
   text-decoration: none;
   cursor: pointer;
+}
+.pane .handles .handle a img {
+  margin-top: -5px;
 }
 .pane .handles .handle-scoring {
   /* 		right: 10px; */
@@ -6478,7 +6483,7 @@ td.sidebar {
   background-color: #f1f1f1;
 }
 .pane .handles .handle-scoring a {
-  color: #333333;
+  color: #565656;
 }
 .pane .handle {
   /* 		position: absolute; */

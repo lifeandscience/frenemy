@@ -5,19 +5,19 @@
 				a Play-by-Play
 			.handle.handle-scoring
 				a 
-					i.fa.fa-lightbulb-o
+					img(src="/img/reminder_icon.png")
 		else if game.mode == 'stats' || (game.mode == 'reputation-request-plus-scoreboard' && game.completed)
 			// TODO: This mode string is wrong
 			.handle.handle-stats
 				a Scoreboard
 			.handle.handle-scoring
 				a 
-					i.fa.fa-lightbulb-o
+					img(src="/img/reminder_icon.png")
 		else
 			.handle.handle-scoring
 				a 
 					| Scoring Reminder 
-					i.fa.fa-lightbulb-o
+					img(src="/img/reminder_icon.png")
 		
 	if game.mode == 'play-by-play'
 		.inner.inner-stats
@@ -33,12 +33,12 @@
 		h3 Scoring Reminder:
 		.row.gray
 			.col-xs-4.col-xs-offset-4.yellow-col
-				span.fa.fa-smile-o
+				img(src="/img/icon_friend_scoring_gray.png")
 			.col-xs-4
-				span.fa.fa-frown-o
+				img(src="/img/icon_enemy_scoring_gray.png")
 		.row.yellow-row
 			.col-xs-4
-				span.fa.fa-smile-o
+				img(src="/img/icon_friend_scoring_blue.png")
 			.col-xs-4.yellow-col
 				span.points #{config.points.winningTie}
 				span.comma ,
@@ -49,7 +49,7 @@
 				span.points.gray #{config.points.win}
 		.row
 			.col-xs-4
-				span.fa.fa-frown-o
+				img(src="/img/icon_enemy_scoring_blue.png")
 			.col-xs-4.yellow-col
 				span.points #{config.points.win}
 				span.comma ,
