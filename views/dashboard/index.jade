@@ -4,28 +4,12 @@ include ../games/mixins
 
 block body
 	#container-inner.user-profile
-		h2 Choose your experimonth:
-		ul
-			for game, i in games
-				li 
-					a(href='/game/'+game._id) #{game.experimonthName}
-		h2 You have no active games.
-		p Check back later.
-		//u = user(2);
-		//- console.log(player);
-		//- if(u)
-			- if(u.email)
-				img(src='http://www.gravatar.com/avatar/'+u.email_hash)
-			h1 Welcome to your dashboard!
-
-			h1 Notifications
-			//mixin do_notifications()
-			
-			h1 Current Games
-			mixin do_games(player.games, true, false)
-			
-			h1 Past Games
-			mixin do_games(player.games, true, true)
-
-			h6 User
-			pre !{JSON.stringify(player, null, '\t')}
+		.row
+			.col-md-4.col-md-offset-4
+				h4.text-center Frenemy hasn't started yet.
+				p.text-center 
+					| If your 
+					a(href=process.env.AUTH_SERVER+"/profile") Experimonth Profile
+					|  is 100% complete, you'll receive an email when Frenemy starts notifying you of your first game. If you don't receive that email, double-check that your profile is 100% complete and then email us at 
+					a(href="mailto:experimonth@lifeandscience.org") experimonth@lifeandscience.org
+					| .

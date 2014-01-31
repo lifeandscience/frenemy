@@ -31,7 +31,7 @@ app.get('/play', auth.authorize(1, 0, null, true), function(req, res){
 				if(incompleteGames.length > 0){
 					return res.redirect('/game/'+incompleteGames[0]._id);
 				}
-				return res.render('dashboard', {title: 'Your Profile', player: player, games: games});
+				return res.render('dashboard', {title: 'Your Profile'});
 			});
 		});
 	});
