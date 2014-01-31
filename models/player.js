@@ -104,7 +104,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
 					html += 'In today\'s game, you will learn one piece of information about the other player. Select "Other Player" to see what that piece of information is. ';
 					break;
 				case 'condition':
-					html += 'In today\'s game, you will get to see a graph of how many times everyone\'s played friend as a move so far. ';
+					html += 'In today\'s game, you will learn one piece of information about the other player. Select "Other Player" to see what that piece of information is. ';
 					break;
 				case 'reputation-request':
 					html += 'In today\'s game, you will get to leave a "good" or "bad" reputation for the other player after the last move. This will show to their partner tomorrow. ';
@@ -113,7 +113,7 @@ PlayerSchema.methods.notifyOfNewRound = function(round, type, url, game, cb){
 					html += 'In today\'s game, you will get to see what reputation the other player\'s partner gave them in yesterday\'s game. ';
 					break;
 				case 'cooperation-display':
-					html += 'In today\'s game, you will get to see a graph of how cooperative everyone\'s been so far. ';
+					html += 'In today\'s game, you will get to see a graph of how many times everyone\'s played friend as a move so far. ';';
 					break;
 				case 'reputation-request-plus-scoreboard':
 					html += 'In today\'s game, you will get to leave a "good" or "bad" reputation for the other player after the last move. This will show on the scoreboard and will never go away. ';
