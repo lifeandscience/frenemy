@@ -105,6 +105,10 @@ app.configure(function(){
 			{
 				'name': 'Play!',
 				'link': _BASEURL+'/play',
+			},
+			{
+				'name': 'Confess',
+				'link': process.env.AUTH_SERVER+'/confess'
 			}
 		];
 
