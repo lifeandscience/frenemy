@@ -17,9 +17,9 @@
 					tr
 						td.name 
 							if player._id.toString() == me._id.toString()
-								| Your Score
+								| Player ##{player.number} (Your Score)
 							else
-								| #{player.number}
+								| Player ##{player.number}
 						td.friendliness 
 							if player.numVotes > 0
 								| #{Math.round((player.friendCount / player.numVotes)*10000)/100}%
