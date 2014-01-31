@@ -267,7 +267,7 @@ PlayerSchema.pre('init', function(next, t){
 
 Player = mongoose.model('Player', PlayerSchema);
 
-Player.find({number: null}).exec(function(err, players){
+Player.find().where('number', null).or().where('number', -1).exec(function(err, players){
 	if(players && players.length > 0){
 		var setPlayer = function(player, index){
 			player.number = index;

@@ -27,7 +27,7 @@
 								| -
 						td.score #{player.score}
 						td.reputation
-							if player.reputations
+							if player.reputations && player.reputations.length && player.reputations.length > 0
 								| #{player.reputations[player.reputations.length-1].value}
 						//td.last-move 
 						//	if 'friend' == player.lastVote
