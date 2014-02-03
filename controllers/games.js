@@ -89,10 +89,10 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 		}
 		var me = null
 		  , opponent = null;
-		if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+		if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 			me = game.opponents[0];
 			opponent = game.opponents[1];
-		}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+		}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 			me = game.opponents[1];
 			opponent = game.opponents[0];
 		}else{
@@ -101,7 +101,7 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 			return;
 		}
 		
-		game.walkaway = req.session.user._id;
+		game.walkaway = req.user._id;
 		game.completed = true;
 		game.save(function(err){
 			if(err){
@@ -163,10 +163,10 @@ app.get('/game/:id/mood', auth.authorize(2), function(req, res){
 		}
 		var me = null
 		  , opponent = null;
-		if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+		if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 			me = game.opponents[0];
 			opponent = game.opponents[1];
-		}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+		}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 			me = game.opponents[1];
 			opponent = game.opponents[0];
 		}else{
@@ -174,7 +174,7 @@ app.get('/game/:id/mood', auth.authorize(2), function(req, res){
 			return;
 		}
 		auth.doAuthServerClientRequest('POST', '/api/1/events', {
-			user: req.session.user._id
+			user: req.user._id
 		  , experimonth: game.experimonth
 		  , client_id: process.env.CLIENT_ID
 		  , name: 'frenemy:moodAtGameStart'
@@ -227,13 +227,13 @@ app.get('/game/:id/:round/complete', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
+					getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+						if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+						}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -390,7 +390,7 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 			res.redirect('/game/'+req.params.id);
 			return;
 		}
-		Player.findOne({remote_user: req.session.user._id, experimonth: game.experimonth}).exec(function(err, player){
+		Player.findOne({remote_user: req.user._id, experimonth: game.experimonth}).exec(function(err, player){
 			if(err || !player){
 				console.log('player: ', err, player);
 				req.flash('error', 'Player not found!');
@@ -405,10 +405,10 @@ app.get('/game/:id/:round/:value', auth.authorize(2), function(req, res){
 					if(--count == 0){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+						if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+						}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -632,13 +632,13 @@ app.get('/game/:id/:round', auth.authorize(2), function(req, res){
 		  , roundMap = {}
 		  , checkDone = function(){
 				if(--count == 0){
-					getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
+					getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
 						var me = null
 						  , opponent = null;
-						if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+						if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[0];
 							opponent = game.opponents[1];
-						}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+						}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 							me = game.opponents[1];
 							opponent = game.opponents[0];
 						}else{
@@ -777,13 +777,13 @@ app.get('/game/:id', auth.authorize(2), function(req, res){
 			return;
 		}
 		
-		getConditionAnswers(game, req.session.user._id.toString(), function(my_condition, their_condition){
+		getConditionAnswers(game, req.user._id.toString(), function(my_condition, their_condition){
 			var me = null
 			  , opponent = null;
-			if(game.opponents[0].remote_user.toString() == req.session.user._id.toString()){
+			if(game.opponents[0].remote_user.toString() == req.user._id.toString()){
 				me = game.opponents[0];
 				opponent = game.opponents[1];
-			}else if(game.opponents[1].remote_user.toString() == req.session.user._id.toString()){
+			}else if(game.opponents[1].remote_user.toString() == req.user._id.toString()){
 				me = game.opponents[1];
 				opponent = game.opponents[0];
 			}else{

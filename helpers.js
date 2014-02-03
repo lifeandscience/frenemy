@@ -24,8 +24,8 @@ exports.dynamicHelpers = {
 		if(minimumState == undefined){
 			minimumState = 0
 		}
-		if(app.req.session.user && app.req.session.user.state >= minimumState){
-			return app.req.session.user;
+		if(app.req.user && app.req.user.state >= minimumState){
+			return app.req.user;
 		}
 	}
   , authServer: function(){

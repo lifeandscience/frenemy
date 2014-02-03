@@ -2,14 +2,14 @@ var util = require('util')
   , less = require('less')
   , auth = require('./auth');
 
-app.get('/', function(req, res){
-	if(req.session.user){
-		if(req.session.user.role >= 10){
+app.get('/', auth.authorize(), function(req, res){
+	if(req.user){
+		if(req.user.role >= 10){
 			return res.redirect('/games');
 		}
-		if(req.session.user.experimonths){
-			for(var i=0; i<req.session.user.experimonths.length; i++){
-				if(req.session.user.experimonths[i].kind.toString() == auth.clientID){
+		if(req.user.experimonths){
+			for(var i=0; i<req.user.experimonths.length; i++){
+				if(req.user.experimonths[i].kind.toString() == auth.clientID){
 					// Found that the user is in an Experimonth with this Kind
 					return res.redirect('/play');
 				}

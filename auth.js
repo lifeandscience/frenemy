@@ -69,7 +69,7 @@ module.exports = {
   , setup: function(app){
 		var populatePlayer = function(req, res, next){
 			var Player = mongoose.model('Player');
-			Player.find({remote_user: req.session.user._id}).exec(function(err, players){
+			Player.find({remote_user: req.user._id}).exec(function(err, players){
 				if(err){
 					console.log('error finding player: ', err);
 					return next(err);
@@ -77,8 +77,8 @@ module.exports = {
 				if(!players || players.length == 0){
 					// Player doesn't exist, so create one!
 					var player = new Player();
-					player.remote_user = req.session.user._id;
-					player.name = req.session.user.email;
+					player.remote_user = req.user._id;
+					player.name = req.user.email;
 					return player.save(function(err, player){
 						if(err){
 							console.log('error saving player: ', err);
@@ -94,7 +94,7 @@ module.exports = {
 		};
 		app.use(function(req, res, next){
 			if(req.session.token){
-				if(!req.session.user){
+				if(!req.user){
 					// We don't have info about a user 
 					console.log('token but no user!');
 					// Use the token to request the user from the auth server
@@ -108,11 +108,12 @@ module.exports = {
 						if(body.error || !body.expires || !body.user){
 							return next(new Error('Error retrieving user information: '+body.error));
 						}
-						req.session.user = body.user;
-						req.session.user_expires = new Date(body.expires);
+						req.user = body.user;
+/* 						req.session.user_expires = new Date(body.expires); */
 						return next();
 /* 						populatePlayer(req, res, next); */
 					});
+/*
 				}else if(!req.session.user_expires){
 					delete req.session.token;
 					delete req.session.user;
@@ -125,6 +126,7 @@ module.exports = {
 					delete req.session.user;
 					delete req.session.user_expires;
 					return res.redirect('/login?redirect_uri='+req.url);
+*/
 				}
 				return next();
 /* 				return populatePlayer(req, res, next); */
@@ -145,7 +147,7 @@ module.exports = {
 					req.flash('error', 'There was an error retreiving an access token!');
 					return res.redirect('/');
 				}
-				console.log('got token? ', arguments);
+/* 				console.log('got token? ', arguments, req.session.redirect_uri); */
 				req.session.token = result;
 				if(req.session.redirect_uri){
 					var uri = req.session.redirect_uri;
@@ -200,7 +202,7 @@ module.exports = {
 			return res.redirect('/login?redirect_uri=/play');
 		});
 	}
-  , authorize: function(requiredState, requiredRole, message, skipQuestionCount){
+  , authorize: function(requiredState, requiredRole){
 		if(!requiredState){
 			requiredState = 0;
 		}
@@ -208,9 +210,9 @@ module.exports = {
 			requiredRole = 0;
 		}
 		return function(req, res, next){
-			if(req.session && req.session.user){
+			if(req.user){
 				// We have a user!
-				if(req.session.user.role < requiredRole){
+				if(req.user.role < requiredRole){
 					// But the user doesn't have an appropriate role
 					req.flash('error', 'You are not authorized to view that page!');
 					res.redirect('/');

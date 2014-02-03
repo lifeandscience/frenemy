@@ -10,7 +10,11 @@ var util = require('util')
   , async = require('async');
 
 app.get('/play', auth.authorize(1, 0, null, true), function(req, res){
-	Player.find({remote_user: req.session.user._id}).exec(function(err, players){
+	if(!req.user){
+		res.redirect('/');
+		return;
+	}
+	Player.find({remote_user: req.user._id}).exec(function(err, players){
 		if(err || !players || players.length == 0){
 			console.log('no players found for current user: ', err);
 			return res.redirect('/');

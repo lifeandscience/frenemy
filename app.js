@@ -112,7 +112,7 @@ app.configure(function(){
 			}
 		];
 
-		if(req.session.user && req.session.user.role >= 10){
+		if(req.user && req.user.role >= 10){
 			EM_NAV.push({
 				'name': 'Games',
 				'link': '#',
