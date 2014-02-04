@@ -146,32 +146,6 @@ app.configure(function(){
 					{
 						'name': 'List Players',
 						'link': _BASEURL+'/players'
-					},
-					{
-						'name': 'Add Player',
-						'link': _BASEURL+'/players/add'
-					},
-					{
-						'name': 'Import Players',
-						'link': _BASEURL+'/players/import'
-					}
-				]
-			});
-			EM_NAV.push({
-				'name': 'Votes',
-				'link': '#',
-				'children': [
-					{
-						'name': 'Export',
-						'link': _BASEURL+'/votes/export'
-					},
-					{
-						'name': 'Export All',
-						'link': _BASEURL+'/votes/export/all'
-					},
-					{
-						'name': 'Export w/ Score',
-						'link': _BASEURL+'/votes/export/score'
 					}
 				]
 			});
