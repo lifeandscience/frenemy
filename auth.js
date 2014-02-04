@@ -42,7 +42,6 @@ module.exports = {
 			    
 				if(body && body.error && body.error == 'Access token expired!'){
 					// generate a new access_token
-					console.log('expired?');
 					client_access_token = null;
 					return t.doAuthServerClientRequest(method, path, params, callback);
 				}
@@ -96,12 +95,16 @@ module.exports = {
 			if(req.session.token){
 				if(!req.user){
 					// We don't have info about a user 
-					console.log('token but no user!');
 					// Use the token to request the user from the auth server
 					return request({
 						uri: process.env.AUTH_SERVER + '/profile/get?access_token='+req.session.token.access_token
 					  , json: true
 					}, function (error, response, body) {
+						if(body && body.error && body.error == 'Access token expired!'){
+							// clear the session token and start over.
+							delete req.session.token;
+							return next();
+						}
 						if(error || response.statusCode != 200){
 							return next(new Error('Error connecting to auth server'));
 						}
@@ -143,7 +146,6 @@ module.exports = {
 			  , redirect_uri: redirect_uri
 			}, function(error, result) {
 				if(error){
-					console.log('Access Token Error', error.message);
 					req.flash('error', 'There was an error retreiving an access token!');
 					return res.redirect('/');
 				}
@@ -162,7 +164,6 @@ module.exports = {
 			if(req.session.token){
 				// We should do something with this token!
 				var token = OAuth2.AccessToken.create(req.session.token);
-				console.log('have token!', token);
 				// TODO: We can't use this as the oauth provider code doesn't set expiration
 				// We should replace this with a call to the server to determine if the user's session is still available / active
 //				if(!token.expired()){
@@ -220,7 +221,10 @@ module.exports = {
 				}
 				// We're authorized!
 				return next();
+			}else if(req.session.token){
+				return next();
 			}
+
 			req.session.redirect_uri = req.url;
 			var authorization_uri = OAuth2.AuthCode.authorizeURL({
 				redirect_uri: redirect_uri
