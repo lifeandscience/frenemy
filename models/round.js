@@ -5,7 +5,7 @@ var mongoose = require('mongoose')
 
 var RoundSchema = new Schema({
 	completed: {type: Boolean, default: false}
-  , number: {type: Number, default: 1, min: 1, max: 7}
+  , number: {type: Number, default: 1, min: 1, max: 9}
   , game: {type: Schema.ObjectId, ref: 'Game'}
   , votes: [{type: Schema.ObjectId, ref: 'Vote'}]
 });
