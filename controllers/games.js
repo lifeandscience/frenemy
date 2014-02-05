@@ -144,6 +144,15 @@ app.get('/game/:id/leave', auth.authorize(2), function(req, res){
 				// TODO: Do something with the result? Or maybe not?
 			});
 			
+			
+
+			me.notifyOfNewRound(game.currentRound, 'end-of-game', '/game/'+game._id, function(){
+				util.log('did notify '+me.name+' of end of game! '+'/game/'+game._id);
+			});
+			opponent.notifyOfNewRound(game.currentRound, 'end-of-game', '/game/'+game._id, function(){
+				util.log('did notify '+opponent.name+' of end of game! '+'/game/'+game._id);
+			});
+			
 			res.redirect('back');
 			return;
 		});
