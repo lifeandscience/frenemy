@@ -158,14 +158,20 @@ if round.number == 1 && !my_vote
 							.col-xs-4.col-sm-3 Stressed
 							.col-xs-8.col-sm-9
 								input#stressed-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="stressed")
+								- for(var i=0; i<10; i++)
+									span.slider-tick-mark(class=(i == 9 ? 'last' : ''))
 						.row
 							.col-xs-4.col-sm-3 Happy
 							.col-xs-8.col-sm-9
 								input#happy-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="happy")
+								- for(var i=0; i<10; i++)
+									span.slider-tick-mark(class=(i == 9 ? 'last' : ''))
 						.row
 							.col-xs-4.col-sm-3 Tired
 							.col-xs-8.col-sm-9
 								input#tired-slider(type="text", value="5", data-slider-min="0", data-slider-max="10", data-slider-step="1", data-slider-value="5", data-slider-orientation="horizontal", data-slider-selection="after", data-slider-tooltip="hide", name="tired")
+								- for(var i=0; i<10; i++)
+									span.slider-tick-mark(class=(i == 9 ? 'last' : ''))
 								
 						.row
 							.col-xs-12.col-sm-6.col-sm-offset-3
