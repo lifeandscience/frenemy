@@ -147,6 +147,7 @@ module.exports = {
 			}, function(error, result) {
 				if(error){
 					req.flash('error', 'There was an error retreiving an access token!');
+					console.log('There was an error retreiving an access token!', error);
 					return res.redirect('/');
 				}
 /* 				console.log('got token? ', arguments, req.session.redirect_uri); */
