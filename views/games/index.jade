@@ -8,14 +8,13 @@ block body
 		mixin do_games(games)
 
 		- if(pages > 1)
-			.pagination
-				ul
-					- if(page > 0)
-						li
-							a(href=baseurl+'/'+(page-1)) Prev
-					- for(var i=0; i<pages; i++)
-						li(class=(i == page ? 'active' : null))
-							a(href=baseurl+'/'+i) #{i+1}
-					- if(page < pages-1)
-						li
-							a(href=baseurl+'/'+(page+1)) Next
+			ul.pagination
+				- if(page > 0)
+					li
+						a(href=baseurl+'/'+(page-1)) Prev
+				- for(var i=0; i<pages; i++)
+					li(class=(i == page ? 'active' : null))
+						a(href=baseurl+'/'+i) #{i+1}
+				- if(page < pages-1)
+					li
+						a(href=baseurl+'/'+(page+1)) Next
