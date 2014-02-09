@@ -208,7 +208,11 @@ GameSchema.statics.startGames = function(req, cb){
 						game.experimonthName = experimonth.name;
 						game.condition = null;
 						if(mode == 'condition-random'){
-							game.condition = experimonth.conditions[Math.floor(Math.random()*experimonth.conditions.length)];
+							if(experimonth.conditions.length){
+								var idx = Math.floor(Math.random()*experimonth.conditions.length);
+/* 								console.log('using condition: ', idx, experimonth.conditions[idx]); */
+								game.condition = experimonth.conditions[idx];
+							}
 						}else if(mode == 'condition'){
 							if(modeId != null){
 								// Find the given condition by ID
@@ -219,7 +223,7 @@ GameSchema.statics.startGames = function(req, cb){
 									}
 								}
 								if(game.condition == null){
-									console.log('couldn\t find indicated condition. No condition with ID: ', modeSlug);
+									console.log('couldn\'t find indicated condition. No condition with ID: ', modeSlug);
 								}
 							}else if(modeSlug != null){
 								// Find the given condition by slug

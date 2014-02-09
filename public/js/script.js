@@ -266,7 +266,7 @@ jQuery(function(){
 	});
 	if(jQuery('#mood-request').length == 0){
 		jQuery('#cooperation-display').modal('toggle');
-		jQuery('#opponent').modal('toggle');
+		jQuery('#opponent.toShow').modal('toggle');
 	}
 	jQuery('#mood-request').modal('toggle').on('shown.bs.modal', function(){
 		jQuery('#stressed-slider').slider();
@@ -290,7 +290,7 @@ jQuery(function(){
 	});
 	jQuery('#mood-request').on('hidden.bs.modal', function(){
 		jQuery('#cooperation-display').modal('toggle');
-		jQuery('#opponent').modal('toggle');
+		jQuery('#opponent.toShow').modal('toggle');
 	});
 	if(jQuery('#cooperation-display').length > 0){
 		jQuery('#cooperation-display').on('shown.bs.modal', function(){

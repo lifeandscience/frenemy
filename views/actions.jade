@@ -52,7 +52,7 @@ ul.actions
 
 
 if game.condition || game.mode == 'reputation-display'
-	#opponent.fade.modal
+	#opponent.fade.modal(class=(round.number == 1 && !my_vote ? 'toShow' : null))
 		.modal-dialog
 			.modal-content
 				.modal-header
